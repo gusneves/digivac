@@ -1,0 +1,12 @@
+{
+  "name": "digivac",
+  "displayName": "digivac",
+  "expo": {
+    "name": "digivac",
+    "slug": "digivac",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
