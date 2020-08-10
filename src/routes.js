@@ -15,12 +15,11 @@ function Router() {
     <NavigationContainer>
       <Tab.Navigator
         tabBarOptions={{
-          activeBackgroundColor: "#21F",
+          activeBackgroundColor: "#2352FF",
           activeTintColor: "#FFF",
-          inactiveBackgroundColor: "#FFF",
-          inactiveTintColor: "#21f",
-        }}
-      >
+          inactiveBackgroundColor: "#FFFFFF",
+          inactiveTintColor: "#2352FF",
+        }}>
         <Tab.Screen
           name="Home"
           options={{
