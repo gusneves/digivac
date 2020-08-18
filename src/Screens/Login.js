@@ -38,6 +38,7 @@ export default function Login() {
           placeholder='Sua senha'
           placeholderTextColor='#999'
           autoCapitalize='none'
+          secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
         />
