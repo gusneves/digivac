@@ -1,15 +1,16 @@
 import React, { createContext, useState } from 'react';
 
-import routes from '../../api/routes';
+import api from '../services/api';
 
-export const SessionContenxt = createContext();
+export const SessionContext = createContext();
 
 export default function SessionProvider({ children }) {
   const [isLoggedIn, setSession] = useState();
 
   async function signIn(email, password) {
-    const response = await routes.post('session', {
-      email, password
+    const response = await api.post('session', {
+      email, 
+      senha: password
     });
 
     const { _id } = response.data;
@@ -18,8 +19,8 @@ export default function SessionProvider({ children }) {
   }
 
   return (
-    <SessionContenxt.Provider value={{ isLoggedIn, signIn}}>
+    <SessionContext.Provider value={{ isLoggedIn, signIn }}>
       {children}
-    </SessionContenxt.Provider>
+    </SessionContext.Provider>
   );
 }

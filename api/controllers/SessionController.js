@@ -12,9 +12,9 @@ module.exports = {
       const { senha: senhaBanco } = usuario;
       Bcrypt.compare(senha, senhaBanco, ((err, result) => {
         if (!result) {
-          res.json({ error: 'Senhas não batem',});
+          return res.json({ error: 'Senhas não batem',});
         } else {
-          res.json(usuario);
+          return res.json(usuario);
         }
       }));
     } else {
