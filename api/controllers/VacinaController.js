@@ -1,6 +1,5 @@
 const Vacina = require('../models/Vacina');
 
-
 module.exports = {
     async index(req, res){
         const vacina = await Vacina.find();
