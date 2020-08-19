@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { AsyncStorage } from 'react-native';
+// import { AsyncStorage } from 'react-native';
 
 import api from '../services/api';
 

@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 2,
     borderWidth: 2,
     borderColor: '#000',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
 
   registerButton: {
-    marginTop: 30,
+    marginTop: 20,
     justifyContent: 'center',
     alignItems: 'center'
   },

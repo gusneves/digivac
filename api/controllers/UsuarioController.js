@@ -6,7 +6,16 @@ module.exports = {
         return res.json(usuario);
     },
     async store(req, res){
+        const { email } = req.body;
+        
+        const emailVerify = await Usuario.findOne({ email });
+
+        if (emailVerify) {
+            return res.json({ mensagem: 'E-mail já utilizado' });
+        }
+
         const usuario = await Usuario.create(req.body);
+
         return res.json(usuario);
     },
     async show(req, res){
@@ -20,7 +29,7 @@ module.exports = {
     },
 
     async destroy(req, res){
-        const usuario = await Usuario.findByIdAndDelete(req.params.id);
+        await Usuario.findByIdAndDelete(req.params.id);
         return res.send();
     }
 }
