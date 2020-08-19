@@ -1,6 +1,9 @@
 const express = require('express');
+
 const VacinaController = require('./controllers/VacinaController');
-const UsuarioController = require('./controllers/UsuarioController')
+const UsuarioController = require('./controllers/UsuarioController');
+const SessionController = require('./controllers/SessionController');
+
 const routes = express.Router();
 
 routes.post('/vacina', VacinaController.store);
@@ -14,5 +17,7 @@ routes.get('/usuario', UsuarioController.index);
 routes.get('/usuario/:id', UsuarioController.show);
 routes.put('/usuario/:id', UsuarioController.update);
 routes.delete('/usuario/:id', UsuarioController.destroy);
+
+routes.post('/session', SessionController.store);
 
 module.exports = routes;

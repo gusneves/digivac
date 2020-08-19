@@ -1,6 +1,13 @@
 import React from 'react'
+
+import SessionProvider from './context/Session';
+
 import Router from './routes'
 
-const App = () => <Router />
-
-export default App;
+export default function App() {
+  return (
+    <SessionProvider>
+      <Router />
+    </SessionProvider>
+  );
+}
