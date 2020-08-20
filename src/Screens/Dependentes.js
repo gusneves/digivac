@@ -1,12 +1,21 @@
-import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import React, { Component } from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 export default class Dependentes extends Component {
   render() {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{fontSize: 18}}>Dependentes</Text>
+      <View style={styles.container}>
+        <Text>Dependentes</Text>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFF"
+  },
+});

@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator, Header } from '@react-navigation/stack';
+import { createStackNavigator, Header } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import Home from "./Screens/Home";
@@ -14,27 +14,33 @@ import Dependentes from "./Screens/Dependentes";
 import Configs from "./Screens/Configs";
 
 const Stack = createStackNavigator();
-function PerfilStack(){
+function PerfilStack() {
   return (
-      <Stack.Navigator>
-        <Stack.Screen name="Perfil" component={Perfil}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Perfil"
+        component={Perfil}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
-        />
-        <Stack.Screen name="EditInfo" component={EditInfo}
+      />
+      <Stack.Screen
+        name="EditInfo"
+        component={EditInfo}
         options={{
-          title: "Editar informações"
+          title: "Editar informações",
         }}
-        />
-        <Stack.Screen name="Configs" component={Configs}
+      />
+      <Stack.Screen
+        name="Configs"
+        component={Configs}
         options={{
-          title: "Configurações"
+          title: "Configurações",
         }}
-        />
-        <Stack.Screen name="Dependentes" component={Dependentes}/>
-      </Stack.Navigator>
-  )
+      />
+      <Stack.Screen name="Dependentes" component={Dependentes} />
+    </Stack.Navigator>
+  );
 }
 
 const Tab = createBottomTabNavigator();
@@ -48,7 +54,8 @@ function Router() {
           activeTintColor: "#FFF",
           inactiveBackgroundColor: "#FFFFFF",
           inactiveTintColor: "#2352FF",
-        }}>
+        }}
+      >
         <Tab.Screen
           name="Home"
           options={{
@@ -89,7 +96,6 @@ function Router() {
     </NavigationContainer>
   );
 }
-
 
 export { PerfilStack };
 
