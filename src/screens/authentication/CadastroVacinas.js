@@ -1,0 +1,285 @@
+import React, { useState, useEffect, useContext } from "react";
+import { View, StyleSheet, FlatList, Text } from "react-native";
+import { Button, Overlay, Divider } from "react-native-elements";
+import AsyncStorage from "@react-native-community/async-storage";
+import Icon from "react-native-vector-icons/SimpleLineIcons";
+import { StatusBar } from "expo-status-bar";
+
+import MarkSlider from "../../components/MarkSlider";
+
+import api from "../../services/api";
+
+import { SessionContext } from "../../context/Session";
+
+export default function CadVac({ route, navigation }) {
+    const [overlay, setOverlay] = useState(true);
+    const [vacinas, setVacinas] = useState();
+    const [confirm, setConfirm] = useState(false);
+    const [data, setData] = useState({
+        id: [],
+        doses: [],
+    });
+    const marks = [
+        { name: 0, value: 0 },
+        { name: 1, value: 1 },
+        { name: 2, value: 2 },
+        { name: 3, value: 3 },
+        { name: 4, value: 4 },
+        { name: 5, value: 5 },
+        { name: 6, value: 6 },
+    ];
+
+    const { signUp, setSession } = useContext(SessionContext);
+
+    function changeVisibility() {
+        setOverlay(!overlay);
+    }
+    function changeConfirmation() {
+        setConfirm(!confirm);
+    }
+
+    useEffect(() => {
+        _getVacinas();
+    }, []);
+
+    useEffect(() => {
+        if (vacinas != null) prepareData();
+    }, [vacinas]);
+
+    async function _getVacinas() {
+        await api
+            .get("/vacina")
+            .then((response) => {
+                setVacinas(response.data);
+            })
+            .catch((e) => {
+                console.log("Erro ao pegar dados das vacinas: " + e.message);
+            });
+    }
+
+    let aux = {
+        id: data.id,
+        doses: data.doses,
+    };
+    function prepareData() {
+        vacinas.map((item) => {
+            const { id, doses } = aux;
+            id.push(item._id);
+            doses.push(0);
+            setData(aux);
+        });
+    }
+
+    function marcaDoses(id, doses) {
+        let indexChanged = data.id.indexOf(id);
+        aux.doses[indexChanged] = doses;
+        setData(aux);
+    }
+
+    async function cadastro() {
+        let { userData } = route.params;
+        let vacinasUsuario = [];
+        data.id.map((value, index) => {
+            let objectVacina = {
+                id: value,
+                doses: data.doses[index],
+            };
+            vacinasUsuario.push(objectVacina);
+        });
+        userData = { ...userData, vacinas: vacinasUsuario };
+
+        await signUp(userData)
+            .then(async ({ data }) => {
+                console.log(data);
+                const { _id } = data.usuario;
+                const { token } = data;
+                setSession(_id);
+                await AsyncStorage.setItem("usuario", _id);
+                await AsyncStorage.setItem("token", token);
+            })
+            .catch((response) => console.log(response));
+    }
+
+    return (
+        <View style={styles.container}>
+            <Overlay
+                isVisible={overlay}
+                onBackdropPress={() => {
+                    changeVisibility();
+                    setConfirm(false);
+                }}
+                overlayStyle={styles.overlay}
+            >
+                {confirm ? (
+                    <View style={styles.overlay}>
+                        <Icon
+                            name="question"
+                            color="#2352FF"
+                            size={24}
+                            style={{ marginTop: 10 }}
+                        />
+                        <Text style={styles.overlayText1}>
+                            Você tem certeza que está tudo correto?
+                        </Text>
+                        <Text style={styles.overlayText2}>
+                            Muita atenção nessa parte!
+                        </Text>
+
+                        <Button
+                            title="Sim"
+                            type="clear"
+                            containerStyle={styles.overlayButton}
+                            titleStyle={styles.overlayButtonText}
+                            onPress={cadastro}
+                        />
+                        <Button
+                            title="Não"
+                            type="clear"
+                            containerStyle={styles.overlayButton}
+                            titleStyle={styles.overlayButtonText}
+                            onPress={() => {
+                                changeVisibility();
+                                setConfirm(false);
+                            }}
+                        />
+                    </View>
+                ) : (
+                    <View style={styles.overlay}>
+                        <Icon
+                            name="emotsmile"
+                            color="#2352FF"
+                            size={24}
+                            style={{ marginTop: 10 }}
+                        />
+                        <Text style={styles.overlayText1}>
+                            Certo, agora precisamos que você pegue sua carteira
+                            de vacinação e marque o número de doses que você tem
+                            certeza que já tomou de cada vacina! Caso não tenha
+                            tomado nenhuma dose, deixar em 0!
+                        </Text>
+                        <Text style={styles.overlayText2}>
+                            Muita atenção nessa parte!
+                        </Text>
+
+                        <Button
+                            title="OK"
+                            type="clear"
+                            containerStyle={styles.overlayButton}
+                            titleStyle={styles.overlayButtonText}
+                            onPress={changeVisibility}
+                        />
+                    </View>
+                )}
+            </Overlay>
+
+            <View>
+                <FlatList
+                    keyExtractor={(item) => item._id}
+                    data={vacinas}
+                    renderItem={({ item }) => (
+                        <View style={styles.listView}>
+                            <Text style={styles.title}>{item.nome}</Text>
+                            <Text style={styles.description}>
+                                {item.descricao}
+                            </Text>
+                            <Text style={styles.doses}>
+                                Número de doses tomadas:
+                            </Text>
+                            <MarkSlider
+                                value={0}
+                                max={item.doses}
+                                min={0}
+                                marks={marks}
+                                step={1}
+                                style={styles.slider}
+                                onChange={(value) =>
+                                    marcaDoses(item._id, value)
+                                }
+                            />
+                            <Divider />
+                        </View>
+                    )}
+                    ListFooterComponent={() => (
+                        <Button
+                            title="Confirmar vacinas"
+                            type="clear"
+                            icon={() => (
+                                <Icon
+                                    name="check"
+                                    color="#2352FF"
+                                    size={24}
+                                    style={{ marginRight: 10 }}
+                                />
+                            )}
+                            onPress={() => {
+                                changeConfirmation();
+                                changeVisibility();
+                            }}
+                        />
+                    )}
+                />
+            </View>
+            <StatusBar
+                style="auto"
+                translucent={false}
+                backgroundColor="#2352FF"
+            />
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        margin: 20,
+    },
+    overlayText1: {
+        fontSize: 16,
+        marginVertical: 15,
+        textAlign: "center",
+        color: "#555",
+        marginHorizontal: 15,
+    },
+    overlayText2: {
+        fontSize: 16,
+        marginBottom: 15,
+        textAlign: "center",
+        fontWeight: "bold",
+        color: "#555",
+        marginHorizontal: 15,
+    },
+    overlayButtonContainer: {
+        minWidth: 50,
+    },
+    overlayButtonText: {
+        color: "#2352FF",
+    },
+
+    container: {
+        flex: 1,
+        backgroundColor: "#FFF",
+    },
+    listView: {
+        padding: 10,
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginVertical: 5,
+    },
+    description: {
+        fontSize: 14,
+        color: "#555",
+        fontStyle: "italic",
+        marginBottom: 15,
+    },
+    doses: {
+        fontSize: 15,
+        fontWeight: "500",
+    },
+    slider: {
+        marginBottom: 8,
+        padding: 0,
+    },
+});
