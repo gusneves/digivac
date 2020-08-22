@@ -4,6 +4,9 @@ const Bcrypt = require('bcryptjs');
 
 module.exports = {
   async store(req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+
     const { email, senha } = req.body;
 
     const usuario = await Usuario.findOne({ email });

@@ -16,8 +16,8 @@ export default function SessionProvider({ children }) {
 
   async function signIn(email, password) {
     const response = await api.post('session', {
-      email, 
-      senha: password
+        email, 
+        senha: password
     });
 
     const { _id } = response.data;
@@ -25,6 +25,7 @@ export default function SessionProvider({ children }) {
     // AsyncStorage.setItem('usuario', _id);
 
     setSession(_id);
+    console.log(response.data);
   }
 
   return (
