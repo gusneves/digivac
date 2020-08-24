@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator, Header } from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import { SessionContext } from './context/Session';
@@ -17,6 +17,7 @@ import Dependentes from "./Screens/Dependentes";
 import Configs from "./Screens/Configs";
 
 const Stack = createStackNavigator();
+
 function PerfilStack() {
   return (
     <Stack.Navigator>
@@ -87,7 +88,7 @@ function Router() {
                     <Icon name="user" color={color} size={25} />
                   ),
                 }}
-                component={Perfil}
+                component={PerfilStack}
               />
               <Tab.Screen
                 name="Sobre"
