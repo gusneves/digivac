@@ -24,7 +24,8 @@ const UsuarioSchema = new mongoose.Schema({
   senha: {
     type: String,
     required: true,
-    bcrypt: true
+    bcrypt: true,
+    select: false
   },
   dependentes: [
     {

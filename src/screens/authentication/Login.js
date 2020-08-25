@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-import logo from '../assets/logo.png';
+import logo from '../../assets/logo.png';
 
-import { SessionContext } from '../context/Session';
+import { SessionContext } from '../../context/Session';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,7 +15,7 @@ export default function Login() {
     signIn(email, password);
   }
 
-  return(
+  return (
     <View style={styles.container}>
       <Image style={styles.logo} source={logo}/>
 
@@ -46,10 +46,9 @@ export default function Login() {
         <TouchableOpacity onPress={handleSubmmit} style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.registerButton}>
+        <TouchableOpacity onPress={() => { navigation.navigate('Cadastro') }} style={styles.registerButton}>
           <Text style={styles.registerButtonText}>Ainda não possui cadastro?</Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   logo: {

@@ -1,5 +1,7 @@
 const express = require('express');
 
+const authMiddleware = require('./middlewares/Authentication');
+
 const VacinaController = require('./controllers/VacinaController');
 const UsuarioController = require('./controllers/UsuarioController');
 const SessionController = require('./controllers/SessionController');
@@ -19,5 +21,11 @@ routes.put('/usuario/:id', UsuarioController.update);
 routes.delete('/usuario/:id', UsuarioController.destroy);
 
 routes.post('/session', SessionController.store);
+routes.get('/session/authentication', authMiddleware, (req, res) => {
+  return res.json({ 
+    ok: true, 
+    id: req.usuarioId 
+  });
+});
 
 module.exports = routes;

@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const Session = require('./SessionController');
 
 module.exports = {
     async index(req, res){
@@ -16,7 +17,12 @@ module.exports = {
 
         const usuario = await Usuario.create(req.body);
 
-        return res.json(usuario);
+        usuario.senha = undefined;
+
+        return res.json({
+            usuario,
+            token: Session.generateToken({ id: usuario._id })
+        });
     },
     async show(req, res){
         const usuario = await Usuario.findById(req.params.id);

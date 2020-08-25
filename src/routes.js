@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -6,15 +7,17 @@ import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import { SessionContext } from './context/Session';
 
-import Home from "./Screens/Home";
-import Agenda from "./Screens/Agenda";
-import Perfil from "./Screens/Perfil";
-import Sobre from "./Screens/Sobre";
-import Login from './Screens/Login';
+import Login from './screens/authentication/Login';
+import Cadastro from './screens/authentication/Cadastro';
 
-import EditInfo from "./Screens/EditInfo";
-import Dependentes from "./Screens/Dependentes";
-import Configs from "./Screens/Configs";
+import Home from "./screens/authenticaded/Home";
+import Agenda from "./screens/authenticaded/Agenda";
+import Perfil from "./screens/authenticaded/Perfil";
+import Sobre from "./screens/authenticaded/Sobre";
+
+import EditInfo from "./screens/authenticaded/profile/EditInfo";
+import Dependentes from "./screens/authenticaded/profile/Dependentes";
+import Configs from "./screens/authenticaded/profile/Configs";
 
 const Stack = createStackNavigator();
 
@@ -48,13 +51,23 @@ function PerfilStack() {
 }
 
 const Tab = createBottomTabNavigator();
+const AuthStack = createStackNavigator();
 
 function Router() {
-  const { isLoggedIn } = useContext(SessionContext);
+  const { isLoggedIn, loading } = useContext(SessionContext);
+
+  if (loading) { // futura splash screen
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='#999' />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      {isLoggedIn ? (
+        <Tab.Navigator
         tabBarOptions={{
           activeBackgroundColor: "#2352FF",
           activeTintColor: "#FFF",
@@ -109,7 +122,22 @@ function Router() {
               }}
             />
           )}
-      </Tab.Navigator>
+        </Tab.Navigator>
+      ) : (
+        <AuthStack.Navigator>
+          <AuthStack.Screen
+            name='Login'
+            component={Login}
+            options={{
+              headerShown: false
+            }}
+          />
+          <AuthStack.Screen
+            name='Cadastro'
+            component={Cadastro}
+          />
+        </AuthStack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
