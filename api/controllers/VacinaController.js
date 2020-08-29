@@ -2,6 +2,8 @@ const Vacina = require('../models/Vacina');
 
 module.exports = {
     async index(req, res){
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
         const vacina = await Vacina.find();
         return res.json(vacina);
     },
