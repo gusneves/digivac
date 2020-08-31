@@ -68,60 +68,48 @@ function Router() {
     <NavigationContainer>
       {isLoggedIn ? (
         <Tab.Navigator
-        tabBarOptions={{
-          activeBackgroundColor: "#2352FF",
-          activeTintColor: "#FFF",
-          inactiveBackgroundColor: "#FFFFFF",
-          inactiveTintColor: "#2352FF",
-        }}>
-          {isLoggedIn ? (
-            <>
-              <Tab.Screen
-                name="Home"
-                options={{
-                  tabBarIcon: ({ color }) => (
-                    <Icon name="home" color={color} size={25} />
-                  ),
-                }}
-                component={Home}
-              />
-              <Tab.Screen
-                name="Agenda"
-                options={{
-                  tabBarIcon: ({ color }) => (
-                    <Icon name="calendar" color={color} size={25} />
-                  ),
-                }}
-                component={Agenda}
-              />
-              <Tab.Screen
-                name="Perfil"
-                options={{
-                  tabBarIcon: ({ color }) => (
-                    <Icon name="user" color={color} size={25} />
-                  ),
-                }}
-                component={PerfilStack}
-              />
-              <Tab.Screen
-                name="Sobre"
-                options={{
-                  tabBarIcon: ({ color }) => (
-                    <Icon name="question" color={color} size={25} />
-                  ),
-                }}
-                component={Sobre}
-              />
-            </>
-          ) : (
+          tabBarOptions={{
+            activeBackgroundColor: "#2352FF",
+            activeTintColor: "#FFF",
+            inactiveBackgroundColor: "#FFFFFF",
+            inactiveTintColor: "#2352FF",
+          }}>
             <Tab.Screen
-              name='Login'
-              component={Login}
-              options={{
-                tabBarVisible: false
-              }}
+            name="Home"
+            options={{
+              tabBarIcon: ({ color }) => (
+                <Icon name="home" color={color} size={25} />
+              ),
+            }}
+            component={Home}
             />
-          )}
+            <Tab.Screen
+              name="Agenda"
+              options={{
+                tabBarIcon: ({ color }) => (
+                  <Icon name="calendar" color={color} size={25} />
+                ),
+              }}
+              component={Agenda}
+            />
+            <Tab.Screen
+              name="Perfil"
+              options={{
+                tabBarIcon: ({ color }) => (
+                  <Icon name="user" color={color} size={25} />
+                ),
+              }}
+              component={PerfilStack}
+            />
+            <Tab.Screen
+              name="Sobre"
+              options={{
+                tabBarIcon: ({ color }) => (
+                  <Icon name="question" color={color} size={25} />
+                ),
+              }}
+              component={Sobre}
+            />
         </Tab.Navigator>
       ) : (
         <AuthStack.Navigator>
