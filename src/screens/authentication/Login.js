@@ -1,12 +1,12 @@
-import React, { useRef, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
     View,
     Image,
-    Text,
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Formik } from "formik";
@@ -20,9 +20,11 @@ export default function Login({ navigation }) {
     const [visibilityIcon, useVisibilityIcon] = useState("visibility-off");
     const [secureEntry, useSecureEntry] = useState(true);
 
-    function changeVisibility(){
-        visibilityIcon === "visibility-off" ? useVisibilityIcon("visibility") : useVisibilityIcon("visibility-off")
-        useSecureEntry(!secureEntry)
+    function changeVisibility() {
+        visibilityIcon === "visibility-off"
+            ? useVisibilityIcon("visibility")
+            : useVisibilityIcon("visibility-off");
+        useSecureEntry(!secureEntry);
         console.log(visibilityIcon, secureEntry);
     }
 
@@ -99,7 +101,9 @@ export default function Login({ navigation }) {
                                     color="#AAA"
                                     size={20}
                                     style={{ marginRight: 4 }}
-                                    onPress={() => {changeVisibility()}}
+                                    onPress={() => {
+                                        changeVisibility();
+                                    }}
                                 />
                             )}
                             labelStyle={styles.inputLabel}
@@ -133,6 +137,11 @@ export default function Login({ navigation }) {
                     </View>
                 )}
             </Formik>
+            <StatusBar
+                style="auto"
+                translucent={false}
+                backgroundColor="#FFF"
+            />
         </KeyboardAvoidingView>
     );
 }

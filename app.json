@@ -1,5 +1,6 @@
 {
   "name": "digivac",
+  "icon":"./src/assets/icon.png",
   "displayName": "digivac",
   "expo": {
     "name": "digivac",

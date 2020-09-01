@@ -52,8 +52,13 @@ export default function Perfil({ navigation }) {
 
     async function getUserInfo() {
         const id = await AsyncStorage.getItem('usuario');
-        const response = await api.get("/usuario/" + id);
-        useUser(response.data);
+        await api.get("/usuario/" + id)
+        .then((response) => {
+            useUser(response.data);
+        })
+        .catch((e) => {
+            console.log("Erro ao pegar dados do usuário" + e)
+        });
     }
 
     async function getPermissionAsync(){
@@ -99,7 +104,6 @@ export default function Perfil({ navigation }) {
         const images = await FileSystem.readDirectoryAsync(dir);
         let lastItem = images[images.length - 1];
         if (images != null) useImage("" + dir + lastItem);
-        console.log(dir, images);
     };
 
     return (
