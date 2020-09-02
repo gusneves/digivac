@@ -1517,6 +1517,13 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
+"@react-native-community/datetimepicker@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-2.4.0.tgz#6b3cf050f507f9b70d31d5a572e1153bb5bd50c9"
+  integrity sha512-ZXPwNAQt4T66PTL20l2nSEbtsn6vtsvFqdYWBfx8aaNKBoCPDygR6SsYzWcIoexKH5wmX0zctSzIsryl+Gtngg==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native-community/masked-view@0.1.10":
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
@@ -7123,6 +7130,13 @@ regjsparser@^0.6.4:
   dependencies:
     jsesc "~0.5.0"
 
+remask@^0.1.0-alpha.5:
+  version "0.1.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/remask/-/remask-0.1.0-alpha.5.tgz#003d49b203210501a4e66b6e7c034e6a92b6e417"
+  integrity sha512-oRVGV7FWDvL6aOcATa/TPyNs78PUr9F1gn2495/J2A4G1B6mSGWKnZfyyc5hfoqLkpxmUdF2LR/pICR2Ox9Ovw==
+  dependencies:
+    vanilla-masker "^1.2.0"
+
 remove-trailing-separator@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz#c24bce2a283adad5bc3f58e0d48249b92379d8ef"
@@ -8385,6 +8399,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+vanilla-masker@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/vanilla-masker/-/vanilla-masker-1.2.0.tgz#c2830e9d994a5fecd2261506477c2707fe589756"
+  integrity sha1-woMOnZlKX+zSJhUGR3wnB/5Yl1Y=
 
 vary@~1.1.2:
   version "1.1.2"

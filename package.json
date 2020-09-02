@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "2.4.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
@@ -37,6 +38,8 @@
     "react-native-unimodules": "~0.10.1",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7",
+    "remask": "^0.1.0-alpha.5",
+    "vanilla-masker": "^1.2.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
