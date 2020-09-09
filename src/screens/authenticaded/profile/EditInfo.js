@@ -72,8 +72,19 @@ export default function EditInfo({ navigation }) {
           .min(10, "Insira uma data válida!"),
   });
 
-  async function editInfo(values) {
-    const { nome, sexo, data_nasc } = values;
+  async function editInfo(values, errors) {
+    const { nome, sexo } = values;
+    let { data_nasc } = values;
+
+    const today = moment();
+    const minDate = moment("31/12/1919", "DD-MM-YYYY");
+
+    data_nasc = moment(data_nasc, "DD/MM/YYYY");
+    
+    if (moment.max(today, data_nasc) === data_nasc || moment.min(minDate, data_nasc) === data_nasc) {
+        errors.setFieldError("data_nasc", "Insira uma data válida!");
+        return;
+    }
 
     const dataFinal = moment(data_nasc, "DD/MM/YYYY").toDate();
 
@@ -100,8 +111,8 @@ export default function EditInfo({ navigation }) {
                   sexo,
                   data_nasc
               }}
-              onSubmit={(values) => {
-                editInfo(values);
+              onSubmit={(values, errors) => {
+                editInfo(values, errors);
               }}
               validationSchema={formSchema}
           >
@@ -127,6 +138,7 @@ export default function EditInfo({ navigation }) {
                           placeholder="Seu e-mail"
                           placeholderTextColor="#999"
                           editable={false}
+                          disabled={true}
                           />
 
                       <Input
@@ -146,30 +158,31 @@ export default function EditInfo({ navigation }) {
                             placeholderTextColor="#999"
                             maxLength={14}
                             editable={false}
+                            disabled={true}
                             />
 
                       <Input
                           label="Nome"
                           leftIcon={() => (
                               <Icon
-                                  name="portrait"
-                                  color="#AAA"
-                                  size={20}
-                                  style={{ marginRight: 4 }}
+                              name="portrait"
+                              color="#AAA"
+                              size={20}
+                              style={{ marginRight: 4 }}
                               />
-                          )}
-                          value={nome}
-                          onChangeText={setNome}
-                          labelStyle={styles.inputLabel}
-                          inputStyle={styles.input}
-                          placeholder="Seu nome completo"
-                          placeholderTextColor="#999"
-                          keyboardType="default"
-                          autoCapitalize="none"
-                          autoCorrect={false}
-                          errorMessage={errors.nome}
-                          errorStyle={styles.error}
-                      />
+                              )}
+                              value={nome}
+                              onChangeText={setNome}
+                              labelStyle={styles.inputLabel}
+                              inputStyle={styles.input}
+                              placeholder="Seu nome completo"
+                              placeholderTextColor="#999"
+                              keyboardType="default"
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              errorMessage={errors.nome}
+                              errorStyle={styles.error}
+                              />
 
                       <View style={styles.sexos}>
                           <Text style={styles.labelSexos}>Sexo</Text>
