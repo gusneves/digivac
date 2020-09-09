@@ -50,8 +50,8 @@ export default function Login({ navigation }) {
                     email: "",
                     password: "",
                 }}
-                onSubmit={async (values, errors) => {
-                    await signIn(values.email, values.password).then(() => {
+                onSubmit={async ({email, password}, errors) => {
+                    await signIn(email, password).then(() => {
                         errors.setFieldError(
                             "password",
                             "Usuário ou senha incorretos!"

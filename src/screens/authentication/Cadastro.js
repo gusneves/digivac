@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, Text, Platform } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, ScrollView, StyleSheet, Text, AsyncStorage } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
 import { mask, unMask } from "remask";
-import { Formik, ErrorMessage } from "formik";
+import { Formik } from "formik";
 import * as Yup from "yup";
+import moment from "moment";
+
+import { SessionContext } from "../../context/Session";
 
 export default function Cadastro() {
+    const { signUp, setSession } = useContext(SessionContext);
+
     const [selectedIndex, useSelectedIndex] = useState(0);
     const sexos = ["Masculino", "Feminino"];
 
@@ -40,10 +45,10 @@ export default function Cadastro() {
             .required("Campo obrigatório!"),
         cpf: Yup.string()
             .required("Campo obrigatório!")
-            .min(14, "Insira um CPF válido!"),
+            .min(14, "Por favor, insira um CPF válido!"),
         data_nasc: Yup.string()
             .required("Campo obrigatório!")
-            .min(10, "Insira uma data válida!"),
+            .min(10, "Por favor, insira uma data válida!"),
     });
 
     return (
@@ -59,8 +64,48 @@ export default function Cadastro() {
                     senha: "",
                     confirmarSenha: "",
                 }}
-                onSubmit={(values) => {
-                    console.log(values);
+                onSubmit={async (
+                    { nome, cpf, sexo, data_nasc, email, senha },
+                    errors
+                ) => {
+                    let today = moment();
+                    const minDate = moment("31/12/1919", "DD-MM-YYYY");
+                    data_nasc = moment(data_nasc, "DD/MM/YYYY");
+                    if (
+                        moment.max(today, data_nasc) === data_nasc ||
+                        moment.min(minDate, data_nasc) === data_nasc
+                    ) {
+                        errors.setFieldError(
+                            "data_nasc",
+                            "Insira uma data válida!"
+                        );
+                    }
+                    const userData = {
+                        nome,
+                        cpf: unMask(cpf),
+                        sexo,
+                        data_nasc,
+                        email,
+                        senha,
+                    };
+                    console.log(userData);
+                    await signUp(userData)
+                        .then(async ({ data }) => {
+                            console.log(data);
+                            if (data.field)
+                                errors.setFieldError(
+                                    data.field,
+                                    data.errorMessage
+                                );
+                            else {
+                                const { _id } = data.usuario;
+                                const { token } = data;
+                                setSession(_id);
+                                await AsyncStorage.setItem("usuario", _id);
+                                await AsyncStorage.setItem("token", token);
+                            }
+                        })
+                        .catch((response) => console.log(response));
                 }}
                 validationSchema={formSchema}
             >
@@ -283,10 +328,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         margin: 10,
-    },
-    registerButtonText: {
-        fontSize: 16,
-        color: "#45a16b",
     },
     error: {
         fontSize: 13,
