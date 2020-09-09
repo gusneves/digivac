@@ -63,9 +63,13 @@ export default function SessionProvider({ children }) {
         });
     }
 
+    async function signUp(userdata){
+        return await api.post('/usuario', userdata);
+    }
+
     return (
         <SessionContext.Provider
-            value={{ isLoggedIn, loading, signIn, signOut }}
+            value={{ isLoggedIn, setSession, loading, signIn, signOut, signUp }}
         >
             {children}
         </SessionContext.Provider>

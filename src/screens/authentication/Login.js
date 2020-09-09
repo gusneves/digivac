@@ -45,12 +45,13 @@ export default function Login({ navigation }) {
         >
             <Image style={styles.logo} source={logo} />
             <Formik
+                validateOnChange={false}
                 initialValues={{
                     email: "",
                     password: "",
                 }}
-                onSubmit={async (values, errors) => {
-                    await signIn(values.email, values.password).then(() => {
+                onSubmit={async ({email, password}, errors) => {
+                    await signIn(email, password).then(() => {
                         errors.setFieldError(
                             "password",
                             "Usuário ou senha incorretos!"
@@ -59,7 +60,13 @@ export default function Login({ navigation }) {
                 }}
                 validationSchema={formSchema}
             >
-                {({ values, handleChange, handleSubmit, errors }) => (
+                {({
+                    values,
+                    handleChange,
+                    handleSubmit,
+                    errors,
+                    isSubmitting,
+                }) => (
                     <View style={styles.form}>
                         <Input
                             label="E-mail"
@@ -81,6 +88,7 @@ export default function Login({ navigation }) {
                             autoCapitalize="none"
                             autoCorrect={false}
                             errorMessage={errors.email}
+                            errorStyle={styles.error}
                         />
 
                         <Input
@@ -124,6 +132,7 @@ export default function Login({ navigation }) {
                             buttonStyle={styles.button}
                             titleStyle={styles.buttonTitle}
                             containerStyle={styles.buttonContainer}
+                            loading={isSubmitting}
                         />
 
                         <Button

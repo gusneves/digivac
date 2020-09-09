@@ -24,6 +24,7 @@
     "express": "^4.17.1",
     "formik": "^2.1.5",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.27.0",
     "mongoose": "^5.9.28",
     "mongoose-bcrypt": "^1.8.0",
     "react": "~16.11.0",
@@ -37,6 +38,8 @@
     "react-native-unimodules": "~0.10.1",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7",
+    "remask": "^0.1.0-alpha.5",
+    "vanilla-masker": "^1.2.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
