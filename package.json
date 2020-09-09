@@ -5,9 +5,11 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "dev": "nodemon api/server.js"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^3.0.2",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
