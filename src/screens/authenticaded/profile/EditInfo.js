@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Text, AsyncStorage } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
+import { StatusBar } from "expo-status-bar";
 import { mask, unMask } from "remask";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -11,7 +12,7 @@ import api from '../../../services/api';
 
 export default function EditInfo({ navigation }) {
   const [user, setUser] = useState({});
-  
+
   useEffect(() => {
     async function getUserData() {
       const userId = await AsyncStorage.getItem('usuario');
@@ -22,33 +23,33 @@ export default function EditInfo({ navigation }) {
 
     getUserData();
   }, []);
-  
+
   function handleCPF(initialCPF) {
     let stringCPF = String(initialCPF);
-    
+
     let CPF = mask(stringCPF, ["999.999.999-99"])
-    
+
     return CPF;
   }
-  
+
   function handleDataNasc(dataNasc) {
     const data = moment.utc(dataNasc).format('DD/MM/YYYY');
-    
+
     return data;
   }
-  
+
   const cpfState = handleCPF(user.cpf);
   const nomeState = user.nome;
   const sexoState = user.sexo;
-  const indexState = user.sexo === 'Masculino' ? 0 : 1; 
+  const indexState = user.sexo === 'Masculino' ? 0 : 1;
   const data_nascState = handleDataNasc(user.data_nasc);
-  
+
   const [cpf, setCPF] = useState(cpfState);
   const [nome, setNome] = useState(nomeState);
   const [selectedIndex, useSelectedIndex] = useState(indexState);
   const [sexo, setSexo] = useState(sexoState)
   const [data_nasc, setData] = useState(data_nascState);
-  
+
   const sexos = ["Masculino", "Feminino"];
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function EditInfo({ navigation }) {
     const minDate = moment("31/12/1919", "DD-MM-YYYY");
 
     data_nasc = moment(data_nasc, "DD/MM/YYYY");
-    
+
     if (moment.max(today, data_nasc) === data_nasc || moment.min(minDate, data_nasc) === data_nasc) {
         errors.setFieldError("data_nasc", "Insira uma data válida!");
         return;
@@ -89,7 +90,7 @@ export default function EditInfo({ navigation }) {
     const dataFinal = moment(data_nasc, "DD/MM/YYYY").toDate();
 
     const userId = await AsyncStorage.getItem('usuario');
-    
+
     await api.put(`/usuario/${userId}`, {
       nome,
       sexo,
@@ -240,6 +241,11 @@ export default function EditInfo({ navigation }) {
                   </View>
               )}
           </Formik>
+          <StatusBar
+                style="auto"
+                translucent={false}
+                backgroundColor="#2352FF"
+            />
       </ScrollView>
     );
 }

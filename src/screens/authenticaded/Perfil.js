@@ -8,8 +8,7 @@ import * as FileSystem from "expo-file-system";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
-
-import api from '../../services/api';
+import api from "../../services/api";
 import { SessionContext } from "../../context/Session";
 
 const list = [
@@ -51,17 +50,18 @@ export default function Perfil({ navigation }) {
     }, []);
 
     async function getUserInfo() {
-        const id = await AsyncStorage.getItem('usuario');
-        await api.get("/usuario/" + id)
-        .then((response) => {
-            useUser(response.data);
-        })
-        .catch((e) => {
-            console.log("Erro ao pegar dados do usuário" + e)
-        });
+        const id = await AsyncStorage.getItem("usuario");
+        await api
+            .get("/usuario/" + id)
+            .then((response) => {
+                useUser(response.data);
+            })
+            .catch((e) => {
+                console.log("Erro ao pegar dados do usuário" + e);
+            });
     }
 
-    async function getPermissionAsync(){
+    async function getPermissionAsync() {
         if (Constants.platform.ios) {
             const { status } = await Permissions.askAsync(
                 Permissions.CAMERA_ROLL
@@ -72,9 +72,9 @@ export default function Perfil({ navigation }) {
                 );
             }
         }
-    };
+    }
 
-    async function _pickImage(){
+    async function _pickImage() {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -88,7 +88,7 @@ export default function Perfil({ navigation }) {
                     from: result.uri,
                     to:
                         FileSystem.documentDirectory +
-                        `assets/${user._id}/`+
+                        `assets/${user._id}/` +
                         Date.now() +
                         ".jpg",
                 });
@@ -97,14 +97,21 @@ export default function Perfil({ navigation }) {
         } catch (E) {
             console.log(E);
         }
-    };
+    }
 
-    async function _getImage(){
+    async function _getImage() {
         const dir = FileSystem.documentDirectory + `assets/${user._id}/`;
-        const images = await FileSystem.readDirectoryAsync(dir);
-        let lastItem = images[images.length - 1];
-        if (images != null) useImage("" + dir + lastItem);
-    };
+        await FileSystem.getInfoAsync(dir)
+            .then(async () => {
+                const images = await FileSystem.readDirectoryAsync(dir);
+                let lastItem = images[images.length - 1];
+                if (images != null) useImage("" + dir + lastItem);
+            })
+            .catch(async (response) => {
+                console.log(response);
+                await FileSystem.makeDirectoryAsync(dir);
+            });
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -112,6 +119,7 @@ export default function Perfil({ navigation }) {
                 size="xlarge"
                 rounded
                 icon={{ name: "user", color: "#DDD", type: "font-awesome" }}
+                placeholderStyle={{backgroundColor: "#FFF"}}
                 source={{ uri: image }}
                 activeOpacity={0.5}
                 containerStyle={styles.avatar}
