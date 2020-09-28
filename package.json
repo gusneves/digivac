@@ -13,7 +13,11 @@
     "@react-navigation/native": "^5.7.3",
     "axios": "^0.19.2",
     "cors": "^2.8.5",
+<<<<<<< HEAD
     "expo": "^38.0.9",
+=======
+    "expo": "^38.0.10",
+>>>>>>> e56f0a9... home pronta - falta atualizar agenda e vacinas a tomar
     "expo-constants": "~9.1.1",
     "expo-splash-screen": "^0.3.1",
     "expo-status-bar": "^1.0.0",
@@ -21,9 +25,10 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.28",
     "mongoose-bcrypt": "^1.8.0",
-    "react": "~16.11.0",
+    "npm": "^6.14.8",
+    "react": "^16.13.1",
     "react-dom": "~16.11.0",
-    "react-native": "~0.62.2",
+    "react-native": "^0.63.2",
     "react-native-elements": "^2.2.1",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-reanimated": "~1.9.0",
