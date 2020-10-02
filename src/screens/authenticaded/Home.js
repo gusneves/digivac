@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, AsyncStorage, FlatList, ScrollView, StatusBar } from "react-native";
 import { Button } from 'react-native-elements';
+import { array } from "yup";
 
 import api from '../../services/api';
 
@@ -18,77 +19,166 @@ export default function Home({ navigation }) {
         setUsuario(data);
         setNome(data.nome);
 
-        const vacinasUsuario = data.vacinas;
-        const idVacinasUsuario = [];
+        const dependentesUsuario = data.dependentes;
+        const nomeDependentes = [];
+        const vacinasDependentes = [];
 
-        vacinasUsuario.forEach(element => {
-          for (let prop in element) {
-            if (prop === 'id') {
-              idVacinasUsuario.push(element[prop]);
+        if (dependentesUsuario.length > 0) {
+          dependentesUsuario.forEach(element => {
+            for (let prop in element) {
+              if (prop === 'nome') {
+                nomeDependentes.push(element[prop]);
+              }
+              if (prop === 'vacinas') {
+                vacinasDependentes.push(element[prop]);
+                }
+              }
+            }
+          );
+
+          const idVacinasDependentes = [];
+
+          for (let i = 0; i < vacinasDependentes.length; i++) {
+            idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
+          }
+          
+          const nomeVacinasDependentes = [];
+
+          for (let i = 0; i < idVacinasDependentes.length; i++) {
+            nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
+          }
+
+          setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+
+          // console.log(nomeVacinasDependentes);
+          console.log(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+        } else {
+          const nomeArray = [nome];
+          const vacinasUsuario = data.vacinas;
+          let idVacinasUsuario = [];
+
+          idVacinasUsuario = getIdVacinas(vacinasUsuario);
+
+          const nomeVacinasUsuario = [];
+
+          for (const id of idVacinasUsuario) {
+            let dataVacinasUsuario = await api.get(`/vacina/${id}`);
+
+            nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
+          }
+
+          setVacinas(juntaInfo(nomeArray, nomeVacinasUsuario));
+
+          console.log(juntaInfo(nomeArray, nomeVacinasUsuario));
+        }
+
+        function getIdVacinas(arrayVacinas) {
+          const idVacinas = [];
+        
+          arrayVacinas.forEach(element => {
+            for (let prop in element) {
+              if (prop === 'id') {
+                idVacinas.push(element[prop]); 
+              }
+            }
+          });
+        
+          return idVacinas;
+        }
+        
+        async function getNomeVacinas(idVacinas) {
+          const nomeVacinas = [];
+
+          for (let i = 0; i < idVacinas.length; i++) {
+            let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
+
+            nomeVacinas.push(dataVacinas.data.nome);
+          }
+
+          return nomeVacinas;
+        }
+
+        function juntaInfo(arrayNome, arrayNomeVacinas, arrayDatas = '15/10/2020') {
+          const arrayFinal = [{}];
+          
+          let arrayNomeVacinasFinal = [];
+          let vacinasTotais = 0;
+
+          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
+          //   if (arrayNomeVacinas[i].length > 1) {
+          //     for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
+          //       for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
+          //         vacinasTotais++;
+          //       }
+          //     }
+          //   } else {
+          //     vacinasTotais = arrayNomeVacinas.lenght;
+          //   }
+          // }
+
+          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
+          //   if (arrayNomeVacinas[i].length > 1) {
+          //     for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
+          //       for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
+          //         arrayNomeVacinasFinal.push(arrayNomeVacinas[j][k]);
+          //         vacinasTotais++;
+          //       }
+          //     }
+          //   }
+          // }
+
+          for (let i = 0; i < arrayNomeVacinas.length; i++) {
+            for (let j = 0; arrayNomeVacinas[i].length; j++) {
+              vacinasTotais++;
             }
           }
-        });
 
-        const nomeVacinasUsuario = [];
-
-        for (const id of idVacinasUsuario) {
-          let dataVacinasUsuario = await api.get(`/vacina/${id}`);
-
-          nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
+          for (let i = 0; i < arrayNomeVacinas.length; i++) {
+            arrayFinal[i] = {
+              nome: arrayNome.length > 1 ? arrayNome[i] : arrayNome[0],
+              vacina: arrayNomeVacinas[i].length > 1 ? arrayNomeVacinasFinal[i] : arrayNomeVacinas[i], //arrayNomeVacinas.lenght > 1 ? arrayNomeVacinas : arrayNomeVacinas[i],
+              data: arrayDatas
+            }; 
+          }
+          
+          return vacinasTotais;
         }
-
-        const arrayVacinasFinais = [{}]; 
-        for (let i = 0; i < idVacinasUsuario.length; i++) {
-          arrayVacinasFinais[i] = {
-            nome: data.nome,
-            vacina: nomeVacinasUsuario[i],
-            data: 'Até o fim de 2020'
-          }; 
-        }
-        setVacinas(arrayVacinasFinais);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    async function getVacinas() {
-      try {
-        const { data } = await api.get('/vacina');
-  
-        setVacinas(data);
-      } catch (e) {
+    } catch (e) {
         console.log(e);
       }
     }
 
     getUsuario();
-    getVacinas();
   }, []);
 
   const string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Orci phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Tempus egestas sed sed risus pretium. Cursus eget nunc scelerisque viverra mauris in aliquam sem fringilla. Sollicitudin nibh sit amet commodo nulla. Id venenatis a condimentum vitae sapien pellentesque. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Malesuada proin libero nunc consequat interdum. Velit dignissim sodales ut eu sem integer vitae justo eget. Vehicula ipsum a arcu cursus.';
 
-  const nomeInteiro = nome;
-  const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
+  function getPrimeiroNome(nomeInteiro) {
+    const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
+
+    return primeiroNome;
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Seja bem-vindo(a), {primeiroNome}! 🏠</Text>
+      <Text style={styles.welcome}>Seja bem-vindo(a), {getPrimeiroNome(nome)}! 🏠</Text>
       <View style={styles.nextVaccines}>
         <Text style={styles.label}>Fique de olho nas próximas vacinas 💉</Text>
         <View style={styles.hr1}></View>
-        <FlatList 
+        {/* <FlatList 
           contentContainerStyle={styles.list}
           data={Object.keys(vacinas)}
-          keyExtractor={vacina => vacina.id}
+          keyExtractor={vacina => vacina._id}
           horizontal 
           showsHorizontalScrollIndicator={false} 
           renderItem={({ item }) => (
             <View style={styles.listItem}>
-              <Text style={styles.name}>{vacinas[item].nome}</Text>
+              <Text style={styles.name}>{getPrimeiroNome(vacinas[item].nome)}</Text>
               <Text style={styles.vaccine}>{vacinas[item].vacina}</Text>
               <Text style={styles.date}>{vacinas[item].data}</Text>
             </View>
           )}
-        />
+        /> */}
       </View>
       <View style={styles.learnMoreContainer}>
         <Text style={styles.learnMoreLabel}>Aprenda um pouco mais 📖</Text>
@@ -117,7 +207,6 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    // paddingTop: Constants.statusBarHeight,
     flex: 1,
     backgroundColor: '#FFF',
   },
