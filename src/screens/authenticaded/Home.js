@@ -48,7 +48,7 @@ export default function Home({ navigation }) {
             nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
           }
 
-          // setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+          setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
 
           // console.log(nomeVacinasDependentes);
           console.log(juntaInfo(nomeDependentes, nomeVacinasDependentes));
@@ -100,6 +100,7 @@ export default function Home({ navigation }) {
 
         function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {          
           let arrayNomeVacinasFinal = [];
+          let arrayObjetosVacinasUnicas = [];
           let vacinasMesmoDependente = 0;
           let vacinasUnicas = 0;
           let nomeDependenteMaisDeUmaVacina;
@@ -115,16 +116,27 @@ export default function Home({ navigation }) {
                 }
               }
             } else {
+              arrayObjetosVacinasUnicas.push(criaObjetoVacinasUnicas(arrayNomes[i], arrayNomeVacinas[i], arrayDatas));
               vacinasUnicas++;
             }
+          }
+
+          function criaObjetoVacinasUnicas(dependente, vacina, data) {
+            let objeto = {
+              nome: dependente,
+              vacina,
+              data: arrayDatas
+            };
+
+            return objeto;
           }
 
           const arrayMaisDeUmaVacina = [{}];
           
           for (let i = 0; i < arrayNomeVacinasFinal.length; i++) {
             arrayMaisDeUmaVacina[i] = {
-              nome: nomeDependenteMaisDeUmaVacina[0],
-              vacinas: arrayNomeVacinasFinal[i],
+              nome: nomeDependenteMaisDeUmaVacina,
+              vacina: arrayNomeVacinasFinal[i],
               data: arrayDatas
             }
           }
@@ -140,6 +152,8 @@ export default function Home({ navigation }) {
           //     data: arrayDatas
           //   }
           // }
+
+          Array.prototype.push.apply(arrayMaisDeUmaVacina, arrayObjetosVacinasUnicas) 
           
           return arrayMaisDeUmaVacina;
         }
@@ -168,7 +182,7 @@ export default function Home({ navigation }) {
         <FlatList 
           contentContainerStyle={styles.list}
           data={Object.keys(vacinas)}
-          keyExtractor={vacina => vacina._id}
+          keyExtractor={(item, index) => 'key' + index}
           horizontal 
           showsHorizontalScrollIndicator={false} 
           renderItem={({ item }) => (
