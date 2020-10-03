@@ -48,7 +48,7 @@ export default function Home({ navigation }) {
             nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
           }
 
-          setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+          // setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
 
           // console.log(nomeVacinasDependentes);
           console.log(juntaInfo(nomeDependentes, nomeVacinasDependentes));
@@ -98,50 +98,50 @@ export default function Home({ navigation }) {
           return nomeVacinas;
         }
 
-        function juntaInfo(arrayNome, arrayNomeVacinas, arrayDatas = '15/10/2020') {
-          const arrayFinal = [{}];
-          
+        function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {          
           let arrayNomeVacinasFinal = [];
-          let vacinasTotais = 0;
-
-          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
-          //   if (arrayNomeVacinas[i].length > 1) {
-          //     for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
-          //       for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
-          //         vacinasTotais++;
-          //       }
-          //     }
-          //   } else {
-          //     vacinasTotais = arrayNomeVacinas.lenght;
-          //   }
-          // }
-
-          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
-          //   if (arrayNomeVacinas[i].length > 1) {
-          //     for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
-          //       for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
-          //         arrayNomeVacinasFinal.push(arrayNomeVacinas[j][k]);
-          //         vacinasTotais++;
-          //       }
-          //     }
-          //   }
-          // }
+          let vacinasMesmoDependente = 0;
+          let vacinasUnicas = 0;
+          let nomeDependenteMaisDeUmaVacina;
 
           for (let i = 0; i < arrayNomeVacinas.length; i++) {
-            for (let j = 0; arrayNomeVacinas[i].length; j++) {
-              vacinasTotais++;
+            if (arrayNomeVacinas[i].length > 1) {
+              nomeDependenteMaisDeUmaVacina = arrayNomes[i];
+              // nomeDependenteMaisDeUmaVacina.push(arrayNomes[i]);
+              for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
+                for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
+                  arrayNomeVacinasFinal.push(arrayNomeVacinas[j][k]);
+                  vacinasMesmoDependente++;
+                }
+              }
+            } else {
+              vacinasUnicas++;
             }
           }
 
-          for (let i = 0; i < arrayNomeVacinas.length; i++) {
-            arrayFinal[i] = {
-              nome: arrayNome.length > 1 ? arrayNome[i] : arrayNome[0],
-              vacina: arrayNomeVacinas[i].length > 1 ? arrayNomeVacinasFinal[i] : arrayNomeVacinas[i], //arrayNomeVacinas.lenght > 1 ? arrayNomeVacinas : arrayNomeVacinas[i],
-              data: arrayDatas
-            }; 
-          }
+          const arrayMaisDeUmaVacina = [{}];
           
-          return vacinasTotais;
+          for (let i = 0; i < arrayNomeVacinasFinal.length; i++) {
+            arrayMaisDeUmaVacina[i] = {
+              nome: nomeDependenteMaisDeUmaVacina[0],
+              vacinas: arrayNomeVacinasFinal[i],
+              data: arrayDatas
+            }
+          }
+
+          const vacinasTotais = vacinasMesmoDependente + vacinasUnicas;
+
+          const arrayUmaVacina = [{}];
+
+          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
+          //   arrayUmaVacina[i] = {
+          //     nome: arrayNomes[i],
+          //     vacina: arrayNomeVacinas[i],
+          //     data: arrayDatas
+          //   }
+          // }
+          
+          return arrayMaisDeUmaVacina;
         }
     } catch (e) {
         console.log(e);
@@ -165,7 +165,7 @@ export default function Home({ navigation }) {
       <View style={styles.nextVaccines}>
         <Text style={styles.label}>Fique de olho nas próximas vacinas 💉</Text>
         <View style={styles.hr1}></View>
-        {/* <FlatList 
+        <FlatList 
           contentContainerStyle={styles.list}
           data={Object.keys(vacinas)}
           keyExtractor={vacina => vacina._id}
@@ -178,7 +178,7 @@ export default function Home({ navigation }) {
               <Text style={styles.date}>{vacinas[item].data}</Text>
             </View>
           )}
-        /> */}
+        />
       </View>
       <View style={styles.learnMoreContainer}>
         <Text style={styles.learnMoreLabel}>Aprenda um pouco mais 📖</Text>
