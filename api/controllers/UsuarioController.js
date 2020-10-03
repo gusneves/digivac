@@ -21,6 +21,7 @@ module.exports = {
             return res.json(e)
         }
     },
+
     async checkIfExists(req, res){
         try {
             const { email } = req.params;
