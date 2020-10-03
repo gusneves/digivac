@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, ScrollView, StyleSheet, Text, AsyncStorage } from "react-native";
+import { View, ScrollView, StyleSheet, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
@@ -10,8 +10,8 @@ import moment from "moment";
 
 import { SessionContext } from "../../context/Session";
 
-export default function Cadastro() {
-    const { signUp, setSession } = useContext(SessionContext);
+export default function Cadastro({ navigation }) {
+    const { checkEmailCPF, setSession } = useContext(SessionContext);
 
     const [selectedIndex, useSelectedIndex] = useState(0);
     const sexos = ["Masculino", "Feminino"];
@@ -88,8 +88,7 @@ export default function Cadastro() {
                         email,
                         senha,
                     };
-                    console.log(userData);
-                    await signUp(userData)
+                    await checkEmailCPF(email, userData.cpf)
                         .then(async ({ data }) => {
                             console.log(data);
                             if (data.field)
@@ -98,14 +97,12 @@ export default function Cadastro() {
                                     data.errorMessage
                                 );
                             else {
-                                const { _id } = data.usuario;
-                                const { token } = data;
-                                setSession(_id);
-                                await AsyncStorage.setItem("usuario", _id);
-                                await AsyncStorage.setItem("token", token);
+                                navigation.navigate("CadVac", { userData });
                             }
                         })
-                        .catch((response) => console.log(response));
+                        .catch(() => {
+                            console.log("Erro ao validar e-mail e cpf!");
+                        });
                 }}
                 validationSchema={formSchema}
             >

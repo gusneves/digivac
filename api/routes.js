@@ -18,13 +18,14 @@ routes.post('/usuario', UsuarioController.store);
 routes.get('/usuario', UsuarioController.index);
 routes.get('/usuario/:id', UsuarioController.show);
 routes.put('/usuario/:id', UsuarioController.update);
+routes.get('/usuario/:email/:cpf', UsuarioController.checkIfExists);
 routes.delete('/usuario/:id', UsuarioController.destroy);
 
 routes.post('/session', SessionController.store);
 routes.get('/session/authentication', authMiddleware, (req, res) => {
-  return res.json({ 
-    ok: true, 
-    id: req.usuarioId 
+  return res.json({
+    ok: true,
+    id: req.usuarioId
   });
 });
 

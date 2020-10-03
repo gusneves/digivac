@@ -2,7 +2,7 @@ const Vacina = require('../models/Vacina');
 
 module.exports = {
     async index(req, res){
-        const vacina = await Vacina.find();
+        const vacina = await Vacina.find().sort('nome');
         return res.json(vacina);
     },
     async store(req, res){
