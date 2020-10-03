@@ -1,0 +1,36 @@
+Dependentes
+
+Array [
+  Object {
+    "data": "15/10/2020",
+    "nome": "Nina Ranzani",
+    "vacina": "Pneumocócica 10 Valente (conjugada)",
+  },
+  Object {
+    "data": "15/10/2020",
+    "nome": "Nina Ranzani",
+    "vacina": "Febre Amarela",
+  },
+  Object {
+    "data": "15/10/2020",
+    "nome": "Roberto Ranzani",
+    "vacina": Array [
+      "Febre Amarela",
+    ],
+  },
+]
+
+Usuário
+
+Array [
+  Object {
+    "data": "15/10/2020",
+    "nome": "Matheus Ranzani",
+    "vacina": "Febre Amarela",
+  },
+  Object {
+    "data": "15/10/2020",
+    "nome": "Matheus Ranzani",
+    "vacina": "DTP",
+  },
+]

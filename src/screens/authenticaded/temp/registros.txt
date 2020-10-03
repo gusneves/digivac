@@ -1,0 +1,40 @@
+Com dependentes
+
+{
+	"dependentes": [
+		{
+			"vacinas": [
+				{
+					"doseAtual": 2,
+					"id": "5f596a9ae773c033c8cfad57",
+					"doses": 1,
+					"dataDose": "2020-08-02T03:00:00.000Z"
+				},
+				{
+					"doseAtual": 1,
+					"id": "5f596b5de773c033c8cfad5a",
+					"doses": 4,
+					"dataDose": "2020-06-02T03:00:00.000Z"
+				}
+			],
+			"nome": "Nina Ranzani",
+			"data_nasc": "2010-06-06T03:00:00.000Z"
+		},
+		{
+			"vacinas": [
+				{
+					"doseAtual": 1,
+					"id": "5f596b5de773c033c8cfad5a",
+					"doses": 1,
+					"dataDose": "2019-08-02T03:00:00.000Z"
+				}
+			],
+			"nome": "Roberto Ranzani",
+			"data_nasc": "2012-06-06T03:00:00.000Z"
+		}
+  ]
+}
+
+Sem dependentes
+
+{"dependentes": []}

@@ -50,10 +50,9 @@ export default function Home({ navigation }) {
 
           setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
 
-          // console.log(nomeVacinasDependentes);
           console.log(juntaInfo(nomeDependentes, nomeVacinasDependentes));
         } else {
-          const nomeArray = [nome];
+          const nomeArray = [data.nome];
           const vacinasUsuario = data.vacinas;
           let idVacinasUsuario = [];
 
@@ -98,7 +97,20 @@ export default function Home({ navigation }) {
           return nomeVacinas;
         }
 
-        function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {          
+        function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {    
+          let arrayFinal = [];
+
+          if (arrayNomes.length === 1) {
+            for (let i = 0; i < arrayNomeVacinas.length; i++) {
+              arrayFinal[i] = {
+                nome: arrayNomes[0],
+                vacina: arrayNomeVacinas[i],
+                data: arrayDatas
+              }; 
+            }
+            return arrayFinal;
+          }
+
           let arrayNomeVacinasFinal = [];
           let arrayObjetosVacinasUnicas = [];
           let vacinasMesmoDependente = 0;
@@ -125,7 +137,7 @@ export default function Home({ navigation }) {
             let objeto = {
               nome: dependente,
               vacina,
-              data: arrayDatas
+              data: data
             };
 
             return objeto;
@@ -141,17 +153,7 @@ export default function Home({ navigation }) {
             }
           }
 
-          const vacinasTotais = vacinasMesmoDependente + vacinasUnicas;
-
-          const arrayUmaVacina = [{}];
-
-          // for (let i = 0; i < arrayNomeVacinas.length; i++) {
-          //   arrayUmaVacina[i] = {
-          //     nome: arrayNomes[i],
-          //     vacina: arrayNomeVacinas[i],
-          //     data: arrayDatas
-          //   }
-          // }
+          // const vacinasTotais = vacinasMesmoDependente + vacinasUnicas;
 
           Array.prototype.push.apply(arrayMaisDeUmaVacina, arrayObjetosVacinasUnicas) 
           
