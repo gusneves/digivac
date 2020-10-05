@@ -11,7 +11,7 @@ import moment from "moment";
 import { SessionContext } from "../../context/Session";
 
 export default function Cadastro({ navigation }) {
-    const { checkEmailCPF, setSession } = useContext(SessionContext);
+    const { checkEmailCPF } = useContext(SessionContext);
 
     const [selectedIndex, useSelectedIndex] = useState(0);
     const sexos = ["Masculino", "Feminino"];

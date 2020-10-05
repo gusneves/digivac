@@ -18,6 +18,7 @@ routes.post('/usuario', UsuarioController.store);
 routes.get('/usuario', UsuarioController.index);
 routes.get('/usuario/:id', UsuarioController.show);
 routes.put('/usuario/:id', UsuarioController.update);
+routes.put('/usuario/dep/:id', UsuarioController.updateDep);
 routes.get('/usuario/:email/:cpf', UsuarioController.checkIfExists);
 routes.delete('/usuario/:id', UsuarioController.destroy);
 
