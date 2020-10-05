@@ -17,6 +17,7 @@ import Sobre from "./screens/authenticaded/Sobre";
 
 import EditInfo from "./screens/authenticaded/profile/EditInfo";
 import Dependentes from "./screens/authenticaded/profile/Dependentes";
+import AddDependente from "./screens/authenticaded/profile/AddDependente";
 import Configs from "./screens/authenticaded/profile/Configs";
 
 const Stack = createStackNavigator();
@@ -59,6 +60,8 @@ function PerfilStack() {
                 }}
             />
             <Stack.Screen name="Dependentes" component={Dependentes} />
+            <Stack.Screen name="AddDependente" component={AddDependente} />
+
         </Stack.Navigator>
     );
 }

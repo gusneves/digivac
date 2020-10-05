@@ -54,6 +54,15 @@ module.exports = {
         return res.json(usuario);
     },
 
+    async updateDep(req, res) {
+        const usuario = await Usuario.findByIdAndUpdate(
+            req.params.id,
+            { $push: { dependentes: req.body } },
+            { new: true }
+        );
+        return res.json(usuario);
+    },
+
     async destroy(req, res) {
         await Usuario.findByIdAndDelete(req.params.id);
         return res.send();
