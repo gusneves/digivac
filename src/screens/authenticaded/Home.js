@@ -48,27 +48,12 @@ export default function Home({ navigation }) {
             nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
           }
 
-          setVacinas(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+          console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes));
 
-          console.log(juntaInfo(nomeDependentes, nomeVacinasDependentes));
+          setVacinas(await juntaInfo(nomeDependentes, nomeVacinasDependentes));
         } else {
-          const nomeArray = [data.nome];
-          const vacinasUsuario = data.vacinas;
-          let idVacinasUsuario = [];
-
-          idVacinasUsuario = getIdVacinas(vacinasUsuario);
-
-          const nomeVacinasUsuario = [];
-
-          for (const id of idVacinasUsuario) {
-            let dataVacinasUsuario = await api.get(`/vacina/${id}`);
-
-            nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
-          }
-
-          setVacinas(juntaInfo(nomeArray, nomeVacinasUsuario));
-
-          console.log(juntaInfo(nomeArray, nomeVacinasUsuario));
+          console.log(await getArrayFinalUsuario());
+          setVacinas(await getArrayFinalUsuario());
         }
 
         function getIdVacinas(arrayVacinas) {
@@ -97,43 +82,61 @@ export default function Home({ navigation }) {
           return nomeVacinas;
         }
 
-        function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {    
-          let arrayFinal = [];
+        async function getArrayFinalUsuario() {
+          const nomeUsuario = data.nome;
+          const vacinasUsuario = data.vacinas;
+
+          let idVacinasUsuario = [];
+
+          idVacinasUsuario = getIdVacinas(vacinasUsuario);
+
+          const nomeVacinasUsuario = [];
+
+          for (const id of idVacinasUsuario) {
+            let dataVacinasUsuario = await api.get(`/vacina/${id}`);
+
+            nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
+          }
+
+          const arrayUsuarioFinal = [];
+          
+          for (let i = 0; i < nomeVacinasUsuario.length; i++) {
+            arrayUsuarioFinal[i] = {
+              nome: nomeUsuario,
+              vacina: nomeVacinasUsuario[i],
+              data: '15/10/2020'
+            }; 
+          }
+           
+          return arrayUsuarioFinal;
+        }
+
+        async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDatas = '15/10/2020') {    
+          const arrayUsuarioFinal = await getArrayFinalUsuario();
 
           if (arrayNomes.length === 1) {
-            for (let i = 0; i < arrayNomeVacinas.length; i++) {
-              arrayFinal[i] = {
-                nome: arrayNomes[0],
-                vacina: arrayNomeVacinas[i],
-                data: arrayDatas
-              }; 
-            }
-            return arrayFinal;
+            return arrayUsuarioFinal;
           }
 
-          let arrayNomeVacinasFinal = [];
-          let arrayObjetosVacinasUnicas = [];
-          let vacinasMesmoDependente = 0;
-          let vacinasUnicas = 0;
-          let nomeDependenteMaisDeUmaVacina;
+          let arrayVacinasFinal = [];
 
           for (let i = 0; i < arrayNomeVacinas.length; i++) {
-            if (arrayNomeVacinas[i].length > 1) {
-              nomeDependenteMaisDeUmaVacina = arrayNomes[i];
-              // nomeDependenteMaisDeUmaVacina.push(arrayNomes[i]);
-              for (let j = 0; j < arrayNomeVacinas[i].length - 1; j++) {
-                for (let k = 0; k < arrayNomeVacinas[j].length; k++) {
-                  arrayNomeVacinasFinal.push(arrayNomeVacinas[j][k]);
-                  vacinasMesmoDependente++;
-                }
-              }
-            } else {
-              arrayObjetosVacinasUnicas.push(criaObjetoVacinasUnicas(arrayNomes[i], arrayNomeVacinas[i], arrayDatas));
-              vacinasUnicas++;
-            }
+            arrayVacinasFinal.push(getVacinasDeCadaDependente(arrayNomes[i], arrayNomeVacinas[i], arrayDatas))
           }
 
-          function criaObjetoVacinasUnicas(dependente, vacina, data) {
+          const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal);
+
+          function getVacinasDeCadaDependente(nomeDependente, arrayNomeVacinasDependente, arrayDatas) {
+            let objetoVacinasDependente = [];
+            
+            for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
+              objetoVacinasDependente.push(criaObjetoVacinas(nomeDependente, arrayNomeVacinasDependente[j], arrayDatas));
+            }
+
+            return objetoVacinasDependente;
+          }
+
+          function criaObjetoVacinas(dependente, vacina, data) {
             let objeto = {
               nome: dependente,
               vacina,
@@ -143,21 +146,11 @@ export default function Home({ navigation }) {
             return objeto;
           }
 
-          const arrayMaisDeUmaVacina = [{}];
+          Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
           
-          for (let i = 0; i < arrayNomeVacinasFinal.length; i++) {
-            arrayMaisDeUmaVacina[i] = {
-              nome: nomeDependenteMaisDeUmaVacina,
-              vacina: arrayNomeVacinasFinal[i],
-              data: arrayDatas
-            }
-          }
-
-          // const vacinasTotais = vacinasMesmoDependente + vacinasUnicas;
-
-          Array.prototype.push.apply(arrayMaisDeUmaVacina, arrayObjetosVacinasUnicas) 
+          const arrayFinal = arrayUsuarioFinal;
           
-          return arrayMaisDeUmaVacina;
+          return arrayFinal;
         }
     } catch (e) {
         console.log(e);
@@ -204,9 +197,7 @@ export default function Home({ navigation }) {
             <Button 
               title='Veja mais ➜'
               type='clear'
-              onPress={() => {
-                // navigation.navigate('Agenda', )
-              }}
+              onPress={() => {}}
               buttonStyle={styles.learnMoreButton}
               titleStyle={styles.learnMoreButtonText}
             />
@@ -259,6 +250,7 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     height: 100,
     paddingLeft: 14,
+    paddingRight: 6,
     marginTop: 10
   },
   

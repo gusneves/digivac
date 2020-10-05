@@ -1,3 +1,9 @@
+Sem dependentes
+
+{
+	"dependentes": []
+}
+
 Com dependentes
 
 {
@@ -5,9 +11,9 @@ Com dependentes
 		{
 			"vacinas": [
 				{
-					"doseAtual": 2,
+					"doseAtual": 0,
 					"id": "5f596a9ae773c033c8cfad57",
-					"doses": 1,
+					"doses": 3,
 					"dataDose": "2020-08-02T03:00:00.000Z"
 				},
 				{
@@ -25,16 +31,30 @@ Com dependentes
 				{
 					"doseAtual": 1,
 					"id": "5f596b5de773c033c8cfad5a",
-					"doses": 1,
+					"doses": 4,
+					"dataDose": "2019-08-02T03:00:00.000Z"
+				},
+				{
+					"doseAtual": 2,
+					"id": "5f596a9ae773c033c8cfad57",
+					"doses": 3,
 					"dataDose": "2019-08-02T03:00:00.000Z"
 				}
 			],
 			"nome": "Roberto Ranzani",
 			"data_nasc": "2012-06-06T03:00:00.000Z"
+		},
+		{
+			"vacinas": [
+				{
+					"doseAtual": 0,
+					"id": "5f596ac5e773c033c8cfad58",
+					"doses": 2,
+					"dataDose": "2019-08-02T03:00:00.000Z"
+				}
+			],
+			"nome": "Jhonson Ranzani",
+			"data_nasc": "2002-06-06T03:00:00.000Z"
 		}
   ]
 }
-
-Sem dependentes
-
-{"dependentes": []}
