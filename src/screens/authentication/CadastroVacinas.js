@@ -18,6 +18,7 @@ export default function CadVac({ route, navigation }) {
     const [data, setData] = useState({
         id: [],
         doses: [],
+        doseAtual: []
     });
     const marks = [
         { name: 0, value: 0 },
@@ -60,19 +61,21 @@ export default function CadVac({ route, navigation }) {
     let aux = {
         id: data.id,
         doses: data.doses,
+        doseAtual: data.doseAtual
     };
     function prepareData() {
         vacinas.map((item) => {
-            const { id, doses } = aux;
+            const { id, doses, doseAtual } = aux;
             id.push(item._id);
-            doses.push(0);
+            doses.push(item.doses);
+            doseAtual.push(0);
             setData(aux);
         });
     }
 
     function marcaDoses(id, doses) {
         let indexChanged = data.id.indexOf(id);
-        aux.doses[indexChanged] = doses;
+        aux.doseAtual[indexChanged] = doses;
         setData(aux);
     }
 
@@ -83,6 +86,7 @@ export default function CadVac({ route, navigation }) {
             let objectVacina = {
                 id: value,
                 doses: data.doses[index],
+                doseAtual: data.doseAtual[index]
             };
             vacinasUsuario.push(objectVacina);
         });
