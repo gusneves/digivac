@@ -107,8 +107,7 @@ export default function Perfil({ navigation }) {
                 let lastItem = images[images.length - 1];
                 if (images != null) useImage("" + dir + lastItem);
             })
-            .catch(async (response) => {
-                console.log(response);
+            .catch(async () => {
                 await FileSystem.makeDirectoryAsync(dir);
             });
     }

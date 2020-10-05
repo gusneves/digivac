@@ -67,9 +67,13 @@ export default function SessionProvider({ children }) {
         return await api.post('/usuario', userdata);
     }
 
+    async function checkEmailCPF(email, cpf){
+        return await api.get(`/usuario/${email}/${cpf}`);
+    }
+
     return (
         <SessionContext.Provider
-            value={{ isLoggedIn, setSession, loading, signIn, signOut, signUp }}
+            value={{ isLoggedIn, setSession, loading, signIn, signOut, signUp, checkEmailCPF }}
         >
             {children}
         </SessionContext.Provider>

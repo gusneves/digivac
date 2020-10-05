@@ -9,6 +9,7 @@ import { SessionContext } from "./context/Session";
 
 import Login from "./screens/authentication/Login";
 import Cadastro from "./screens/authentication/Cadastro";
+import CadVac from "./screens/authentication/CadastroVacinas";
 
 import Home from "./screens/authenticaded/Home";
 import Agenda from "./screens/authenticaded/Agenda";
@@ -155,7 +156,24 @@ function Router() {
                             headerTitleStyle: {
                                 fontWeight: "bold",
                                 fontSize: 20,
-                            }
+                            },
+                            title:"Suas vacinas"
+                        }}
+                        name="CadVac"
+                        component={CadVac}
+                    />
+                    <AuthStack.Screen
+                        options={{
+                            headerTitleAlign: "center",
+                            headerTintColor: "#FFF",
+                            headerStyle: {
+                                backgroundColor: "#2352FF",
+                                height: 60,
+                            },
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                                fontSize: 20,
+                            },
                         }}
                         name="Cadastro"
                         component={Cadastro}

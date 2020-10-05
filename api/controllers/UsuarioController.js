@@ -6,10 +6,26 @@ module.exports = {
         const usuario = await Usuario.find();
         return res.json(usuario);
     },
+
     async store(req, res) {
         try {
-            const { email } = req.body;
-            const { cpf } = req.body;
+            const usuario = await Usuario.create(req.body);
+
+            usuario.senha = undefined;
+
+            res.status(200).send({
+                usuario,
+                token: Session.generateToken({ id: usuario._id }),
+            });
+        } catch (e) {
+            return res.json(e)
+        }
+    },
+
+    async checkIfExists(req, res){
+        try {
+            const { email } = req.params;
+            const { cpf } = req.params;
 
             const cpfVerify = await Usuario.findOne({ cpf });
             if (cpfVerify) {
@@ -26,17 +42,9 @@ module.exports = {
                     field: "email",
                 });
             }
-
-            const usuario = await Usuario.create(req.body);
-
-            usuario.senha = undefined;
-
-            res.status(200).send({
-                usuario,
-                token: Session.generateToken({ id: usuario._id }),
-            });
-        } catch (e) {
-            return res.json(e)
+            return res.json({success:"Requisição feita, e-mail e cpf válidos."})
+        } catch (error) {
+            return res.json(error)
         }
     },
 
