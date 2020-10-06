@@ -1,17 +1,49 @@
 Sem dependentes
 
 {
+	"vacinas": [
+    {
+      "doseAtual": 4,
+      "_id": "5f74c9a106db3a22ea889f06",
+      "id": "5f596b5de773c033c8cfad5a",
+      "doses": 4,
+      "dataDose": "2020-06-02T03:00:00.000Z"
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f74c9a106db3a22ea889f07",
+      "id": "5f596bd4e773c033c8cfad5c",
+      "doses": 2,
+      "dataDose": "2020-07-02T03:00:00.000Z"
+    }
+  ],
 	"dependentes": []
 }
 
 Com dependentes
 
 {
+	"vacinas": [
+    {
+      "doseAtual": 4,
+      "_id": "5f74c9a106db3a22ea889f06",
+      "id": "5f596b5de773c033c8cfad5a",
+      "doses": 4,
+      "dataDose": "2020-06-02T03:00:00.000Z"
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f74c9a106db3a22ea889f07",
+      "id": "5f596bd4e773c033c8cfad5c",
+      "doses": 2,
+      "dataDose": "2020-07-02T03:00:00.000Z"
+    }
+  ],
 	"dependentes": [
 		{
 			"vacinas": [
 				{
-					"doseAtual": 0,
+					"doseAtual": 3,
 					"id": "5f596a9ae773c033c8cfad57",
 					"doses": 3,
 					"dataDose": "2020-08-02T03:00:00.000Z"
@@ -29,7 +61,7 @@ Com dependentes
 		{
 			"vacinas": [
 				{
-					"doseAtual": 1,
+					"doseAtual": 4,
 					"id": "5f596b5de773c033c8cfad5a",
 					"doses": 4,
 					"dataDose": "2019-08-02T03:00:00.000Z"
