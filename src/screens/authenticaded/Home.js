@@ -194,7 +194,7 @@ export default function Home({ navigation }) {
         async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {    
           const arrayUsuarioFinal = await getArrayFinalUsuario();
 
-          if (arrayNomes.length === 1) {
+          if (arrayNomes.length === 0) {
             return arrayUsuarioFinal;
           }
 

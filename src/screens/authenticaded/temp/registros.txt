@@ -90,3 +90,258 @@ Com dependentes
 		}
   ]
 }
+
+Todas as vacinas (usuário e dependentes)
+
+ "vacinas": [
+    {
+      "doseAtual": 1,
+      "_id": "5f7c888faebe172509b3df0c",
+      "id": "5f5967a173933716b4212c9f",
+      "doses": 1
+    },
+    {
+      "doseAtual": 1,
+      "_id": "5f7c888faebe172509b3df0d",
+      "id": "5f596bd4e773c033c8cfad5c",
+      "doses": 2
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df0e",
+      "id": "5f597108e773c033c8cfad66",
+      "doses": 1
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df0f",
+      "id": "5f596b5de773c033c8cfad5a",
+      "doses": 4
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df10",
+      "id": "5f5970b3e773c033c8cfad64",
+      "doses": 2
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df11",
+      "id": "5f596c4fe773c033c8cfad5e",
+      "doses": 1
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df12",
+      "id": "5f5969ade773c033c8cfad54",
+      "doses": 4
+    },
+    {
+      "doseAtual": 3,
+      "_id": "5f7c888faebe172509b3df13",
+      "id": "5f597082e773c033c8cfad63",
+      "doses": 3
+    },
+    {
+      "doseAtual": 3,
+      "_id": "5f7c888faebe172509b3df14",
+      "id": "5f596b14e773c033c8cfad59",
+      "doses": 3
+    },
+    {
+      "doseAtual": 1,
+      "_id": "5f7c888faebe172509b3df15",
+      "id": "5f5970e5e773c033c8cfad65",
+      "doses": 1
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df16",
+      "id": "5f596a46e773c033c8cfad55",
+      "doses": 3
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df17",
+      "id": "5f596a9ae773c033c8cfad57",
+      "doses": 3
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df18",
+      "id": "5f597125e773c033c8cfad67",
+      "doses": 1
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df19",
+      "id": "5f596ac5e773c033c8cfad58",
+      "doses": 2
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df1a",
+      "id": "5f596cb5e773c033c8cfad61",
+      "doses": 1
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df1b",
+      "id": "5f597156e773c033c8cfad68",
+      "doses": 1
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df1c",
+      "id": "5f596b9ce773c033c8cfad5b",
+      "doses": 6
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df1d",
+      "id": "5f596a6be773c033c8cfad56",
+      "doses": 3
+    },
+    {
+      "doseAtual": 2,
+      "_id": "5f7c888faebe172509b3df1e",
+      "id": "5f596c0ce773c033c8cfad5d",
+      "doses": 2
+    },
+    {
+      "doseAtual": 0,
+      "_id": "5f7c888faebe172509b3df1f",
+      "id": "5f596eade773c033c8cfad62",
+      "doses": 1
+    }
+  ],
+  "dependentes": [
+    {
+      "vacinas": [
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df21",
+          "id": "5f5967a173933716b4212c9f",
+          "doses": 1
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df22",
+          "id": "5f596bd4e773c033c8cfad5c",
+          "doses": 2
+        },
+        {
+          "doseAtual": 0,
+          "_id": "5f7c88e9aebe172509b3df23",
+          "id": "5f597108e773c033c8cfad66",
+          "doses": 1
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df24",
+          "id": "5f596b5de773c033c8cfad5a",
+          "doses": 4
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df25",
+          "id": "5f5970b3e773c033c8cfad64",
+          "doses": 2
+        },
+        {
+          "doseAtual": 0,
+          "_id": "5f7c88e9aebe172509b3df26",
+          "id": "5f596c4fe773c033c8cfad5e",
+          "doses": 1
+        },
+        {
+          "doseAtual": 3,
+          "_id": "5f7c88e9aebe172509b3df27",
+          "id": "5f5969ade773c033c8cfad54",
+          "doses": 4
+        },
+        {
+          "doseAtual": 3,
+          "_id": "5f7c88e9aebe172509b3df28",
+          "id": "5f597082e773c033c8cfad63",
+          "doses": 3
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df29",
+          "id": "5f596b14e773c033c8cfad59",
+          "doses": 3
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df2a",
+          "id": "5f5970e5e773c033c8cfad65",
+          "doses": 1
+        },
+        {
+          "doseAtual": 3,
+          "_id": "5f7c88e9aebe172509b3df2b",
+          "id": "5f596a46e773c033c8cfad55",
+          "doses": 3
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df2c",
+          "id": "5f596a9ae773c033c8cfad57",
+          "doses": 3
+        },
+        {
+          "doseAtual": 0,
+          "_id": "5f7c88e9aebe172509b3df2d",
+          "id": "5f597125e773c033c8cfad67",
+          "doses": 1
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df2e",
+          "id": "5f596ac5e773c033c8cfad58",
+          "doses": 2
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df2f",
+          "id": "5f596cb5e773c033c8cfad61",
+          "doses": 1
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df30",
+          "id": "5f597156e773c033c8cfad68",
+          "doses": 1
+        },
+        {
+          "doseAtual": 4,
+          "_id": "5f7c88e9aebe172509b3df31",
+          "id": "5f596b9ce773c033c8cfad5b",
+          "doses": 6
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df32",
+          "id": "5f596a6be773c033c8cfad56",
+          "doses": 3
+        },
+        {
+          "doseAtual": 2,
+          "_id": "5f7c88e9aebe172509b3df33",
+          "id": "5f596c0ce773c033c8cfad5d",
+          "doses": 2
+        },
+        {
+          "doseAtual": 1,
+          "_id": "5f7c88e9aebe172509b3df34",
+          "id": "5f596eade773c033c8cfad62",
+          "doses": 1
+        }
+      ],
+      "_id": "5f7c88e9aebe172509b3df20",
+      "nome": "Testezinha",
+      "sexo": "Feminino",
+      "data_nasc": "2014-10-06T03:00:00.000Z"
+    }
+  ],
