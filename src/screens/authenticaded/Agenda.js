@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage, ActivityIndicator } from 'react-native';
 import { Divider } from 'react-native-elements';
 
 import api from '../../services/api';
@@ -7,6 +7,7 @@ import api from '../../services/api';
 export default function Agenda() {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getUsuario() {
@@ -16,6 +17,7 @@ export default function Agenda() {
       setUsuario(data);
 
       const dependentesUsuario = data.dependentes;
+
       const nomeDependentes = [];
       const vacinasDependentes = [];
       const dosesAtuaisDependentesFinal = [];
@@ -44,6 +46,12 @@ export default function Agenda() {
         for (let i = 0; i < idVacinasDependentes.length; i++) {
           nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
         }
+
+        const descricaoVacinasDependentes = [];
+
+        for (let i = 0; i < idVacinasDependentes.length; i++) {
+          descricaoVacinasDependentes.push(await getDescricaoVacinasDependentes(idVacinasDependentes[i]));
+        }
         
         const dosesTotaisDependetes = [];
 
@@ -52,10 +60,17 @@ export default function Agenda() {
         }
 
         // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
-        setVacinas(await juntaInfo(nomeDependentes, nomeVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
+        setVacinas(
+          await juntaInfo(
+            nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes
+          )
+        );
+
+        setLoading(false);
       } else {
         // console.log(await getArrayFinalUsuario());
         setVacinas(await getArrayFinalUsuario());
+        setLoading(false);
       }
 
       function getDosesAtuaisDependentes(element) {
@@ -118,6 +133,18 @@ export default function Agenda() {
         return nomeVacinas;
       }
 
+      async function getDescricaoVacinasDependentes(idVacinas) {
+        const descricaoVacinasDependentes = [];
+
+        for (let i = 0; i < idVacinas.length; i++) {
+          let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
+
+          descricaoVacinasDependentes.push(dataVacinas.data.descricao);
+        }
+
+        return descricaoVacinasDependentes;
+      }
+
       async function getDosesTotaisVacinas(idVacinas) {
         const dosesTotaisVacinas = [];
 
@@ -145,6 +172,7 @@ export default function Agenda() {
         idVacinasUsuario = getIdVacinas(vacinasUsuario);
 
         const nomeVacinasUsuario = [];
+        const descricaoVacinasUsuario = []; 
         const dosesTotaisVacinasUsuario = [];
 
         for (const id of idVacinasUsuario) {
@@ -152,6 +180,7 @@ export default function Agenda() {
 
           nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
           dosesTotaisVacinasUsuario.push(dataVacinasUsuario.data.doses);
+          descricaoVacinasUsuario.push(dataVacinasUsuario.data.descricao);
         }
 
         const diferencas = [];
@@ -174,6 +203,7 @@ export default function Agenda() {
           arrayUsuarioFinal[i] = {
             nome: nomeUsuario,
             vacina: nomeVacinasUsuario[i],
+            descricao: descricaoVacinasUsuario[i],
             doseAtual: dosesAtuaisVacinasUsuario[i],
             doseTotal: dosesTotaisVacinasUsuario[i],
             data: '15/10/2020'
@@ -183,7 +213,7 @@ export default function Agenda() {
         return arrayUsuarioFinal;
       }
 
-      async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
+      async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDescricao, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
         const arrayUsuarioFinal = await getArrayFinalUsuario();
 
         if (arrayNomes.length === 1) {
@@ -196,7 +226,7 @@ export default function Agenda() {
         for (let i = 0; i < arrayNomeVacinas.length; i++) {
           arrayVacinasFinal.push(
             getVacinasDeCadaDependente(
-              arrayNomes[i], arrayNomeVacinas[i], arrayDosesFinais[i], arrayDosesTotais[i], diferencaEntreDoses[i], arrayDatas
+              arrayNomes[i], arrayNomeVacinas[i], arrayDescricao[i], arrayDosesFinais[i], arrayDosesTotais[i], diferencaEntreDoses[i], arrayDatas
             )
           );
         }
@@ -204,7 +234,7 @@ export default function Agenda() {
         const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal); // reduz a um array
 
         function getVacinasDeCadaDependente(
-          nomeDependente, arrayNomeVacinasDependente, arrayDosesFinais, arrayDosesTotais, diferenca, arrayDatas
+          nomeDependente, arrayNomeVacinasDependente, arrayDescricao, arrayDosesFinais, arrayDosesTotais, diferenca, arrayDatas
         ) {
           let objetoVacinasDependente = [];
           
@@ -215,7 +245,7 @@ export default function Agenda() {
             }
             objetoVacinasDependente.push(
               criaObjetoVacinas(
-                nomeDependente, arrayNomeVacinasDependente[j], arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas
+                nomeDependente, arrayNomeVacinasDependente[j], arrayDescricao[j], arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas
               )
             );
           }
@@ -223,10 +253,11 @@ export default function Agenda() {
           return objetoVacinasDependente;
         }
 
-        function criaObjetoVacinas(dependente, vacina, doseAtual, doseTotal, data) {
+        function criaObjetoVacinas(dependente, vacina, descricao, doseAtual, doseTotal, data) {
           let objeto = {
             nome: dependente,
             vacina,
+            descricao,
             doseAtual,
             doseTotal,
             data
@@ -252,6 +283,21 @@ export default function Agenda() {
     return primeiroNome;
   }
 
+  if (isLoading) {
+    return (
+      <View
+        style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: '#fff',
+        }}
+      >
+        <ActivityIndicator size="large" color="#999" />
+      </View>
+    );
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -267,8 +313,8 @@ export default function Agenda() {
               <Text style={styles.nomeDependente}>({getPrimeiroNome(vacinas[item].nome)})</Text>
               <Divider style={styles.divider}/>
               <Text style={styles.doses}>Dose: {vacinas[item].doseAtual}/{vacinas[item].doseTotal}</Text>
-              <Text style={styles.descricaoVacina}>Descrição: É amarela</Text>
-              <Text style={styles.dataVacina}>{vacinas[item].data}</Text>
+              <Text style={styles.descricaoVacina}>Descrição: {vacinas[item].descricao} </Text>
+              <Text style={styles.dataVacina}>Data: {vacinas[item].data}</Text>
             </View>
           )}
         />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, AsyncStorage, FlatList, ScrollView, StatusBar } from "react-native";
+import { View, Text, StyleSheet, AsyncStorage, FlatList, ScrollView, StatusBar, ActivityIndicator } from "react-native";
 import { Button } from 'react-native-elements';
 
 import api from '../../services/api';
@@ -8,6 +8,7 @@ export default function Home({ navigation }) {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [nome, setNome] = useState('');
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getUsuario() {
@@ -19,6 +20,7 @@ export default function Home({ navigation }) {
         setNome(data.nome);
 
         const dependentesUsuario = data.dependentes;
+        
         const nomeDependentes = [];
         const vacinasDependentes = [];
         const dosesAtuaisDependentesFinal = [];
@@ -59,9 +61,11 @@ export default function Home({ navigation }) {
 
           // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
           setVacinas(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
+          setLoading(false);
         } else {
           // console.log(await getArrayFinalUsuario());
           setVacinas(await getArrayFinalUsuario());
+          setLoading(false);
         }
 
         function getDosesAtuaisDependentes(element) {
@@ -247,6 +251,21 @@ export default function Home({ navigation }) {
     const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
 
     return primeiroNome;
+  }
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: '#fff'
+        }}
+      >
+        <ActivityIndicator size="large" color="#999" />
+      </View>
+    );
   }
 
   return (
