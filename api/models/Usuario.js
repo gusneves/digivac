@@ -48,9 +48,6 @@ const UsuarioSchema = new mongoose.Schema({
             type: Number,
             default: 0,
           },
-          doses: {
-            type: Number,
-          },
           dataDose: {
             type: Date
           },
@@ -67,9 +64,6 @@ const UsuarioSchema = new mongoose.Schema({
       doseAtual: {
         type: Number,
         default: 0,
-      },
-      doses: {
-        type: Number,
       },
       dataDose: {
         type: Date
