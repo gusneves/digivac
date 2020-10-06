@@ -1,281 +1,288 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage, ActivityIndicator } from 'react-native';
 import { Divider } from 'react-native-elements';
+import { useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
 
-export default function Agenda() {
+export default function Agenda({ navigation }) {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [isLoading, setLoading] = useState(true);
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    async function getUsuario() {
-      const id = await AsyncStorage.getItem('usuario');
-      const { data } = await api.get(`/usuario/${id}`);
-      
-      setUsuario(data);
+    getUsuario();
+  }, []);
 
-      const dependentesUsuario = data.dependentes;
+  useEffect(() => {
+    getUsuario();
+  }, [navigation, isFocused]);
 
-      const nomeDependentes = [];
-      const vacinasDependentes = [];
-      const dosesAtuaisDependentesFinal = [];
+  async function getUsuario() {
+    const id = await AsyncStorage.getItem('usuario');
+    const { data } = await api.get(`/usuario/${id}`);
+    
+    setUsuario(data);
 
-      if (dependentesUsuario.length > 0) {
-        dependentesUsuario.forEach(element => {
-          for (let prop in element) {
-            if (prop === 'nome') {
-              nomeDependentes.push(element[prop]);
-            }
-            if (prop === 'vacinas') {
-              vacinasDependentes.push(element[prop]);
-              dosesAtuaisDependentesFinal.push(getDosesAtuaisDependentes(element[prop]));
-            }
+    const dependentesUsuario = data.dependentes;
+
+    const nomeDependentes = [];
+    const vacinasDependentes = [];
+    const dosesAtuaisDependentesFinal = [];
+
+    if (dependentesUsuario.length > 0) {
+      dependentesUsuario.forEach(element => {
+        for (let prop in element) {
+          if (prop === 'nome') {
+            nomeDependentes.push(element[prop]);
           }
-        });
-
-        const idVacinasDependentes = [];
-
-        for (let i = 0; i < vacinasDependentes.length; i++) {
-          idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
+          if (prop === 'vacinas') {
+            vacinasDependentes.push(element[prop]);
+            dosesAtuaisDependentesFinal.push(getDosesAtuaisDependentes(element[prop]));
+          }
         }
+      });
+
+      const idVacinasDependentes = [];
+
+      for (let i = 0; i < vacinasDependentes.length; i++) {
+        idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
+      }
+      
+      const nomeVacinasDependentes = [];
+
+      for (let i = 0; i < idVacinasDependentes.length; i++) {
+        nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
+      }
+
+      const descricaoVacinasDependentes = [];
+
+      for (let i = 0; i < idVacinasDependentes.length; i++) {
+        descricaoVacinasDependentes.push(await getDescricaoVacinasDependentes(idVacinasDependentes[i]));
+      }
+      
+      const dosesTotaisDependetes = [];
+
+      for (let i = 0; i < idVacinasDependentes.length; i++) {
+        dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
+      }
+
+      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
+      setVacinas(
+        await juntaInfo(
+          nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes
+        )
+      );
+
+      setLoading(false);
+    } else {
+      // console.log(await getArrayFinalUsuario());
+      setVacinas(await getArrayFinalUsuario());
+      setLoading(false);
+    }
+
+    function getDosesAtuaisDependentes(element) {
+      const dosesAtuaisDependentes = [];
+
+      for (let i = 0; i < element.length; i++) {
+        dosesAtuaisDependentes.push(element[i].doseAtual);
+      }
+
+      return dosesAtuaisDependentes;
+    }
+
+    function getDosesFinais(dosesTotais, dosesAtuais) {
+      const dosesFinais = [];
+
+      for (let i = 0; i < dosesTotais.length; i++) {
+        dosesFinais.push(getDosesAux(dosesTotais[i], dosesAtuais[i]));
+      }
+
+      return dosesFinais;
+    }
+
+    function getDosesAux(dosesTotais, dosesAtuais) {
+      const dosesAux = [];
+
+      for (let i = 0; i < dosesTotais.length; i++) {
+        if (dosesTotais[i] - dosesAtuais[i] > 0) {
+          dosesAux.push(dosesTotais[i] - dosesAtuais[i]);
+        } else {
+          dosesAux.push(0);
+        }
+      }
+
+      return dosesAux;
+    }
+
+    function getIdVacinas(arrayVacinas) {
+      const idVacinas = [];
+    
+      arrayVacinas.forEach(element => {
+        for (let prop in element) {
+          if (prop === 'id') {
+            idVacinas.push(element[prop]); 
+          }
+        }
+      });
+    
+      return idVacinas;
+    }
+    
+    async function getNomeVacinas(idVacinas) {
+      const nomeVacinas = [];
+
+      for (let i = 0; i < idVacinas.length; i++) {
+        let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
+
+        nomeVacinas.push(dataVacinas.data.nome);
+      }
+
+      return nomeVacinas;
+    }
+
+    async function getDescricaoVacinasDependentes(idVacinas) {
+      const descricaoVacinasDependentes = [];
+
+      for (let i = 0; i < idVacinas.length; i++) {
+        let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
+
+        descricaoVacinasDependentes.push(dataVacinas.data.descricao);
+      }
+
+      return descricaoVacinasDependentes;
+    }
+
+    async function getDosesTotaisVacinas(idVacinas) {
+      const dosesTotaisVacinas = [];
+
+      for (let i = 0; i < idVacinas.length; i++) {
+        let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
+
+        dosesTotaisVacinas.push(dataVacinas.data.doses);
+      }
+
+      return dosesTotaisVacinas;
+    }
+
+    async function getArrayFinalUsuario() {
+      const nomeUsuario = data.nome;
+      const vacinasUsuario = data.vacinas;
+
+      const dosesAtuaisVacinasUsuario = [];
+
+      for (let i = 0; i < data.vacinas.length; i ++) {
+        dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
+      }
+
+      let idVacinasUsuario = [];
+
+      idVacinasUsuario = getIdVacinas(vacinasUsuario);
+
+      const nomeVacinasUsuario = [];
+      const descricaoVacinasUsuario = []; 
+      const dosesTotaisVacinasUsuario = [];
+
+      for (const id of idVacinasUsuario) {
+        let dataVacinasUsuario = await api.get(`/vacina/${id}`);
+
+        nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
+        dosesTotaisVacinasUsuario.push(dataVacinasUsuario.data.doses);
+        descricaoVacinasUsuario.push(dataVacinasUsuario.data.descricao);
+      }
+
+      const diferencas = [];
+
+      for (let i = 0; i < dosesTotaisVacinasUsuario.length; i++) {
+        if (dosesTotaisVacinasUsuario[i] - dosesAtuaisVacinasUsuario[i] === 0) {
+          diferencas.push(0);
+        } else {
+          diferencas.push(dosesTotaisVacinasUsuario[i] - dosesAtuaisVacinasUsuario[i]);
+        }
+      }
+
+      const arrayUsuarioFinal = [];
+      
+      for (let i = 0; i < nomeVacinasUsuario.length; i++) {
+        if (diferencas[i] === 0) {
+          continue;
+        }
+
+        arrayUsuarioFinal[i] = {
+          nome: nomeUsuario,
+          vacina: nomeVacinasUsuario[i],
+          descricao: descricaoVacinasUsuario[i],
+          doseAtual: dosesAtuaisVacinasUsuario[i],
+          doseTotal: dosesTotaisVacinasUsuario[i],
+          data: '15/10/2020'
+        }; 
+      }
         
-        const nomeVacinasDependentes = [];
+      return arrayUsuarioFinal;
+    }
 
-        for (let i = 0; i < idVacinasDependentes.length; i++) {
-          nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
-        }
+    async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDescricao, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
+      const arrayUsuarioFinal = await getArrayFinalUsuario();
 
-        const descricaoVacinasDependentes = [];
-
-        for (let i = 0; i < idVacinasDependentes.length; i++) {
-          descricaoVacinasDependentes.push(await getDescricaoVacinasDependentes(idVacinasDependentes[i]));
-        }
-        
-        const dosesTotaisDependetes = [];
-
-        for (let i = 0; i < idVacinasDependentes.length; i++) {
-          dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
-        }
-
-        // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
-        setVacinas(
-          await juntaInfo(
-            nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes
-          )
-        );
-
-        setLoading(false);
-      } else {
-        // console.log(await getArrayFinalUsuario());
-        setVacinas(await getArrayFinalUsuario());
-        setLoading(false);
-      }
-
-      function getDosesAtuaisDependentes(element) {
-        const dosesAtuaisDependentes = [];
-
-        for (let i = 0; i < element.length; i++) {
-          dosesAtuaisDependentes.push(element[i].doseAtual);
-        }
-
-        return dosesAtuaisDependentes;
-      }
-
-      function getDosesFinais(dosesTotais, dosesAtuais) {
-        const dosesFinais = [];
-
-        for (let i = 0; i < dosesTotais.length; i++) {
-          dosesFinais.push(getDosesAux(dosesTotais[i], dosesAtuais[i]));
-        }
-
-        return dosesFinais;
-      }
-
-      function getDosesAux(dosesTotais, dosesAtuais) {
-        const dosesAux = [];
-
-        for (let i = 0; i < dosesTotais.length; i++) {
-          if (dosesTotais[i] - dosesAtuais[i] > 0) {
-            dosesAux.push(dosesTotais[i] - dosesAtuais[i]);
-          } else {
-            dosesAux.push(0);
-          }
-        }
-
-        return dosesAux;
-      }
-
-      function getIdVacinas(arrayVacinas) {
-        const idVacinas = [];
-      
-        arrayVacinas.forEach(element => {
-          for (let prop in element) {
-            if (prop === 'id') {
-              idVacinas.push(element[prop]); 
-            }
-          }
-        });
-      
-        return idVacinas;
-      }
-      
-      async function getNomeVacinas(idVacinas) {
-        const nomeVacinas = [];
-
-        for (let i = 0; i < idVacinas.length; i++) {
-          let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
-
-          nomeVacinas.push(dataVacinas.data.nome);
-        }
-
-        return nomeVacinas;
-      }
-
-      async function getDescricaoVacinasDependentes(idVacinas) {
-        const descricaoVacinasDependentes = [];
-
-        for (let i = 0; i < idVacinas.length; i++) {
-          let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
-
-          descricaoVacinasDependentes.push(dataVacinas.data.descricao);
-        }
-
-        return descricaoVacinasDependentes;
-      }
-
-      async function getDosesTotaisVacinas(idVacinas) {
-        const dosesTotaisVacinas = [];
-
-        for (let i = 0; i < idVacinas.length; i++) {
-          let dataVacinas = await api.get(`/vacina/${idVacinas[i]}`);
-
-          dosesTotaisVacinas.push(dataVacinas.data.doses);
-        }
-
-        return dosesTotaisVacinas;
-      }
-
-      async function getArrayFinalUsuario() {
-        const nomeUsuario = data.nome;
-        const vacinasUsuario = data.vacinas;
-
-        const dosesAtuaisVacinasUsuario = [];
-
-        for (let i = 0; i < data.vacinas.length; i ++) {
-          dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
-        }
-
-        let idVacinasUsuario = [];
-
-        idVacinasUsuario = getIdVacinas(vacinasUsuario);
-
-        const nomeVacinasUsuario = [];
-        const descricaoVacinasUsuario = []; 
-        const dosesTotaisVacinasUsuario = [];
-
-        for (const id of idVacinasUsuario) {
-          let dataVacinasUsuario = await api.get(`/vacina/${id}`);
-
-          nomeVacinasUsuario.push(dataVacinasUsuario.data.nome);
-          dosesTotaisVacinasUsuario.push(dataVacinasUsuario.data.doses);
-          descricaoVacinasUsuario.push(dataVacinasUsuario.data.descricao);
-        }
-
-        const diferencas = [];
-
-        for (let i = 0; i < dosesTotaisVacinasUsuario.length; i++) {
-          if (dosesTotaisVacinasUsuario[i] - dosesAtuaisVacinasUsuario[i] === 0) {
-            diferencas.push(0);
-          } else {
-            diferencas.push(dosesTotaisVacinasUsuario[i] - dosesAtuaisVacinasUsuario[i]);
-          }
-        }
-
-        const arrayUsuarioFinal = [];
-        
-        for (let i = 0; i < nomeVacinasUsuario.length; i++) {
-          if (diferencas[i] === 0) {
-            continue;
-          }
-
-          arrayUsuarioFinal[i] = {
-            nome: nomeUsuario,
-            vacina: nomeVacinasUsuario[i],
-            descricao: descricaoVacinasUsuario[i],
-            doseAtual: dosesAtuaisVacinasUsuario[i],
-            doseTotal: dosesTotaisVacinasUsuario[i],
-            data: '15/10/2020'
-          }; 
-        }
-          
+      if (arrayNomes.length === 0) {
         return arrayUsuarioFinal;
       }
 
-      async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDescricao, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
-        const arrayUsuarioFinal = await getArrayFinalUsuario();
+      let arrayVacinasFinal = [];
+      const diferencaEntreDoses = getDosesFinais(arrayDosesTotais, arrayDosesFinais);
 
-        if (arrayNomes.length === 0) {
-          return arrayUsuarioFinal;
-        }
+      for (let i = 0; i < arrayNomeVacinas.length; i++) {
+        arrayVacinasFinal.push(
+          getVacinasDeCadaDependente(
+            arrayNomes[i], arrayNomeVacinas[i], arrayDescricao[i], arrayDosesFinais[i], arrayDosesTotais[i], diferencaEntreDoses[i], arrayDatas
+          )
+        );
+      }
 
-        let arrayVacinasFinal = [];
-        const diferencaEntreDoses = getDosesFinais(arrayDosesTotais, arrayDosesFinais);
+      const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal); // reduz a um array
 
-        for (let i = 0; i < arrayNomeVacinas.length; i++) {
-          arrayVacinasFinal.push(
-            getVacinasDeCadaDependente(
-              arrayNomes[i], arrayNomeVacinas[i], arrayDescricao[i], arrayDosesFinais[i], arrayDosesTotais[i], diferencaEntreDoses[i], arrayDatas
+      function getVacinasDeCadaDependente(
+        nomeDependente, arrayNomeVacinasDependente, arrayDescricao, arrayDosesFinais, arrayDosesTotais, diferenca, arrayDatas
+      ) {
+        let objetoVacinasDependente = [];
+        
+        for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
+          
+          if (diferenca[j] === 0) {
+            continue;
+          }
+          objetoVacinasDependente.push(
+            criaObjetoVacinas(
+              nomeDependente, arrayNomeVacinasDependente[j], arrayDescricao[j], arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas
             )
           );
         }
 
-        const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal); // reduz a um array
-
-        function getVacinasDeCadaDependente(
-          nomeDependente, arrayNomeVacinasDependente, arrayDescricao, arrayDosesFinais, arrayDosesTotais, diferenca, arrayDatas
-        ) {
-          let objetoVacinasDependente = [];
-          
-          for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
-            
-            if (diferenca[j] === 0) {
-              continue;
-            }
-            objetoVacinasDependente.push(
-              criaObjetoVacinas(
-                nomeDependente, arrayNomeVacinasDependente[j], arrayDescricao[j], arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas
-              )
-            );
-          }
-
-          return objetoVacinasDependente;
-        }
-
-        function criaObjetoVacinas(dependente, vacina, descricao, doseAtual, doseTotal, data) {
-          let objeto = {
-            nome: dependente,
-            vacina,
-            descricao,
-            doseAtual,
-            doseTotal,
-            data
-          };
-
-          return objeto;
-        }
-
-        Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
-        
-        const arrayFinal = arrayUsuarioFinal;
-        
-        return arrayFinal;
+        return objetoVacinasDependente;
       }
-    }
 
-    getUsuario();
-  }, []);
+      function criaObjetoVacinas(dependente, vacina, descricao, doseAtual, doseTotal, data) {
+        let objeto = {
+          nome: dependente,
+          vacina,
+          descricao,
+          doseAtual,
+          doseTotal,
+          data
+        };
+
+        return objeto;
+      }
+
+      Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
+      
+      const arrayFinal = arrayUsuarioFinal;
+      
+      return arrayFinal;
+    }
+  }
 
   function getPrimeiroNome(nomeInteiro) {
     const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
