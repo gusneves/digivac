@@ -23,9 +23,9 @@ const list = [
         icon: "settings",
     },
     {
-        title: "Adicionar dependentes",
+        title: "Dependentes",
         name: "Dependentes",
-        icon: "plus",
+        icon: "people",
     },
     {
         title: "Sair",

@@ -1,29 +1,31 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, Text, YellowBox } from "react-native";
+import { StackActions } from "@react-navigation/native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import { StatusBar } from "expo-status-bar";
 
-import MarkSlider from "../../components/MarkSlider";
+import MarkSlider from "../../../../components/MarkSlider";
 
-import api from "../../services/api";
+import api from "../../../../services/api";
 
-import { SessionContext } from "../../context/Session";
-
-export default function CadVac({ route, navigation }) {
+export default function CadVacDep({ route, navigation }) {
     YellowBox.ignoreWarnings([
         "Non-serializable values were found in the navigation state",
     ]);
 
-    const [overlay, setOverlay] = useState(true);
-    const [vacinas, setVacinas] = useState();
-    const [confirm, setConfirm] = useState(false);
+    const [overlay, setOverlay] = useState(true); //on-off do overlay
+    const [vacinas, setVacinas] = useState(); //dados vacinas
+    const [confirm, setConfirm] = useState(false); //overlay confirmação
+    const [id, setId] = useState(""); //id do usuario - asyncstorage
     const [data, setData] = useState({
+        //recebe as doses
         id: [],
         doses: [],
-        doseAtual: []
+        doseAtual: [],
     });
+
     const marks = [
         { name: 0, value: 0 },
         { name: 1, value: 1 },
@@ -34,22 +36,31 @@ export default function CadVac({ route, navigation }) {
         { name: 6, value: 6 },
     ];
 
-    const { signUp, setSession } = useContext(SessionContext);
-
     function changeVisibility() {
         setOverlay(!overlay);
     }
+
     function changeConfirmation() {
         setConfirm(!confirm);
     }
 
     useEffect(() => {
         _getVacinas();
+        getUserData();
     }, []);
 
     useEffect(() => {
         if (vacinas != null) prepareData();
     }, [vacinas]);
+
+    async function getUserData() {
+        const userId = await AsyncStorage.getItem("usuario");
+        setId(userId);
+    }
+
+    async function cadDep(data) {
+        return await api.put("/usuario/dep/" + id, data);
+    }
 
     async function _getVacinas() {
         await api
@@ -65,7 +76,7 @@ export default function CadVac({ route, navigation }) {
     let aux = {
         id: data.id,
         doses: data.doses,
-        doseAtual: data.doseAtual
+        doseAtual: data.doseAtual,
     };
     function prepareData() {
         vacinas.map((item) => {
@@ -83,27 +94,23 @@ export default function CadVac({ route, navigation }) {
         setData(aux);
     }
 
-    async function cadastro() {
-        let { userData } = route.params;
+    async function cadastroDependente() {
+        let { dependentes } = route.params;
         let vacinasUsuario = [];
         data.id.map((value, index) => {
             let objectVacina = {
                 id: value,
                 doses: data.doses[index],
-                doseAtual: data.doseAtual[index]
+                doseAtual: data.doseAtual[index],
             };
             vacinasUsuario.push(objectVacina);
         });
-        userData = { ...userData, vacinas: vacinasUsuario };
-
-        await signUp(userData)
+        depData = { ...dependentes, vacinas: vacinasUsuario };
+        await cadDep(depData)
             .then(async ({ data }) => {
                 console.log(data);
-                const { _id } = data.usuario;
-                const { token } = data;
-                setSession(_id);
-                await AsyncStorage.setItem("usuario", _id);
-                await AsyncStorage.setItem("token", token);
+                const popStack = StackActions.pop(3);
+                navigation.dispatch(popStack);
             })
             .catch((response) => console.log(response));
     }
@@ -138,7 +145,7 @@ export default function CadVac({ route, navigation }) {
                             type="clear"
                             containerStyle={styles.overlayButton}
                             titleStyle={styles.overlayButtonText}
-                            onPress={cadastro}
+                            onPress={cadastroDependente}
                         />
                         <Button
                             title="Não"
@@ -160,10 +167,11 @@ export default function CadVac({ route, navigation }) {
                             style={{ marginTop: 10 }}
                         />
                         <Text style={styles.overlayText1}>
-                            Certo, agora precisamos que você pegue sua carteira
-                            de vacinação e marque o número de doses que você tem
-                            certeza que já tomou de cada vacina! Caso não tenha
-                            tomado nenhuma dose, deixe em 0!
+                            Certo, agora precisamos que você pegue a carteira de
+                            vacinação do seu dependente e marque o número de
+                            doses que você tem certeza que ele tomou de cada
+                            vacina! Caso não tenha tomado nenhuma dose, deixe em
+                            0!
                         </Text>
                         <Text style={styles.overlayText2}>
                             Muita atenção nessa parte!

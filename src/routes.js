@@ -18,7 +18,8 @@ import Sobre from "./screens/authenticaded/Sobre";
 
 import EditInfo from "./screens/authenticaded/profile/EditInfo";
 import Dependentes from "./screens/authenticaded/profile/Dependentes";
-import AddDependente from "./screens/authenticaded/profile/AddDependente";
+import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
+import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
 import Configs from "./screens/authenticaded/profile/Configs";
 
 const Stack = createStackNavigator();
@@ -61,8 +62,20 @@ function PerfilStack() {
                 }}
             />
             <Stack.Screen name="Dependentes" component={Dependentes} />
-            <Stack.Screen name="AddDependente" component={AddDependente} />
-
+            <Stack.Screen
+                name="AddDependente"
+                component={AddDependente}
+                options={{
+                    title: "Adicionar Dependente",
+                }}
+            />
+            <Stack.Screen
+                name="CadVacDep"
+                component={CadVacDep}
+                options={{
+                    title: "Vacinas do Dependente",
+                }}
+            />
         </Stack.Navigator>
     );
 }
@@ -157,7 +170,7 @@ function Router() {
                                 fontWeight: "bold",
                                 fontSize: 20,
                             },
-                            title:"Suas vacinas"
+                            title: "Suas vacinas",
                         }}
                         name="CadVac"
                         component={CadVac}
