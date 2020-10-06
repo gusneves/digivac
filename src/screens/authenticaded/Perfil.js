@@ -7,6 +7,7 @@ import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
+import { useIsFocused } from '@react-navigation/native';
 
 import api from "../../services/api";
 import { SessionContext } from "../../context/Session";
@@ -37,6 +38,7 @@ const list = [
 export default function Perfil({ navigation }) {
     const [image, useImage] = useState(null);
     const [user, useUser] = useState({});
+    const isFocused = useIsFocused();
 
     const { signOut } = useContext(SessionContext);
 
@@ -46,8 +48,13 @@ export default function Perfil({ navigation }) {
 
     useEffect(() => {
         getPermissionAsync();
+
         getUserInfo();
     }, []);
+    
+    useEffect(() => {
+        getUserInfo();
+    }, [navigation, isFocused])
 
     async function getUserInfo() {
         const id = await AsyncStorage.getItem("usuario");
