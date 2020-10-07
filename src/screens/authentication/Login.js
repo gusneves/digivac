@@ -6,6 +6,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import { StatusBar } from "expo-status-bar";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -35,7 +36,7 @@ export default function Login({ navigation }) {
         password: Yup.string().required("Campo obrigatório!"),
     });
 
-    const { signIn } = useContext(SessionContext);
+    const { signIn, tokenVerify, setSession } = useContext(SessionContext);
 
     return (
         <KeyboardAvoidingView
@@ -51,13 +52,26 @@ export default function Login({ navigation }) {
                     password: "",
                 }}
                 onSubmit={async ({email, password}, errors) => {
-                    await signIn(email, password).then(() => {
-                        errors.setFieldError(
-                            "password",
-                            "Usuário ou senha incorretos!"
-                        );
-                    });
-                }}
+                    await signIn(email, password)
+                        .then(async (response) => {
+                            const { _id } = response.data.usuario;
+                            const { token } = response.data;
+                            tokenVerify(token);
+
+                            setSession(_id);
+
+                            await AsyncStorage.setItem("usuario", _id);
+                            await AsyncStorage.setItem("token", token);
+                        })
+                        .catch((e) => {
+                            console.log(e.erro);
+                            errors.setFieldError(
+                                "password",
+                                "Usuário ou senha incorretos!"
+                            );
+                        });
+                    }
+                }
                 validationSchema={formSchema}
             >
                 {({

@@ -27,12 +27,11 @@ export default function SessionProvider({ children }) {
     }, []);
 
     async function signIn(email, password) {
-        await api
-            .post("session", {
-                email,
-                senha: password,
-            })
-            .then(async (response) => {
+        return await api.post("session", {
+            email,
+            senha: password,
+        });
+        /*.then(async (response) => {
                 const { _id } = response.data.usuario;
                 const { token } = response.data;
                 const tokenVerify = await api.get("/session/authentication", {
@@ -54,7 +53,20 @@ export default function SessionProvider({ children }) {
             })
             .catch((e) => {
                 console.log(e);
-            });
+            });*/
+    }
+
+    async function tokenVerify(token) {
+        const tokenVerify = await api
+            .get("/session/authentication", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            if (!tokenVerify.data.ok) {
+                reject("Token recusado", null);
+            }
+            api.defaults.headers.Authorization = `Bearer ${token}`;
     }
 
     function signOut() {
@@ -63,17 +75,26 @@ export default function SessionProvider({ children }) {
         });
     }
 
-    async function signUp(userdata){
-        return await api.post('/usuario', userdata);
+    async function signUp(userdata) {
+        return await api.post("/usuario", userdata);
     }
 
-    async function checkEmailCPF(email, cpf){
+    async function checkEmailCPF(email, cpf) {
         return await api.get(`/usuario/${email}/${cpf}`);
     }
 
     return (
         <SessionContext.Provider
-            value={{ isLoggedIn, setSession, loading, signIn, signOut, signUp, checkEmailCPF }}
+            value={{
+                isLoggedIn,
+                setSession,
+                loading,
+                signIn,
+                signOut,
+                signUp,
+                checkEmailCPF,
+                tokenVerify,
+            }}
         >
             {children}
         </SessionContext.Provider>

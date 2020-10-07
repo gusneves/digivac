@@ -73,6 +73,6 @@ module.exports = {
 
     async destroy(req, res) {
         await Usuario.findByIdAndDelete(req.params.id);
-        return res.send();
+        return res.json({action: "usuário deletado!"});
     },
 };

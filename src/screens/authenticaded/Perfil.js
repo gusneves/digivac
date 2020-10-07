@@ -7,7 +7,7 @@ import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
 import Constants from "expo-constants";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 
 import api from "../../services/api";
 import { SessionContext } from "../../context/Session";
@@ -51,10 +51,10 @@ export default function Perfil({ navigation }) {
 
         getUserInfo();
     }, []);
-    
+
     useEffect(() => {
         getUserInfo();
-    }, [navigation, isFocused])
+    }, [navigation, isFocused]);
 
     async function getUserInfo() {
         const id = await AsyncStorage.getItem("usuario");
@@ -100,7 +100,6 @@ export default function Perfil({ navigation }) {
                         ".jpg",
                 });
             }
-            console.log(result);
         } catch (E) {
             console.log(E);
         }
@@ -111,36 +110,65 @@ export default function Perfil({ navigation }) {
         await FileSystem.getInfoAsync(dir)
             .then(async () => {
                 const images = await FileSystem.readDirectoryAsync(dir);
-                let lastItem = images[images.length - 1];
-                if (images != null) useImage("" + dir + lastItem);
+                if(images[0] != null){
+                    let lastItem = images[images.length - 1];
+                    if (images != null) useImage("" + dir + lastItem);
+                }
             })
             .catch(async () => {
-                await FileSystem.makeDirectoryAsync(dir);
+                await FileSystem.makeDirectoryAsync(dir)
+                    .then(() => {
+                        console.log("diretório criado");
+                    })
+                    .catch((e) => {
+                        console.log("erro ao criar diretório:", e.message);
+                    });
             });
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <Avatar
-                size="xlarge"
-                rounded
-                icon={{ name: "user", color: "#DDD", type: "font-awesome" }}
-                placeholderStyle={{backgroundColor: "#FFF"}}
-                source={{ uri: image }}
-                activeOpacity={0.5}
-                containerStyle={styles.avatar}
-                onPress={_pickImage}
-                onAccessoryPress={_pickImage}
-                showAccessory={true}
-                accessory={{
-                    name: "camera",
-                    underlayColor: "#2020FA",
-                    type: "font-awesome",
-                    size: 40,
-                    style: { backgroundColor: "#2352FA" },
-                    iconProps: { size: 20, color: "#FFF" },
-                }}
-            />
+            {image === null ? (
+                <Avatar
+                    size="xlarge"
+                    rounded
+                    icon={{ name: "user", color: "#DDD", type: "font-awesome" }}
+                    placeholderStyle={{ backgroundColor: "#FFF" }}
+                    activeOpacity={0.5}
+                    containerStyle={styles.avatar}
+                    onPress={_pickImage}
+                    onAccessoryPress={_pickImage}
+                    showAccessory={true}
+                    accessory={{
+                        name: "camera",
+                        underlayColor: "#2020FA",
+                        type: "font-awesome",
+                        size: 40,
+                        style: { backgroundColor: "#2352FA" },
+                        iconProps: { size: 20, color: "#FFF" },
+                    }}
+                />
+            ) : (
+                <Avatar
+                    size="xlarge"
+                    rounded
+                    placeholderStyle={{ backgroundColor: "#FFF" }}
+                    source={{ uri: image }}
+                    activeOpacity={0.5}
+                    containerStyle={styles.avatar}
+                    onPress={_pickImage}
+                    onAccessoryPress={_pickImage}
+                    showAccessory={true}
+                    accessory={{
+                        name: "camera",
+                        underlayColor: "#2020FA",
+                        type: "font-awesome",
+                        size: 40,
+                        style: { backgroundColor: "#2352FA" },
+                        iconProps: { size: 20, color: "#FFF" },
+                    }}
+                />
+            )}
 
             <Text style={styles.username}>{user.nome}</Text>
             <Divider />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, FlatList, Text, YellowBox } from "react-native";
+import { View, StyleSheet, FlatList, Text, LogBox } from "react-native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
@@ -12,7 +12,7 @@ import api from "../../services/api";
 import { SessionContext } from "../../context/Session";
 
 export default function CadVac({ route, navigation }) {
-    YellowBox.ignoreWarnings([
+    LogBox.ignoreLogs([
         "Non-serializable values were found in the navigation state",
     ]);
 

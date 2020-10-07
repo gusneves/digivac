@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, Text, YellowBox } from "react-native";
+import { View, StyleSheet, FlatList, Text, LogBox } from "react-native";
 import { StackActions } from "@react-navigation/native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -11,7 +11,7 @@ import MarkSlider from "../../../../components/MarkSlider";
 import api from "../../../../services/api";
 
 export default function CadVacDep({ route, navigation }) {
-    YellowBox.ignoreWarnings([
+    LogBox.ignoreLogs([
         "Non-serializable values were found in the navigation state",
     ]);
 
