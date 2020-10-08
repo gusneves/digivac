@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StatusBar, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -20,7 +20,6 @@ import EditInfo from "./screens/authenticaded/profile/EditInfo";
 import Dependentes from "./screens/authenticaded/profile/Dependentes";
 import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
 import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
-import Configs from "./screens/authenticaded/profile/Configs";
 
 const Stack = createStackNavigator();
 
@@ -54,13 +53,6 @@ function PerfilStack() {
                     title: "Editar informações",
                 }}
             />
-            <Stack.Screen
-                name="Configs"
-                component={Configs}
-                options={{
-                    title: "Configurações",
-                }}
-            />
             <Stack.Screen name="Dependentes" component={Dependentes} />
             <Stack.Screen
                 name="AddDependente"
@@ -89,6 +81,7 @@ function Router() {
     if (loading) {
         // futura splash screen
         return (
+            <>
             <View
                 style={{
                     flex: 1,
@@ -98,7 +91,14 @@ function Router() {
                 }}
             >
                 <ActivityIndicator size="large" color="#999" />
+                <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando aplicativo...</Text>
             </View>
+            <StatusBar
+                barStyle="dark-content"
+                translucent={false}
+                backgroundColor="#FFF"
+            />
+            </>
         );
     }
 

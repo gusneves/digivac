@@ -164,7 +164,7 @@ export default function Agenda() {
 
       const dosesAtuaisVacinasUsuario = [];
 
-      for (let i = 0; i < data.vacinas.length; i ++) {
+      for (let i = 0; i < vacinasUsuario.length; i ++) {
         dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
       }
 
@@ -195,23 +195,31 @@ export default function Agenda() {
       }
 
       const arrayUsuarioFinal = [];
-      
-      for (let i = 0; i < nomeVacinasUsuario.length; i++) {
-        if (diferencas[i] === 0) {
+
+      for (let j = 0; j < nomeVacinasUsuario.length; j++) {
+        if (diferencas[j] === 0) {
           continue;
         }
 
-        arrayUsuarioFinal[i] = {
-          nome: nomeUsuario,
-          vacina: nomeVacinasUsuario[i],
-          descricao: descricaoVacinasUsuario[i],
-          doseAtual: dosesAtuaisVacinasUsuario[i],
-          doseTotal: dosesTotaisVacinasUsuario[i],
-          data: '15/10/2020'
-        }; 
+        arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+          nomeUsuario, nomeVacinasUsuario[j], descricaoVacinasUsuario[j], dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j], '15/10/2020'
+        ));
       }
-        
+      
       return arrayUsuarioFinal;
+    }
+
+    function criaObjetoVacinasUsuario(nome, vacina, descricao, doseAtual, doseTotal, data) {
+      let objeto = {
+        nome,
+        vacina,
+        descricao,
+        doseAtual,
+        doseTotal,
+        data
+      };
+
+      return objeto;
     }
 
     async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDescricao, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
@@ -283,6 +291,7 @@ export default function Agenda() {
 
   if (isLoading) {
     return (
+      <>
       <View
         style={{
             flex: 1,
@@ -292,9 +301,27 @@ export default function Agenda() {
         }}
       >
         <ActivityIndicator size="large" color="#999" />
+        <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
       </View>
+      <StatusBar
+          barStyle="dark-content"
+          translucent={false}
+          backgroundColor="#FFF"
+      />
+      </>
     );
   }
+
+  const renderItem = ({ item }) => (
+    <View style={styles.vacinaContainer}>
+      <Text style={styles.nomeVacina}>{item.vacina}</Text>
+      <Text style={styles.nomeDependente}>({getPrimeiroNome(item.nome)})</Text>
+      <Divider style={styles.divider}/>
+      <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+      <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
+      <Text style={styles.dataVacina}>Data: {item.data}</Text>
+    </View>
+  );
 
   return (
     <>
@@ -302,19 +329,10 @@ export default function Agenda() {
         <Text style={styles.label}>Atente-se a todas as suas vacinas!</Text>
 
         <FlatList 
-          data={Object.keys(vacinas)}
+          data={vacinas}
           keyExtractor={(item, index) => 'key' + index}
           showsHorizontalScrollIndicator={false} 
-          renderItem={({ item }) => (
-            <View style={styles.vacinaContainer}>
-              <Text style={styles.nomeVacina}>{vacinas[item].vacina}</Text>
-              <Text style={styles.nomeDependente}>({getPrimeiroNome(vacinas[item].nome)})</Text>
-              <Divider style={styles.divider}/>
-              <Text style={styles.doses}>Dose: {vacinas[item].doseAtual}/{vacinas[item].doseTotal}</Text>
-              <Text style={styles.descricaoVacina}>Descrição: {vacinas[item].descricao} </Text>
-              <Text style={styles.dataVacina}>Data: {vacinas[item].data}</Text>
-            </View>
-          )}
+          renderItem={renderItem}
         />
       </View>
       <StatusBar

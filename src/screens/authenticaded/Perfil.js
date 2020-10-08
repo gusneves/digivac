@@ -18,11 +18,6 @@ const list = [
         icon: "pencil",
     },
     {
-        title: "Configurações",
-        name: "Configs",
-        icon: "settings",
-    },
-    {
         title: "Dependentes",
         name: "Dependentes",
         icon: "people",

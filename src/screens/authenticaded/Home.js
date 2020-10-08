@@ -148,7 +148,7 @@ export default function Home() {
 
         const dosesAtuaisVacinasUsuario = [];
 
-        for (let i = 0; i < data.vacinas.length; i ++) {
+        for (let i = 0; i < vacinasUsuario.length; i ++) {
           dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
         }
 
@@ -178,22 +178,28 @@ export default function Home() {
 
         const arrayUsuarioFinal = [];
 
-        for (let i = 0; i < nomeVacinasUsuario.length; i++) {
-          if (diferencas[i] === 0) {
+        for (let j = 0; j < nomeVacinasUsuario.length; j++) {
+          if (diferencas[j] === 0) {
             continue;
           }
 
-          arrayUsuarioFinal[i] = {
-            nome: nomeUsuario,
-            vacina: nomeVacinasUsuario[i],
-            data: '15/10/2020'
-          };
+          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(nomeUsuario, nomeVacinasUsuario[j], '15/10/2020'));
         }
 
         return arrayUsuarioFinal;
       }
 
-      async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {
+      function criaObjetoVacinasUsuario(nome, vacina, data) {
+        let objeto = {
+          nome,
+          vacina,
+          data
+        };
+
+        return objeto;
+      }
+
+      async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {    
         const arrayUsuarioFinal = await getArrayFinalUsuario();
 
         if (arrayNomes.length === 0) {
@@ -256,6 +262,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
+      <>
       <View
         style={{
             flex: 1,
@@ -265,9 +272,24 @@ export default function Home() {
         }}
       >
         <ActivityIndicator size="large" color="#999" />
+        <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
       </View>
+      <StatusBar
+          barStyle="dark-content"
+          translucent={false}
+          backgroundColor="#FFF"
+      />
+      </>
     );
   }
+
+  const renderItem = ({ item }) => (
+    <View style={styles.listItem}>
+      <Text style={styles.name}>{getPrimeiroNome(item.nome)}</Text>
+      <Text style={styles.vaccine}>{item.vacina}</Text>
+      <Text style={styles.date}>{item.data}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -277,17 +299,11 @@ export default function Home() {
         <View style={styles.hr1}></View>
         <FlatList
           contentContainerStyle={styles.list}
-          data={Object.keys(vacinas)}
+          data={vacinas}
           keyExtractor={(item, index) => 'key' + index}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <Text style={styles.name}>{getPrimeiroNome(vacinas[item].nome)}</Text>
-              <Text style={styles.vaccine}>{vacinas[item].vacina}</Text>
-              <Text style={styles.date}>{vacinas[item].data}</Text>
-            </View>
-          )}
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          renderItem={renderItem}
         />
       </View>
       <View style={styles.learnMoreContainer}>
