@@ -5,9 +5,9 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
+    StatusBar
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { StatusBar } from "expo-status-bar";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Formik } from "formik";
@@ -161,7 +161,7 @@ export default function Login({ navigation }) {
                 )}
             </Formik>
             <StatusBar
-                style="auto"
+                barStyle={'dark-content'}
                 translucent={false}
                 backgroundColor="#FFF"
             />

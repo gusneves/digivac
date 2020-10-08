@@ -1,12 +1,19 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, StatusBar } from "react-native";
 
 export default class Configs extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Configurações</Text>
-      </View>
+      <>
+        <View style={styles.container}>
+          <Text>Configurações</Text>
+        </View>
+        <StatusBar 
+          barStyle={'light-content'}
+          translucent={false}
+          backgroundColor={'#2352FF'}
+        />
+      </>
     );
   }
 }

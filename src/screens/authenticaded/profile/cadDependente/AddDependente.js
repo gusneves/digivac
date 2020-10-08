@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Text, AsyncStorage } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { View, ScrollView, StyleSheet, Text, AsyncStorage, StatusBar } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
 import { mask, unMask } from "remask";
@@ -184,7 +183,7 @@ export default function AddDependente({ navigation }) {
                 )}
             </Formik>
             <StatusBar
-                style="auto"
+                barStyle={'light-content'}
                 translucent={false}
                 backgroundColor="#2352FF"
             />
@@ -223,6 +222,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         margin: 10,
+        marginBottom: 30
     },
     error: {
         fontSize: 13,

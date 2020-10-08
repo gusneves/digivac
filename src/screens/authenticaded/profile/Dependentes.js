@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, AsyncStorage, StyleSheet, FlatList, Text } from "react-native";
+import { View, AsyncStorage, StyleSheet, FlatList, Text, StatusBar } from "react-native";
 import { Button, Divider } from "react-native-elements";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-import { StatusBar } from "expo-status-bar";
 import moment from "moment";
 
 import api from "../../../services/api";
@@ -98,7 +97,7 @@ export default function Depedentes({ navigation }) {
             </View>
 
             <StatusBar
-                style="auto"
+                barStyle="light-content"
                 translucent={false}
                 backgroundColor="#2352FF"
             />

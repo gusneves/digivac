@@ -5,7 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
 
-export default function Agenda({ navigation }) {
+export default function Agenda() {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [isLoading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function Agenda({ navigation }) {
 
   useEffect(() => {
     getUsuario();
-  }, [navigation, isFocused]);
+  }, [isFocused]);
 
   async function getUsuario() {
     const id = await AsyncStorage.getItem('usuario');
@@ -46,26 +46,17 @@ export default function Agenda({ navigation }) {
       });
 
       const idVacinasDependentes = [];
+      const nomeVacinasDependentes = [];
+      const dosesTotaisDependetes = [];
+      const descricaoVacinasDependentes = [];
 
       for (let i = 0; i < vacinasDependentes.length; i++) {
         idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
       }
       
-      const nomeVacinasDependentes = [];
-
       for (let i = 0; i < idVacinasDependentes.length; i++) {
         nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
-      }
-
-      const descricaoVacinasDependentes = [];
-
-      for (let i = 0; i < idVacinasDependentes.length; i++) {
         descricaoVacinasDependentes.push(await getDescricaoVacinasDependentes(idVacinasDependentes[i]));
-      }
-      
-      const dosesTotaisDependetes = [];
-
-      for (let i = 0; i < idVacinasDependentes.length; i++) {
         dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
       }
 

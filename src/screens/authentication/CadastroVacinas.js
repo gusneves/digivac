@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, FlatList, Text, LogBox } from "react-native";
+import { View, StyleSheet, FlatList, Text, LogBox, StatusBar } from "react-native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-import { StatusBar } from "expo-status-bar";
 
 import MarkSlider from "../../components/MarkSlider";
 
@@ -209,6 +208,7 @@ export default function CadVac({ route, navigation }) {
                     )}
                     ListFooterComponent={() => (
                         <Button
+                            containerStyle={{ marginBottom: 8}}
                             title="Confirmar vacinas"
                             type="clear"
                             icon={() => (
@@ -228,7 +228,7 @@ export default function CadVac({ route, navigation }) {
                 />
             </View>
             <StatusBar
-                style="auto"
+                barStyle={'light-content'}
                 translucent={false}
                 backgroundColor="#2352FF"
             />

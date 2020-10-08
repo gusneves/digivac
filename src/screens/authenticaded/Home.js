@@ -5,7 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
 
-export default function Home({ navigation }) {
+export default function Home() {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [nome, setNome] = useState('');
@@ -19,7 +19,7 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     getUsuario();
-  }, [navigation, isFocused]);
+  }, [isFocused]);
 
   async function getUsuario() {
     try {
@@ -50,23 +50,15 @@ export default function Home({ navigation }) {
         );
 
         const idVacinasDependentes = [];
+        const nomeVacinasDependentes = [];
+        const dosesTotaisDependetes = [];
 
         for (let i = 0; i < vacinasDependentes.length; i++) {
           idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
-        }
-        
-        const nomeVacinasDependentes = [];
-
-        for (let i = 0; i < idVacinasDependentes.length; i++) {
           nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
-        }
-
-        const dosesTotaisDependetes = [];
-
-        for (let i = 0; i < idVacinasDependentes.length; i++) {
           dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
         }
-
+        
         const diferencaEntreDoses = getDosesFinais(dosesTotaisDependetes, dosesAtuaisDependentesFinal);
 
         // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
@@ -252,7 +244,9 @@ export default function Home({ navigation }) {
     }
   }
   
-  const string = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Orci phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor. Tempus egestas sed sed risus pretium. Cursus eget nunc scelerisque viverra mauris in aliquam sem fringilla. Sollicitudin nibh sit amet commodo nulla. Id venenatis a condimentum vitae sapien pellentesque. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Malesuada proin libero nunc consequat interdum. Velit dignissim sodales ut eu sem integer vitae justo eget. Vehicula ipsum a arcu cursus.';
+  const string = 'O rotavírus é uma doença causada por sete tipos diferentes de sorotipos que são antigêncios diferentes, mas da mesma espécie microbiana. Porém, apenas três infectam o ser humano. Os principais sintomas são diarréia - que pode levar a desidratação -, vômitos e febre, além de problemas respiratórios, como coriza e tosse.' +
+                 '\nA transmissão pode ser fecal-oral ou seja, o vírus é eliminado nas fezes do paciente, contamina a água ou alimentos, e pode entrar em contato com a pessoa através das mãos.' +
+                 '\nAs principais medidas para evitar a rotavirose é a higiene das mãos, que pode ser feita com água e sabão ou álcool-gel, principalmente antes das refeições e após o banheiro. Além disso, ingerir sempre alimentos bem higienizados e água tratada é fundamental.';
 
   function getPrimeiroNome(nomeInteiro) {
     const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
@@ -299,6 +293,7 @@ export default function Home({ navigation }) {
       <View style={styles.learnMoreContainer}>
         <Text style={styles.learnMoreLabel}>Aprenda um pouco mais 📖</Text>
         <View style={styles.hr2}></View>
+        <Text style={styles.learnMoreTitle}>Rotavírus humano</Text>
         <ScrollView style={styles.learnMoreText}>
             <Text style={styles.learnMore}>{string}</Text>
             <Button 
@@ -414,10 +409,17 @@ const styles = StyleSheet.create({
     borderBottomColor: '#D3D3D3'
   },
 
+  learnMoreTitle: {
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    marginTop: 10
+  },
+
   learnMoreText: {
-    marginVertical: 10,
+    marginTop: 5,
+    marginBottom: 10,
     marginHorizontal: 14,
-    height: 314
+    height: 295
   },
 
   learnMore: {

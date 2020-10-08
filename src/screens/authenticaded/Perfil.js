@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, Text, StyleSheet, AsyncStorage } from "react-native";
+import { SafeAreaView, Text, StyleSheet, AsyncStorage, StatusBar } from "react-native";
 import { ListItem, Avatar, Divider } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
@@ -54,7 +53,7 @@ export default function Perfil({ navigation }) {
 
     useEffect(() => {
         getUserInfo();
-    }, [navigation, isFocused]);
+    }, [isFocused]);
 
     async function getUserInfo() {
         const id = await AsyncStorage.getItem("usuario");
@@ -191,7 +190,7 @@ export default function Perfil({ navigation }) {
             ))}
 
             <StatusBar
-                style="auto"
+                barStyle={'dark-content'}
                 translucent={false}
                 backgroundColor="#FFF"
             />

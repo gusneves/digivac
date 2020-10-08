@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Text, AsyncStorage } from "react-native";
+import { View, ScrollView, StyleSheet, Text, AsyncStorage, StatusBar } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
-import { StatusBar } from "expo-status-bar";
 import { mask, unMask } from "remask";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -242,7 +241,7 @@ export default function EditInfo({ navigation }) {
               )}
           </Formik>
           <StatusBar
-                style="auto"
+                barStyle={'light-content'}
                 translucent={false}
                 backgroundColor="#2352FF"
             />
