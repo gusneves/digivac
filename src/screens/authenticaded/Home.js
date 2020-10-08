@@ -11,7 +11,7 @@ export default function Home() {
   const [nome, setNome] = useState('');
   const [isLoading, setLoading] = useState(true);
 
-  const isFocused = useIsFocused(); 
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getUsuario();
@@ -25,12 +25,12 @@ export default function Home() {
     try {
       const id = await AsyncStorage.getItem('usuario');
       const { data } = await api.get(`/usuario/${id}`);
-      
+
       setUsuario(data);
       setNome(data.nome);
 
       const dependentesUsuario = data.dependentes;
-      
+
       const nomeDependentes = [];
       const vacinasDependentes = [];
       const dosesAtuaisDependentesFinal = [];
@@ -58,7 +58,7 @@ export default function Home() {
           nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
           dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
         }
-        
+
         const diferencaEntreDoses = getDosesFinais(dosesTotaisDependetes, dosesAtuaisDependentesFinal);
 
         // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
@@ -106,18 +106,18 @@ export default function Home() {
 
       function getIdVacinas(arrayVacinas) {
         const idVacinas = [];
-      
+
         arrayVacinas.forEach(element => {
           for (let prop in element) {
             if (prop === 'id') {
-              idVacinas.push(element[prop]); 
+              idVacinas.push(element[prop]);
             }
           }
         });
-      
+
         return idVacinas;
       }
-      
+
       async function getNomeVacinas(idVacinas) {
         const nomeVacinas = [];
 
@@ -177,7 +177,7 @@ export default function Home() {
         }
 
         const arrayUsuarioFinal = [];
-        
+
         for (let i = 0; i < nomeVacinasUsuario.length; i++) {
           if (diferencas[i] === 0) {
             continue;
@@ -187,13 +187,13 @@ export default function Home() {
             nome: nomeUsuario,
             vacina: nomeVacinasUsuario[i],
             data: '15/10/2020'
-          }; 
+          };
         }
-         
+
         return arrayUsuarioFinal;
       }
 
-      async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {    
+      async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {
         const arrayUsuarioFinal = await getArrayFinalUsuario();
 
         if (arrayNomes.length === 0) {
@@ -210,7 +210,7 @@ export default function Home() {
 
         function getVacinasDeCadaDependente(nomeDependente, arrayNomeVacinasDependente, diferencaEntreDoses, arrayDatas) {
           let objetoVacinasDependente = [];
-          
+
           for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
             if (diferencaEntreDoses[j] === 0) {
               continue;
@@ -234,16 +234,16 @@ export default function Home() {
         }
 
         Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
-        
+
         const arrayFinal = arrayUsuarioFinal;
-        
+
         return arrayFinal;
       }
     } catch (e) {
       console.log(e);
     }
   }
-  
+
   const string = 'O rotavírus é uma doença causada por sete tipos diferentes de sorotipos que são antigêncios diferentes, mas da mesma espécie microbiana. Porém, apenas três infectam o ser humano. Os principais sintomas são diarréia - que pode levar a desidratação -, vômitos e febre, além de problemas respiratórios, como coriza e tosse.' +
                  '\nA transmissão pode ser fecal-oral ou seja, o vírus é eliminado nas fezes do paciente, contamina a água ou alimentos, e pode entrar em contato com a pessoa através das mãos.' +
                  '\nAs principais medidas para evitar a rotavirose é a higiene das mãos, que pode ser feita com água e sabão ou álcool-gel, principalmente antes das refeições e após o banheiro. Além disso, ingerir sempre alimentos bem higienizados e água tratada é fundamental.';
@@ -275,12 +275,12 @@ export default function Home() {
       <View style={styles.nextVaccines}>
         <Text style={styles.label}>Fique de olho nas próximas vacinas 💉</Text>
         <View style={styles.hr1}></View>
-        <FlatList 
+        <FlatList
           contentContainerStyle={styles.list}
           data={Object.keys(vacinas)}
           keyExtractor={(item, index) => 'key' + index}
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+          horizontal
+          showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.listItem}>
               <Text style={styles.name}>{getPrimeiroNome(vacinas[item].nome)}</Text>
@@ -296,7 +296,7 @@ export default function Home() {
         <Text style={styles.learnMoreTitle}>Rotavírus humano</Text>
         <ScrollView style={styles.learnMoreText}>
             <Text style={styles.learnMore}>{string}</Text>
-            <Button 
+            <Button
               title='Veja mais ➜'
               type='clear'
               onPress={() => {}}
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF',
   },
-  
+
   welcome: {
     margin: 20,
     fontWeight: 'bold',
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     marginTop: 10
   },
-  
+
   listItem: {
     flexWrap: 'wrap',
     marginRight: 8,
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#2352FF',
   },
-  
+
   name: {
     color: '#fff',
     paddingTop: 8,
@@ -388,6 +388,7 @@ const styles = StyleSheet.create({
   },
 
   learnMoreContainer: {
+    flex: 1,
     margin: 20,
     paddingVertical: 10,
     borderWidth: 1,
@@ -396,16 +397,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     borderWidth: 1,
   },
-  
+
   learnMoreLabel: {
     marginLeft: 14,
     marginBottom: 10,
     fontWeight: 'bold',
     fontSize: 14
   },
-  
+
   hr2: {
-    borderWidth: 0.35,
+    borderWidth: 0.25,
     borderBottomColor: '#D3D3D3'
   },
 
