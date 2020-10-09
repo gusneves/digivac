@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage, ActivityIndicator } from 'react-native';
+import {
+  View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage, ActivityIndicator
+} from 'react-native';
 import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -14,16 +16,12 @@ export default function Agenda() {
 
   useEffect(() => {
     getUsuario();
-  }, []);
-
-  useEffect(() => {
-    getUsuario();
   }, [isFocused]);
 
   async function getUsuario() {
     const id = await AsyncStorage.getItem('usuario');
     const { data } = await api.get(`/usuario/${id}`);
-    
+
     setUsuario(data);
 
     const dependentesUsuario = data.dependentes;
@@ -53,17 +51,19 @@ export default function Agenda() {
       for (let i = 0; i < vacinasDependentes.length; i++) {
         idVacinasDependentes.push(getIdVacinas(vacinasDependentes[i]));
       }
-      
+
       for (let i = 0; i < idVacinasDependentes.length; i++) {
         nomeVacinasDependentes.push(await getNomeVacinas(idVacinasDependentes[i]));
         descricaoVacinasDependentes.push(await getDescricaoVacinasDependentes(idVacinasDependentes[i]));
         dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
       }
 
-      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
+      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
       setVacinas(
         await juntaInfo(
-          nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes
+          nomeDependentes, nomeVacinasDependentes,
+          descricaoVacinasDependentes,
+          dosesAtuaisDependentesFinal, dosesTotaisDependetes, '15/10/2020'
         )
       );
 
@@ -110,18 +110,18 @@ export default function Agenda() {
 
     function getIdVacinas(arrayVacinas) {
       const idVacinas = [];
-    
+
       arrayVacinas.forEach(element => {
         for (let prop in element) {
           if (prop === 'id') {
-            idVacinas.push(element[prop]); 
+            idVacinas.push(element[prop]);
           }
         }
       });
-    
+
       return idVacinas;
     }
-    
+
     async function getNomeVacinas(idVacinas) {
       const nomeVacinas = [];
 
@@ -164,7 +164,7 @@ export default function Agenda() {
 
       const dosesAtuaisVacinasUsuario = [];
 
-      for (let i = 0; i < vacinasUsuario.length; i ++) {
+      for (let i = 0; i < vacinasUsuario.length; i++) {
         dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
       }
 
@@ -173,7 +173,7 @@ export default function Agenda() {
       idVacinasUsuario = getIdVacinas(vacinasUsuario);
 
       const nomeVacinasUsuario = [];
-      const descricaoVacinasUsuario = []; 
+      const descricaoVacinasUsuario = [];
       const dosesTotaisVacinasUsuario = [];
 
       for (const id of idVacinasUsuario) {
@@ -197,32 +197,55 @@ export default function Agenda() {
       const arrayUsuarioFinal = [];
 
       for (let j = 0; j < nomeVacinasUsuario.length; j++) {
+        let vacinaTomada = false;
+
         if (diferencas[j] === 0) {
+          vacinaTomada = true;
+
+          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+            nomeUsuario, nomeVacinasUsuario[j],
+            descricaoVacinasUsuario[j],
+            dosesAtuaisVacinasUsuario[j],
+            dosesTotaisVacinasUsuario[j],
+            vacinaTomada, '15/10/2020'
+          ));
+
           continue;
         }
 
         arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
-          nomeUsuario, nomeVacinasUsuario[j], descricaoVacinasUsuario[j], dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j], '15/10/2020'
+          nomeUsuario, nomeVacinasUsuario[j],
+          descricaoVacinasUsuario[j],
+          dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j],
+          vacinaTomada, '15/10/2020'
         ));
       }
-      
+
       return arrayUsuarioFinal;
     }
 
-    function criaObjetoVacinasUsuario(nome, vacina, descricao, doseAtual, doseTotal, data) {
+    function criaObjetoVacinasUsuario(
+      nome, vacina,
+      descricao,
+      doseAtual, doseTotal,
+      vacinaTomada, data) {
       let objeto = {
         nome,
         vacina,
         descricao,
         doseAtual,
         doseTotal,
+        vacinaTomada,
         data
       };
 
       return objeto;
     }
 
-    async function juntaInfo(arrayNomes, arrayNomeVacinas, arrayDescricao, arrayDosesFinais, arrayDosesTotais, arrayDatas = '15/10/2020') {              
+    async function juntaInfo(arrayNomes, arrayNomeVacinas,
+      arrayDescricao,
+      arrayDosesFinais, arrayDosesTotais,
+      arrayDatas = '15/10/2020') {
       const arrayUsuarioFinal = await getArrayFinalUsuario();
 
       if (arrayNomes.length === 0) {
@@ -235,7 +258,10 @@ export default function Agenda() {
       for (let i = 0; i < arrayNomeVacinas.length; i++) {
         arrayVacinasFinal.push(
           getVacinasDeCadaDependente(
-            arrayNomes[i], arrayNomeVacinas[i], arrayDescricao[i], arrayDosesFinais[i], arrayDosesTotais[i], diferencaEntreDoses[i], arrayDatas
+            arrayNomes[i], arrayNomeVacinas[i],
+            arrayDescricao[i],
+            arrayDosesFinais[i], arrayDosesTotais[i],
+            diferencaEntreDoses[i], arrayDatas
           )
         );
       }
@@ -243,18 +269,37 @@ export default function Agenda() {
       const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal); // reduz a um array
 
       function getVacinasDeCadaDependente(
-        nomeDependente, arrayNomeVacinasDependente, arrayDescricao, arrayDosesFinais, arrayDosesTotais, diferenca, arrayDatas
+        nomeDependente, arrayNomeVacinasDependente,
+        arrayDescricao,
+        arrayDosesFinais, arrayDosesTotais,
+        diferenca, arrayDatas
       ) {
         let objetoVacinasDependente = [];
-        
+
         for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
-          
+          let vacinaTomada = false;
+
           if (diferenca[j] === 0) {
+            vacinaTomada = true;
+
+            objetoVacinasDependente.push(
+              criaObjetoVacinas(
+                nomeDependente, arrayNomeVacinasDependente[j],
+                arrayDescricao[j],
+                arrayDosesFinais[j], arrayDosesTotais[j],
+                vacinaTomada, arrayDatas
+              )
+            );
+
             continue;
           }
+
           objetoVacinasDependente.push(
             criaObjetoVacinas(
-              nomeDependente, arrayNomeVacinasDependente[j], arrayDescricao[j], arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas
+              nomeDependente, arrayNomeVacinasDependente[j],
+              arrayDescricao[j],
+              arrayDosesFinais[j], arrayDosesTotais[j],
+              vacinaTomada, arrayDatas
             )
           );
         }
@@ -262,13 +307,18 @@ export default function Agenda() {
         return objetoVacinasDependente;
       }
 
-      function criaObjetoVacinas(dependente, vacina, descricao, doseAtual, doseTotal, data) {
+      function criaObjetoVacinas(
+        dependente, vacina,
+        descricao,
+        doseAtual, doseTotal,
+        vacinaTomada, data) {
         let objeto = {
           nome: dependente,
           vacina,
           descricao,
           doseAtual,
           doseTotal,
+          vacinaTomada,
           data
         };
 
@@ -276,15 +326,15 @@ export default function Agenda() {
       }
 
       Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
-      
+
       const arrayFinal = arrayUsuarioFinal;
-      
+
       return arrayFinal;
     }
   }
 
   function getPrimeiroNome(nomeInteiro) {
-    const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
+    const primeiroNome = nomeInteiro.replace(/ .*/, ''); // RegEx que subistitui tudo depois do espaço por vazio
 
     return primeiroNome;
   }
@@ -292,46 +342,55 @@ export default function Agenda() {
   if (isLoading) {
     return (
       <>
-      <View
-        style={{
+        <View
+          style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: '#fff',
-        }}
-      >
-        <ActivityIndicator size="large" color="#999" />
-        <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
-      </View>
-      <StatusBar
+          }}
+        >
+          <ActivityIndicator size="large" color="#999" />
+          <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
+        </View>
+        <StatusBar
           barStyle="dark-content"
           translucent={false}
           backgroundColor="#FFF"
-      />
+        />
       </>
     );
   }
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }) => !item.vacinaTomada ? (
     <View style={styles.vacinaContainer}>
       <Text style={styles.nomeVacina}>{item.vacina}</Text>
       <Text style={styles.nomeDependente}>({getPrimeiroNome(item.nome)})</Text>
-      <Divider style={styles.divider}/>
+      <Divider style={styles.divider} />
       <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
       <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
       <Text style={styles.dataVacina}>Data: {item.data}</Text>
     </View>
-  );
+  ) : (
+      <View style={styles.vacinaTomadaContainer}>
+        <Text style={styles.nomeVacinaTomada}>{item.vacina}</Text>
+        <Text style={styles.nomeDependenteVacinaTomada}>({getPrimeiroNome(item.nome)})</Text>
+        <Divider style={styles.dividerVacinaTomada} />
+        <Text style={styles.dosesTomadas}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+        <Text style={styles.descricaoVacinaTomada}>Descrição: {item.descricao} </Text>
+        <Text style={styles.dataVacinaTomada}>Todas as doses foram tomadas.</Text>
+      </View>
+    );
 
   return (
     <>
       <View style={styles.container}>
         <Text style={styles.label}>Atente-se a todas as suas vacinas!</Text>
 
-        <FlatList 
+        <FlatList
           data={vacinas}
           keyExtractor={(item, index) => 'key' + index}
-          showsHorizontalScrollIndicator={false} 
+          showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
         />
       </View>
@@ -367,6 +426,57 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  vacinaTomadaContainer: {
+    marginHorizontal: 20,
+    backgroundColor: '#31872f',
+    borderWidth: 1,
+    borderColor: '#89ed87',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 20,
+  },
+
+  nomeDependenteVacinaTomada: {
+    color: '#fafafa',
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+
+  nomeVacinaTomada: {
+    color: '#fafafa',
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+
+  dosesTomadas: {
+    color: '#fafafa',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 8
+  },
+
+  descricaoVacinaTomada: {
+    color: '#fafafa',
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginBottom: 8
+  },
+
+  dataVacinaTomada: {
+    color: '#89ed87',
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+
+  dividerVacinaTomada: {
+    height: 1,
+    backgroundColor: '#89ed87',
+    marginVertical: 8
+  },
+
   divider: {
     height: 1,
     backgroundColor: '#D3D3D3',
@@ -378,25 +488,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
   },
-  
+
   nomeVacina: {
     alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: 15,
   },
-  
+
   doses: {
     fontSize: 14,
     marginBottom: 8
   },
-  
+
   descricaoVacina: {
     fontSize: 14,
     color: '#555',
     fontStyle: 'italic',
     marginBottom: 8
   },
-  
+
   dataVacina: {
     fontSize: 14,
   }
