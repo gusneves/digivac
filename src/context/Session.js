@@ -22,7 +22,7 @@ export default function SessionProvider({ children }) {
 
             setTimeout(() => {
                 setLoading(false);
-            }, 4000);
+            }, 500);
         }
 
         loadStoragedData();

@@ -4,10 +4,58 @@ import {
 } from 'react-native';
 import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import api from '../../services/api';
 
+import ListaVacinas from '../../components/ListaVacinas';
+
+const DrawerAgenda = createDrawerNavigator();
+
 export default function Agenda() {
+  const [info, setInfo] = useState([]);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getInfo();
+  }, [isFocused]);
+
+  async function getInfo() {
+    const id = await AsyncStorage.getItem('usuario');
+    const { data } = await api.get(`/usuario/${id}`);
+
+    const dataNascUsuario = data.data_nasc;
+    const nomeUsuario = data.nome;
+    const vacinasUsuario = data.vacinas;
+
+    const objetoUsuario = {
+      data_nasc: dataNascUsuario,
+      nome: nomeUsuario,
+      vacinas: vacinasUsuario
+    };
+
+    const dependentesUsuario = data.dependentes;
+
+    dependentesUsuario.unshift(objetoUsuario);
+
+    setInfo(dependentesUsuario);
+  }
+
+  return (
+    <DrawerAgenda.Navigator>
+      <DrawerAgenda.Screen name="Todas as pessoas" component={ListVacinasTodasAsPessoas} />
+      {info.map((info, key) => {
+        return (
+          <DrawerAgenda.Screen key={key} name={info.nome} component={ListaVacinas} initialParams={{ info }} />
+        );
+      })}
+    </DrawerAgenda.Navigator>
+  );
+}
+
+function ListVacinasTodasAsPessoas({ navigation }) {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [isLoading, setLoading] = useState(true);
@@ -378,15 +426,17 @@ export default function Agenda() {
         <Divider style={styles.dividerVacinaTomada} />
         <Text style={styles.dosesTomadas}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
         <Text style={styles.descricaoVacinaTomada}>Descrição: {item.descricao} </Text>
-        <Text style={styles.dataVacinaTomada}>Todas as doses foram tomadas.</Text>
+        <Text style={styles.dataVacinaTomada}>Todas as doses foram tomadas!</Text>
       </View>
     );
 
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.label}>Atente-se a todas as suas vacinas!</Text>
-
+        <View style={styles.header}>
+          <Icon name='menu' size={25} onPress={() => { navigation.openDrawer() }} />
+          <Text style={styles.label}>Atente-se a todas as vacinas!</Text>
+        </View>
         <FlatList
           data={vacinas}
           keyExtractor={(item, index) => 'key' + index}
@@ -409,11 +459,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
 
-  label: {
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     margin: 20,
+  },
+
+  label: {
+    marginLeft: 22,
     fontWeight: 'bold',
-    fontSize: 18,
-    alignSelf: 'center'
+    fontSize: 16.5,
   },
 
   vacinaContainer: {
