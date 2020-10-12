@@ -38,7 +38,9 @@ export default function Cadastro({ navigation }) {
         email: Yup.string()
             .required("Campo obrigatório!")
             .email("Por favor, insira um e-mail válido!"),
-        senha: Yup.string().required("Campo obrigatório!"),
+        senha: Yup.string()
+            .required("Campo obrigatório!")
+            .min(4, "Senha muito pequena!"),
         confirmarSenha: Yup.string()
             .oneOf([Yup.ref("senha")], "As senhas devem ser iguais!")
             .required("Campo obrigatório!"),
@@ -78,6 +80,7 @@ export default function Cadastro({ navigation }) {
                             "data_nasc",
                             "Insira uma data válida!"
                         );
+                        return;
                     }
                     const userData = {
                         nome,
@@ -324,7 +327,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         margin: 10,
-        marginBottom: 30
+        marginBottom: 30,
     },
     error: {
         fontSize: 13,
