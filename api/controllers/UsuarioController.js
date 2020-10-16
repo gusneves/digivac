@@ -18,11 +18,11 @@ module.exports = {
                 token: Session.generateToken({ id: usuario._id }),
             });
         } catch (e) {
-            return res.json(e)
+            return res.json(e);
         }
     },
 
-    async checkIfExists(req, res){
+    async checkIfExists(req, res) {
         try {
             const { email } = req.params;
             const { cpf } = req.params;
@@ -42,9 +42,11 @@ module.exports = {
                     field: "email",
                 });
             }
-            return res.json({success:"Requisição feita, e-mail e cpf válidos."})
+            return res.json({
+                success: "Requisição feita, e-mail e cpf válidos.",
+            });
         } catch (error) {
-            return res.json(error)
+            return res.json(error);
         }
     },
 
@@ -62,7 +64,7 @@ module.exports = {
         return res.json(usuario);
     },
 
-    async updateDep(req, res) {
+    async addDep(req, res) {
         const usuario = await Usuario.findByIdAndUpdate(
             req.params.id,
             { $push: { dependentes: req.body } },
@@ -71,8 +73,24 @@ module.exports = {
         return res.json(usuario);
     },
 
+    async updateDep(req, res) {
+        const { depId } = req.params;
+        const { nome, sexo, data_nasc } = req.body;
+        const usuario = await Usuario.update(
+            { "dependentes._id": depId },
+            {
+                $set: {
+                    "dependentes.$.nome": nome,
+                    "dependentes.$.sexo": sexo,
+                    "dependentes.$.data_nasc": data_nasc,
+                },
+            }
+        );
+        return res.json({ nome, sexo, data_nasc, usuario });
+    },
+
     async destroy(req, res) {
         await Usuario.findByIdAndDelete(req.params.id);
-        return res.json({action: "usuário deletado!"});
+        return res.json({ action: "usuário deletado!" });
     },
 };

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Text, AsyncStorage, StatusBar } from "react-native";
+import {
+    View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    AsyncStorage,
+    StatusBar,
+    Alert,
+} from "react-native";
+import { StackActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
 import { mask, unMask } from "remask";
@@ -9,26 +18,51 @@ import moment from "moment";
 
 import api from "../../../../services/api";
 
-export default function AddDependente({ navigation }) {
+export default function EditDependente({ route, navigation }) {
     const [selectedIndex, useSelectedIndex] = useState(0);
+    const [originalState, setOriginalState] = useState({});
     const sexos = ["Masculino", "Feminino"];
-
-    const [data, setData] = useState("");
 
     const [id, setId] = useState("");
 
     useEffect(() => {
+        getOriginalState();
         getUserData();
     }, []);
 
     async function getUserData() {
         const userId = await AsyncStorage.getItem("usuario");
-
         setId(userId);
     }
 
-    async function cadDep(data) {
-        return await api.put("/usuario/dep/" + id, data);
+    function getOriginalState() {
+        const dados = route.params.dep;
+        console.log(dados);
+        setOriginalState(dados);
+    }
+
+    function handleDataNasc(dataNasc) {
+        const data = moment.utc(dataNasc).format("DD/MM/YYYY");
+
+        return data;
+    }
+
+    const nomeDep = originalState.nome;
+    const nascDep = handleDataNasc(originalState.data_nasc);
+
+    const sexoDep = originalState.sexo === "Masculino" ? 0 : 1;
+
+    const [nome, setNome] = useState(nomeDep);
+    const [data_nasc, setData] = useState(nascDep);
+
+    useEffect(() => {
+        setNome(nomeDep);
+        setData(nascDep);
+        useSelectedIndex(sexoDep);
+    }, [nomeDep, nascDep, sexoDep]);
+
+    async function editDep(data) {
+        return await api.put("/usuario/editdep/" + originalState._id, data);
     }
 
     function updateIndex(selectedIndex) {
@@ -51,34 +85,61 @@ export default function AddDependente({ navigation }) {
     return (
         <ScrollView style={styles.container}>
             <Formik
+                enableReinitialize={true}
                 validateOnChange={false}
                 initialValues={{
-                    nome: "",
-                    sexo: "Masculino",
-                    data_nasc: "",
+                    nome,
+                    sexo: sexos[selectedIndex],
+                    data_nasc,
                 }}
                 onSubmit={async ({ nome, sexo, data_nasc }, errors) => {
-                    let today = moment();
-                    const minDate = moment("31/12/1919", "DD-MM-YYYY");
-                    data_nasc = moment(data_nasc, "DD/MM/YYYY");
                     if (
-                        moment.max(today, data_nasc) === data_nasc ||
-                        moment.min(minDate, data_nasc) === data_nasc
+                        nome === originalState.nome &&
+                        sexo === originalState.sexo &&
+                        data_nasc === handleDataNasc(originalState.data_nasc)
                     ) {
-                        errors.setFieldError(
-                            "data_nasc",
-                            "Insira uma data válida!"
-                        );
-                        return;
+                        Alert.alert("Concluído", "Nenhuma alteração foi feita.")
+                        navigation.goBack();
+                    } else {
+                        let today = moment();
+                        const minDate = moment("31/12/1919", "DD-MM-YYYY");
+                        data_nasc = moment(data_nasc, "DD/MM/YYYY");
+                        if (
+                            moment.max(today, data_nasc) === data_nasc ||
+                            moment.min(minDate, data_nasc) === data_nasc
+                        ) {
+                            errors.setFieldError(
+                                "data_nasc",
+                                "Insira uma data válida!"
+                            );
+                            return;
+                        }
+                        const dependentes = {
+                            nome,
+                            sexo,
+                            data_nasc,
+                        };
+                        console.log(dependentes);
+                        await editDep(dependentes)
+                            .then(async ({ data }) => {
+                                console.log(data);
+                                if (data.usuario.ok === 1) {
+                                    Alert.alert(
+                                        "Concluído",
+                                        "Os dados do dependente foram atualizados com sucesso!"
+                                    );
+                                    const popStack = StackActions.pop(2);
+                                    navigation.dispatch(popStack);
+                                } else {
+                                    throw new Error(
+                                        "Erro ao atualizar dependente."
+                                    );
+                                }
+                            })
+                            .catch((error) =>
+                                Alert.alert("Concluído", error.message)
+                            );
                     }
-                    const dependentes = {
-                        nome,
-                        sexo,
-                        data_nasc,
-                    };
-                    console.log(dependentes);
-
-                    navigation.navigate("CadVacDep", { dependentes });
                 }}
                 validationSchema={formSchema}
             >
@@ -100,8 +161,8 @@ export default function AddDependente({ navigation }) {
                                     style={{ marginRight: 4 }}
                                 />
                             )}
-                            value={values.nome}
-                            onChangeText={handleChange("nome")}
+                            value={nome}
+                            onChangeText={setNome}
                             labelStyle={styles.inputLabel}
                             inputStyle={styles.input}
                             placeholder="Nome completo"
@@ -139,7 +200,7 @@ export default function AddDependente({ navigation }) {
                                     style={{ marginRight: 4 }}
                                 />
                             )}
-                            value={data}
+                            value={data_nasc}
                             onChangeText={(value) => {
                                 onChangeData(value);
                                 values.data_nasc = value;
@@ -169,7 +230,7 @@ export default function AddDependente({ navigation }) {
                 )}
             </Formik>
             <StatusBar
-                barStyle={'light-content'}
+                barStyle={"light-content"}
                 translucent={false}
                 backgroundColor="#2352FF"
             />
@@ -208,7 +269,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         margin: 10,
-        marginBottom: 30
+        marginBottom: 30,
     },
     error: {
         fontSize: 13,

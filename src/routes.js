@@ -18,6 +18,7 @@ import Sobre from "./screens/authenticaded/Sobre";
 
 import EditInfo from "./screens/authenticaded/profile/EditInfo";
 import Dependentes from "./screens/authenticaded/profile/Dependentes";
+import EditDependente from "./screens/authenticaded/profile/cadDependente/EditDependente";
 import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
 import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
 
@@ -55,17 +56,24 @@ function PerfilStack() {
             />
             <Stack.Screen name="Dependentes" component={Dependentes} />
             <Stack.Screen
+                name="EditDependente"
+                component={EditDependente}
+                options={{
+                    title: "Editar dependente",
+                }}
+            />
+            <Stack.Screen
                 name="AddDependente"
                 component={AddDependente}
                 options={{
-                    title: "Adicionar Dependente",
+                    title: "Adicionar dependente",
                 }}
             />
             <Stack.Screen
                 name="CadVacDep"
                 component={CadVacDep}
                 options={{
-                    title: "Vacinas do Dependente",
+                    title: "Vacinas do dependente",
                 }}
             />
         </Stack.Navigator>

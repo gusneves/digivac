@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, AsyncStorage, StyleSheet, FlatList, Text, StatusBar } from "react-native";
+import { View, AsyncStorage, StyleSheet, FlatList, Text, StatusBar, TouchableOpacity } from "react-native";
 import { Button, Divider } from "react-native-elements";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import moment from "moment";
 
 import api from "../../../services/api";
+import EditDependente from "./cadDependente/EditDependente";
 
 export default function Depedentes({ navigation }) {
     const [dependentes, setDependentes] = useState([]);
@@ -12,11 +13,15 @@ export default function Depedentes({ navigation }) {
     useEffect(() => {
         getUserInfo();
     }, []);
+
     async function getUserInfo() {
         const id = await AsyncStorage.getItem("usuario");
         await api
             .get("/usuario/" + id)
             .then((response) => {
+                response.data.dependentes.map((item)=>{
+                    delete item.vacinas;
+                })
                 setDependentes(response.data.dependentes);
             })
             .catch((e) => {
@@ -29,15 +34,17 @@ export default function Depedentes({ navigation }) {
             <View>
                 <FlatList
                     keyExtractor={(item) => item._id}
+                    on
                     data={dependentes}
                     renderItem={({ item }) => {
                         let data_nasc = moment(item.data_nasc).format(
                             "DD/MM/YYYY"
                         );
+                        console.log(item);
 
                         return (
                             <>
-                                <View style={styles.listView}>
+                                <TouchableOpacity style={styles.listView} onPress={() => navigation.navigate("EditDependente", { dep: item })} >
                                     <View style={{ flex: 3 }}>
                                         <Text style={styles.nome}>
                                             {item.nome}
@@ -71,7 +78,7 @@ export default function Depedentes({ navigation }) {
                                             />
                                         </View>
                                     )}
-                                </View>
+                                </TouchableOpacity>
 
                                 <Divider />
                             </>
