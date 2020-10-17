@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, FlatList, Text, LogBox, StatusBar } from "react-native";
+import {
+    View,
+    StyleSheet,
+    FlatList,
+    Text,
+    LogBox,
+    StatusBar,
+} from "react-native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
@@ -21,7 +28,7 @@ export default function CadVac({ route, navigation }) {
     const [data, setData] = useState({
         id: [],
         doses: [],
-        doseAtual: []
+        doseAtual: [],
     });
     const marks = [
         { name: 0, value: 0 },
@@ -64,7 +71,7 @@ export default function CadVac({ route, navigation }) {
     let aux = {
         id: data.id,
         doses: data.doses,
-        doseAtual: data.doseAtual
+        doseAtual: data.doseAtual,
     };
     function prepareData() {
         vacinas.map((item) => {
@@ -89,7 +96,7 @@ export default function CadVac({ route, navigation }) {
             let objectVacina = {
                 id: value,
                 doses: data.doses[index],
-                doseAtual: data.doseAtual[index]
+                doseAtual: data.doseAtual[index],
             };
             vacinasUsuario.push(objectVacina);
         });
@@ -97,7 +104,6 @@ export default function CadVac({ route, navigation }) {
 
         await signUp(userData)
             .then(async ({ data }) => {
-                console.log(data);
                 const { _id } = data.usuario;
                 const { token } = data;
                 setSession(_id);
@@ -208,7 +214,7 @@ export default function CadVac({ route, navigation }) {
                     )}
                     ListFooterComponent={() => (
                         <Button
-                            containerStyle={{ marginBottom: 8}}
+                            containerStyle={{ marginBottom: 8 }}
                             title="Confirmar vacinas"
                             type="clear"
                             icon={() => (
@@ -228,7 +234,7 @@ export default function CadVac({ route, navigation }) {
                 />
             </View>
             <StatusBar
-                barStyle={'light-content'}
+                barStyle={"light-content"}
                 translucent={false}
                 backgroundColor="#2352FF"
             />

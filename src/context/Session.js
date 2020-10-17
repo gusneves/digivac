@@ -31,29 +31,6 @@ export default function SessionProvider({ children }) {
             email,
             senha: password,
         });
-        /*.then(async (response) => {
-                const { _id } = response.data.usuario;
-                const { token } = response.data;
-                const tokenVerify = await api.get("/session/authentication", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!tokenVerify.data.ok) {
-                    reject("Token recusado", null);
-                }
-
-                setSession(_id);
-
-                api.defaults.headers.Authorization = `Bearer ${token}`;
-
-                await AsyncStorage.setItem("usuario", _id);
-                await AsyncStorage.setItem("token", token);
-            })
-            .catch((e) => {
-                console.log(e);
-            });*/
     }
 
     async function tokenVerify(token) {
