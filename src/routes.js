@@ -10,6 +10,8 @@ import { SessionContext } from "./context/Session";
 import Login from "./screens/authentication/Login";
 import Cadastro from "./screens/authentication/Cadastro";
 import CadVac from "./screens/authentication/CadastroVacinas";
+import forgotPassword from "./screens/authentication/newPassword/forgotPassword";
+import resetPassword from "./screens/authentication/newPassword/resetPassword";
 
 import Home from "./screens/authenticaded/Home";
 import Agenda from "./screens/authenticaded/Agenda";
@@ -199,6 +201,40 @@ function Router() {
                         }}
                         name="Cadastro"
                         component={Cadastro}
+                    />
+                    <AuthStack.Screen
+                        options={{
+                            headerTransparent: true,
+                            headerTitleAlign: "center",
+                            headerTintColor: "#2352FF",
+                            headerStyle: {
+                                height: 60,
+                            },
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                                fontSize: 20,
+                            },
+                            title: ""
+                        }}
+                        name="forgotPassword"
+                        component={forgotPassword}
+                    />
+                    <AuthStack.Screen
+                        options={{
+                            headerTransparent: true,
+                            headerTitleAlign: "center",
+                            headerTintColor: "#2352FF",
+                            headerStyle: {
+                                height: 60,
+                            },
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                                fontSize: 20,
+                            },
+                            title: "Redefinição de senha"
+                        }}
+                        name="resetPassword"
+                        component={resetPassword}
                     />
                 </AuthStack.Navigator>
             )}

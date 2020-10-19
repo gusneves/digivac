@@ -5,7 +5,7 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
-    StatusBar
+    StatusBar,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import { Input, Button } from "react-native-elements";
@@ -51,7 +51,7 @@ export default function Login({ navigation }) {
                     email: "",
                     password: "",
                 }}
-                onSubmit={async ({email, password}, errors) => {
+                onSubmit={async ({ email, password }, errors) => {
                     await signIn(email, password)
                         .then(async (response) => {
                             const { _id } = response.data.usuario;
@@ -70,8 +70,7 @@ export default function Login({ navigation }) {
                                 "Usuário ou senha incorretos!"
                             );
                         });
-                    }
-                }
+                }}
                 validationSchema={formSchema}
             >
                 {({
@@ -150,18 +149,26 @@ export default function Login({ navigation }) {
                         />
 
                         <Button
-                            title="Ainda não possui cadastro?"
+                            title="Ainda não possui cadastro? Faça um!"
                             type="clear"
                             onPress={() => {
                                 navigation.navigate("Cadastro");
                             }}
                             titleStyle={styles.registerButtonText}
                         />
+                        <Button
+                            title="Esqueceu sua senha?"
+                            type="clear"
+                            onPress={() => {
+                                navigation.navigate("forgotPassword");
+                            }}
+                            titleStyle={styles.forgotPasswordButtonText}
+                        />
                     </View>
                 )}
             </Formik>
             <StatusBar
-                barStyle={'dark-content'}
+                barStyle={"dark-content"}
                 translucent={false}
                 backgroundColor="#FFF"
             />
@@ -211,6 +218,10 @@ const styles = StyleSheet.create({
     registerButtonText: {
         fontSize: 16,
         color: "#45a16b",
+    },
+    forgotPasswordButtonText: {
+        fontSize: 16,
+        color: "#ae5a33",
     },
     error: {
         fontSize: 13,
