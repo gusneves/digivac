@@ -45,17 +45,20 @@ export default function Agenda() {
 
   return (
     <DrawerAgenda.Navigator>
-      <DrawerAgenda.Screen name="Todas as pessoas" component={ListVacinasTodasAsPessoas} />
+      <DrawerAgenda.Screen name="Todas as pessoas" component={ListaVacinasTodasAsPessoas} />
       {info.map((info, key) => {
         return (
-          <DrawerAgenda.Screen key={key} name={info.nome} component={ListaVacinas} initialParams={{ info }} />
+          <DrawerAgenda.Screen
+            key={key} name={info.nome}
+            component={ListaVacinas}
+            initialParams={{ info }} />
         );
       })}
     </DrawerAgenda.Navigator>
   );
 }
 
-function ListVacinasTodasAsPessoas({ navigation }) {
+function ListaVacinasTodasAsPessoas({ navigation }) {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [isLoading, setLoading] = useState(true);
