@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     },
     forgotPasswordButtonText: {
         fontSize: 16,
-        color: "#ae5a33",
+        color: "#45a16b",
     },
     error: {
         fontSize: 13,

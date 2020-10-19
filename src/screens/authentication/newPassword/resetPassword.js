@@ -1,9 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, StatusBar, Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {StackActions} from "@react-navigation/native"
 import { Input, Button } from "react-native-elements";
-import CodeInput from "react-native-confirmation-code-input";
 import {
     CodeField,
     Cursor,
