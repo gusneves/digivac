@@ -20,7 +20,9 @@ export default function SessionProvider({ children }) {
                 setSession(storagedUser);
             }
 
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 500);
         }
 
         loadStoragedData();
@@ -40,10 +42,10 @@ export default function SessionProvider({ children }) {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            if (!tokenVerify.data.ok) {
-                reject("Token recusado", null);
-            }
-            api.defaults.headers.Authorization = `Bearer ${token}`;
+        if (!tokenVerify.data.ok) {
+            reject("Token recusado", null);
+        }
+        api.defaults.headers.Authorization = `Bearer ${token}`;
     }
 
     function signOut() {
@@ -66,6 +68,7 @@ export default function SessionProvider({ children }) {
                 isLoggedIn,
                 setSession,
                 loading,
+                setLoading,
                 signIn,
                 signOut,
                 signUp,

@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { View, ActivityIndicator, StatusBar, Text } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, Image, StatusBar, StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -23,6 +23,10 @@ import Dependentes from "./screens/authenticaded/profile/Dependentes";
 import EditDependente from "./screens/authenticaded/profile/cadDependente/EditDependente";
 import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
 import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
+
+import logo from './assets/logo.png';
+import cti from './assets/cti.png';
+import unesp from './assets/unesp.png';
 
 const Stack = createStackNavigator();
 
@@ -85,30 +89,40 @@ function PerfilStack() {
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 
-function Router() {
-    const { isLoggedIn, loading } = useContext(SessionContext);
-
-    if (loading) {
-        // futura splash screen
-        return (
-            <>
+const SplashScreen = () => {
+    return (
+        <>
             <View
                 style={{
                     flex: 1,
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: '#fff'
+                    backgroundColor: '#fff',
+                    marginHorizontal: 40
                 }}
             >
-                <ActivityIndicator size="large" color="#999" />
-                <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando aplicativo...</Text>
+                <Image style={styles.logo} source={logo} />
+                <Text style={styles.title} >Sua carteira de vacinação online</Text>
+                <View style={styles.unesp_cti}>
+                    <Image style={styles.cti} source={cti} />
+                    <Image style={styles.unesp} source={unesp} />
+                </View>
             </View>
             <StatusBar
                 barStyle="dark-content"
                 translucent={false}
                 backgroundColor="#FFF"
             />
-            </>
+        </>
+    );
+}
+
+function Router() {
+    const { isLoggedIn, loading } = useContext(SessionContext);
+
+    if (loading) {
+        return (
+            <SplashScreen />
         );
     }
 
@@ -181,10 +195,9 @@ function Router() {
                                 fontWeight: "bold",
                                 fontSize: 20,
                             },
-                            title: "Suas vacinas",
                         }}
-                        name="CadVac"
-                        component={CadVac}
+                        name="Cadastro"
+                        component={Cadastro}
                     />
                     <AuthStack.Screen
                         options={{
@@ -198,9 +211,10 @@ function Router() {
                                 fontWeight: "bold",
                                 fontSize: 20,
                             },
+                            title: "Suas vacinas",
                         }}
-                        name="Cadastro"
-                        component={Cadastro}
+                        name="CadVac"
+                        component={CadVac}
                     />
                     <AuthStack.Screen
                         options={{
@@ -241,6 +255,35 @@ function Router() {
         </NavigationContainer>
     );
 }
+
+const styles = StyleSheet.create({
+    logo: {
+        resizeMode: 'contain',
+        width: 400,
+        height: 200,
+    },
+    title: {
+        marginTop: 20,
+        fontSize: 17,
+        fontWeight: 'bold'
+    },
+    unesp_cti: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    cti: {
+        resizeMode: 'contain',
+        width: 100,
+        height: 80,
+        marginRight: 30
+    },
+    unesp: {
+        resizeMode: 'contain',
+        width: 150,
+        height: 110,
+    },
+});
 
 export { PerfilStack };
 

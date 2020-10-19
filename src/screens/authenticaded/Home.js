@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, AsyncStorage, FlatList, ScrollView, StatusBar, ActivityIndicator } from "react-native";
-import { Button } from 'react-native-elements';
+import {
+  View, Text, StyleSheet, AsyncStorage, FlatList, ScrollView, StatusBar, ActivityIndicator
+} from "react-native";
+import { Button, Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 
 import api from '../../services/api';
@@ -12,10 +14,6 @@ export default function Home() {
   const [isLoading, setLoading] = useState(true);
 
   const isFocused = useIsFocused();
-
-  useEffect(() => {
-    getUsuario();
-  }, []);
 
   useEffect(() => {
     getUsuario();
@@ -44,9 +42,9 @@ export default function Home() {
             if (prop === 'vacinas') {
               vacinasDependentes.push(element[prop]);
               dosesAtuaisDependentesFinal.push(getDosesAtuaisDependentes(element[prop]));
-              }
             }
           }
+        }
         );
 
         const idVacinasDependentes = [];
@@ -148,7 +146,7 @@ export default function Home() {
 
         const dosesAtuaisVacinasUsuario = [];
 
-        for (let i = 0; i < vacinasUsuario.length; i ++) {
+        for (let i = 0; i < vacinasUsuario.length; i++) {
           dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
         }
 
@@ -183,7 +181,9 @@ export default function Home() {
             continue;
           }
 
-          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(nomeUsuario, nomeVacinasUsuario[j], '15/10/2020'));
+          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+            nomeUsuario, nomeVacinasUsuario[j], '15/10/2020'
+          ));
         }
 
         return arrayUsuarioFinal;
@@ -199,7 +199,9 @@ export default function Home() {
         return objeto;
       }
 
-      async function juntaInfo(arrayNomes, arrayNomeVacinas, diferencaEntreDoses, arrayDatas = '15/10/2020') {    
+      async function juntaInfo(arrayNomes, arrayNomeVacinas,
+        diferencaEntreDoses,
+        arrayDatas = '15/10/2020') {
         const arrayUsuarioFinal = await getArrayFinalUsuario();
 
         if (arrayNomes.length === 0) {
@@ -209,12 +211,17 @@ export default function Home() {
         let arrayVacinasFinal = [];
 
         for (let i = 0; i < arrayNomeVacinas.length; i++) {
-          arrayVacinasFinal.push(getVacinasDeCadaDependente(arrayNomes[i], arrayNomeVacinas[i], diferencaEntreDoses[i], arrayDatas))
+          arrayVacinasFinal.push(getVacinasDeCadaDependente(
+            arrayNomes[i], arrayNomeVacinas[i],
+            diferencaEntreDoses[i],
+            arrayDatas))
         }
 
         const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal);
 
-        function getVacinasDeCadaDependente(nomeDependente, arrayNomeVacinasDependente, diferencaEntreDoses, arrayDatas) {
+        function getVacinasDeCadaDependente(
+          nomeDependente, arrayNomeVacinasDependente,
+          diferencaEntreDoses, arrayDatas) {
           let objetoVacinasDependente = [];
 
           for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
@@ -251,11 +258,11 @@ export default function Home() {
   }
 
   const string = 'O rotavírus é uma doença causada por sete tipos diferentes de sorotipos que são antigêncios diferentes, mas da mesma espécie microbiana. Porém, apenas três infectam o ser humano. Os principais sintomas são diarréia - que pode levar a desidratação -, vômitos e febre, além de problemas respiratórios, como coriza e tosse.' +
-                 '\nA transmissão pode ser fecal-oral ou seja, o vírus é eliminado nas fezes do paciente, contamina a água ou alimentos, e pode entrar em contato com a pessoa através das mãos.' +
-                 '\nAs principais medidas para evitar a rotavirose é a higiene das mãos, que pode ser feita com água e sabão ou álcool-gel, principalmente antes das refeições e após o banheiro. Além disso, ingerir sempre alimentos bem higienizados e água tratada é fundamental.';
+    '\nA transmissão pode ser fecal-oral ou seja, o vírus é eliminado nas fezes do paciente, contamina a água ou alimentos, e pode entrar em contato com a pessoa através das mãos.' +
+    '\nAs principais medidas para evitar a rotavirose é a higiene das mãos, que pode ser feita com água e sabão ou álcool-gel, principalmente antes das refeições e após o banheiro. Além disso, ingerir sempre alimentos bem higienizados e água tratada é fundamental.';
 
   function getPrimeiroNome(nomeInteiro) {
-    const primeiroNome = nomeInteiro.replace(/ .*/,''); // RegEx que subistitui tudo depois do espaço por vazio
+    const primeiroNome = nomeInteiro.replace(/ .*/, ''); // RegEx que subistitui tudo depois do espaço por vazio
 
     return primeiroNome;
   }
@@ -263,22 +270,22 @@ export default function Home() {
   if (isLoading) {
     return (
       <>
-      <View
-        style={{
+        <View
+          style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: '#fff'
-        }}
-      >
-        <ActivityIndicator size="large" color="#999" />
-        <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
-      </View>
-      <StatusBar
+          }}
+        >
+          <ActivityIndicator size="large" color="#999" />
+          <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
+        </View>
+        <StatusBar
           barStyle="dark-content"
           translucent={false}
           backgroundColor="#FFF"
-      />
+        />
       </>
     );
   }
@@ -296,29 +303,29 @@ export default function Home() {
       <Text style={styles.welcome}>Seja bem-vindo(a), {getPrimeiroNome(nome)}! 🏠</Text>
       <View style={styles.nextVaccines}>
         <Text style={styles.label}>Fique de olho nas próximas vacinas 💉</Text>
-        <View style={styles.hr1}></View>
+        <Divider style={{ backgroundColor: '#D3D3D3', height: 1 }} />
         <FlatList
           contentContainerStyle={styles.list}
           data={vacinas}
           keyExtractor={(item, index) => 'key' + index}
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+          horizontal
+          showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
         />
       </View>
       <View style={styles.learnMoreContainer}>
         <Text style={styles.learnMoreLabel}>Aprenda um pouco mais 📖</Text>
-        <View style={styles.hr2}></View>
+        <Divider style={{ backgroundColor: '#D3D3D3', height: 1 }} />
         <Text style={styles.learnMoreTitle}>Rotavírus humano</Text>
         <ScrollView style={styles.learnMoreText}>
-            <Text style={styles.learnMore}>{string}</Text>
-            <Button
-              title='Veja mais ➜'
-              type='clear'
-              onPress={() => {}}
-              buttonStyle={styles.learnMoreButton}
-              titleStyle={styles.learnMoreButtonText}
-            />
+          <Text style={styles.learnMore}>{string}</Text>
+          <Button
+            title='Veja mais ➜'
+            type='clear'
+            onPress={() => { }}
+            buttonStyle={styles.learnMoreButton}
+            titleStyle={styles.learnMoreButtonText}
+          />
         </ScrollView>
         <StatusBar
           barStyle="dark-content"
@@ -326,7 +333,7 @@ export default function Home() {
           backgroundColor="#FFF"
         />
       </View>
-  </View>
+    </View>
   );
 }
 
@@ -357,11 +364,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     fontSize: 14,
-  },
-
-  hr1: {
-    borderWidth: 0.25,
-    borderBottomColor: '#D3D3D3'
   },
 
   list: {
@@ -419,11 +421,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     fontSize: 14
-  },
-
-  hr2: {
-    borderWidth: 0.25,
-    borderBottomColor: '#D3D3D3'
   },
 
   learnMoreTitle: {
