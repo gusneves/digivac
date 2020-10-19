@@ -7,7 +7,7 @@ import unesp from "../../assets/unesp.png";
 
 export default function Sobre() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
       <Image style={styles.logo} source={logo} />
       <Text style={styles.titulo}>Quem somos?</Text>
       <Text style={styles.texto}>

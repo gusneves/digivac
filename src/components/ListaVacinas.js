@@ -47,7 +47,8 @@ export default function ListaVacinas({ route, navigation }) {
 
     const diferenca = getDosesFinais(dosesTotais, doseAtual);
 
-    const arrayVacinasFinal = [];
+    const arrayVacinasPendentes = [];
+    const arrayVacinasTomadas = [];
 
     for (let j = 0; j < nomeVacinas.length; j++) {
       let vacinaTomada = false;
@@ -55,7 +56,7 @@ export default function ListaVacinas({ route, navigation }) {
       if (diferenca[j] === 0) {
         vacinaTomada = true;
 
-        arrayVacinasFinal.push(
+        arrayVacinasTomadas.push(
           criaObjetoVacinas(
             nome, nomeVacinas[j],
             descricaoVacinas[j],
@@ -67,7 +68,7 @@ export default function ListaVacinas({ route, navigation }) {
         continue;
       }
 
-      arrayVacinasFinal.push(
+      arrayVacinasPendentes.push(
         criaObjetoVacinas(
           nome, nomeVacinas[j],
           descricaoVacinas[j],
@@ -77,6 +78,11 @@ export default function ListaVacinas({ route, navigation }) {
       );
     }
     // return console.log(arrayVacinasFinal);
+
+    Array.prototype.push.apply(arrayVacinasPendentes, arrayVacinasTomadas)
+
+    const arrayVacinasFinal = arrayVacinasPendentes;
+
     setVacinas(arrayVacinasFinal);
     setLoading(false);
   }
