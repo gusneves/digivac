@@ -1,6 +1,14 @@
 //PRIMEIRA TELA - USUARIO ENTRA COM EMAIL CADASTRADO
 import React, { useState } from "react";
-import { View, Text, Alert, StyleSheet, StatusBar } from "react-native";
+import {
+    KeyboardAvoidingView,
+    Platform,
+    View,
+    Text,
+    Alert,
+    StyleSheet,
+    StatusBar,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import api from "../../../services/api";
 import { Input, Button } from "react-native-elements";
@@ -16,7 +24,11 @@ export default function forgotPassword({ navigation }) {
     });
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            enabled={Platform.OS === "ios"}
+            behavior="padding"
+            style={styles.container}
+        >
             <Text style={styles.text}>
                 Insira seu e-mail abaixo para o envio do código de redefinição
                 de senha
@@ -93,7 +105,7 @@ export default function forgotPassword({ navigation }) {
                 translucent={false}
                 backgroundColor="#FFF"
             />
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

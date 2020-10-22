@@ -235,10 +235,11 @@ function Router() {
                     />
                     <AuthStack.Screen
                         options={{
-                            headerTransparent: true,
+                            headerTransparent: false,
                             headerTitleAlign: "center",
                             headerTintColor: "#2352FF",
                             headerStyle: {
+                                backgroundColor: "#FFF",
                                 height: 60,
                             },
                             headerTitleStyle: {

@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, StatusBar, Alert } from "react-native";
+import {
+    KeyboardAvoidingView,
+    Platform,
+    View,
+    Text,
+    StyleSheet,
+    StatusBar,
+    Alert,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import {StackActions} from "@react-navigation/native"
+import { StackActions } from "@react-navigation/native";
 import { Input, Button } from "react-native-elements";
 import {
     CodeField,
@@ -17,7 +25,7 @@ import * as Yup from "yup";
 
 const CELL_COUNT = 6;
 
-export default function resetPassword({navigation}) {
+export default function resetPassword({ navigation }) {
     const [visibilityIcon, useVisibilityIcon] = useState("visibility-off");
     const [secureEntry, useSecureEntry] = useState(true);
 
@@ -45,11 +53,15 @@ export default function resetPassword({navigation}) {
             .min(4, "Senha muito pequena!"),
         confirmarSenha: Yup.string()
             .oneOf([Yup.ref("senha")], "As senhas devem ser iguais!")
-            .required("Campo obrigatório!")
+            .required("Campo obrigatório!"),
     });
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            nabled={Platform.OS === "ios"}
+            behavior="padding"
+            style={styles.container}
+        >
             <Formik
                 validateOnChange={false}
                 validationSchema={formSchema}
@@ -59,22 +71,33 @@ export default function resetPassword({navigation}) {
                     confirmarSenha: "",
                     token: "",
                 }}
-                onSubmit={async ({email, senha, token}) => {
+                onSubmit={async ({ email, senha, token }) => {
                     console.log(token.toUpperCase());
-                    if(token.length < 6){
-                        Alert.alert("Alerta", "Por favor, preencha todo o código!");
+                    if (token.length < 6) {
+                        Alert.alert(
+                            "Alerta",
+                            "Por favor, preencha todo o código!"
+                        );
                         return;
                     }
                     token = token.toUpperCase();
-                    await api.post("/usuario/reset-password",{ email, senha, token })
-                    .then((response) => {
-                        Alert.alert("Concluído", "Sua senha foi alterada com sucesso!");
-                        const popStack = StackActions.pop(2);
-                        navigation.dispatch(popStack);
-                    })
-                    .catch((err) =>{
-                        Alert.alert("Erro", err.response.data.error);
-                    })
+                    await api
+                        .post("/usuario/reset-password", {
+                            email,
+                            senha,
+                            token,
+                        })
+                        .then((response) => {
+                            Alert.alert(
+                                "Concluído",
+                                "Sua senha foi alterada com sucesso!"
+                            );
+                            const popStack = StackActions.pop(2);
+                            navigation.dispatch(popStack);
+                        })
+                        .catch((err) => {
+                            Alert.alert("Erro", err.response.data.error);
+                        });
                 }}
             >
                 {({
@@ -91,7 +114,7 @@ export default function resetPassword({navigation}) {
                                 ref={ref}
                                 {...props}
                                 value={value}
-                                onChangeText={(value)=>{
+                                onChangeText={(value) => {
                                     setValue(value);
                                     values.token = value;
                                 }}
@@ -103,7 +126,6 @@ export default function resetPassword({navigation}) {
                                 renderCell={({ index, symbol, isFocused }) => (
                                     <Text
                                         key={index}
-
                                         style={[
                                             styles.cell,
                                             isFocused && styles.focusCell,
@@ -220,7 +242,7 @@ export default function resetPassword({navigation}) {
                 translucent={false}
                 backgroundColor="#FFF"
             />
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 const styles = StyleSheet.create({
@@ -278,7 +300,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "#00000030",
         textAlign: "center",
-        borderRadius: 10
+        borderRadius: 10,
     },
     focusCell: {
         borderColor: "#2352FF",
