@@ -109,7 +109,7 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
       }
 
-      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes));
+      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes, '15/10/2020'));
       setVacinas(
         await juntaInfo(
           nomeDependentes, nomeVacinasDependentes,
@@ -245,7 +245,8 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         }
       }
 
-      const arrayUsuarioFinal = [];
+      const arrayVacinasUsuario = [];
+      const arrayVacinasTomadasUsuario = [];
 
       for (let j = 0; j < nomeVacinasUsuario.length; j++) {
         let vacinaTomada = false;
@@ -253,7 +254,7 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         if (diferencas[j] === 0) {
           vacinaTomada = true;
 
-          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+          arrayVacinasTomadasUsuario.push(criaObjetoVacinasUsuario(
             nomeUsuario, nomeVacinasUsuario[j],
             descricaoVacinasUsuario[j],
             dosesAtuaisVacinasUsuario[j],
@@ -264,13 +265,17 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
           continue;
         }
 
-        arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+        arrayVacinasUsuario.push(criaObjetoVacinasUsuario(
           nomeUsuario, nomeVacinasUsuario[j],
           descricaoVacinasUsuario[j],
           dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j],
           vacinaTomada, '15/10/2020'
         ));
       }
+
+      Array.prototype.push.apply(arrayVacinasUsuario, arrayVacinasTomadasUsuario);
+
+      const arrayUsuarioFinal = arrayVacinasUsuario;
 
       return arrayUsuarioFinal;
     }
@@ -293,14 +298,21 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
       return objeto;
     }
 
-    async function juntaInfo(arrayNomes, arrayNomeVacinas,
+    async function juntaInfo(
+      arrayNomes, arrayNomeVacinas,
       arrayDescricao,
       arrayDosesFinais, arrayDosesTotais,
       arrayDatas = '15/10/2020') {
-      const arrayUsuarioFinal = await getArrayFinalUsuario();
+      const arrayUsuario = await getArrayFinalUsuario();
+      const arrayVacinasTomadasUsuario = [];
+      const arrayVacinasPendentesUsuario = [];
 
-      if (arrayNomes.length === 0) {
-        return arrayUsuarioFinal;
+      for (let i = 0; i < arrayUsuario.length; i++) {
+        if (arrayUsuario[i].vacinaTomada) {
+          arrayVacinasTomadasUsuario.push(arrayUsuario[i]);
+        } else {
+          arrayVacinasPendentesUsuario.push(arrayUsuario[i]);
+        }
       }
 
       let arrayVacinasFinal = [];
@@ -325,7 +337,8 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         arrayDosesFinais, arrayDosesTotais,
         diferenca, arrayDatas
       ) {
-        let objetoVacinasDependente = [];
+        const objetoVacinasDependente = [];
+        const objetoVacinasTomadasDependente = [];
 
         for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
           let vacinaTomada = false;
@@ -333,7 +346,7 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
           if (diferenca[j] === 0) {
             vacinaTomada = true;
 
-            objetoVacinasDependente.push(
+            objetoVacinasTomadasDependente.push(
               criaObjetoVacinas(
                 nomeDependente, arrayNomeVacinasDependente[j],
                 arrayDescricao[j],
@@ -355,7 +368,11 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
           );
         }
 
-        return objetoVacinasDependente;
+        Array.prototype.push.apply(objetoVacinasDependente, objetoVacinasTomadasDependente);
+
+        const objetoVacinasDependenteFinal = objetoVacinasDependente;
+
+        return objetoVacinasDependenteFinal;
       }
 
       function criaObjetoVacinas(
@@ -376,9 +393,23 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         return objeto;
       }
 
-      Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
+      const arrayVacinasTomadasDependentes = [];
+      const arrayVacinasPendentesDependetes = [];
 
-      const arrayFinal = arrayUsuarioFinal;
+      for (let i = 0; i < arrayDependentesFinal.length; i++) {
+        if (arrayDependentesFinal[i].vacinaTomada) {
+          arrayVacinasTomadasDependentes.push(arrayDependentesFinal[i]);
+        } else {
+          arrayVacinasPendentesDependetes.push(arrayDependentesFinal[i]);
+        }
+      }
+
+      Array.prototype.push.apply(arrayVacinasPendentesUsuario, arrayVacinasPendentesDependetes);
+      Array.prototype.push.apply(arrayVacinasTomadasUsuario, arrayVacinasTomadasDependentes);
+
+      Array.prototype.push.apply(arrayVacinasPendentesUsuario, arrayVacinasTomadasUsuario); // une os dois arrays no primeiro
+
+      const arrayFinal = arrayVacinasPendentesUsuario;
 
       return arrayFinal;
     }
