@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import MarkSlider from "../../components/MarkSlider";
 
+import calculoDataDose from "../../lib/dataDose";
 import api from "../../services/api";
 
 import { SessionContext } from "../../context/Session";
@@ -101,8 +102,9 @@ export default function CadVac({ route, navigation }) {
             vacinasUsuario.push(objectVacina);
         });
         userData = { ...userData, vacinas: vacinasUsuario };
-
-        await signUp(userData)
+        const newUserData = calculoDataDose(vacinas, userData);
+        console.log(newUserData);
+        await signUp(newUserData)
             .then(async ({ data }) => {
                 const { _id } = data.usuario;
                 const { token } = data;
