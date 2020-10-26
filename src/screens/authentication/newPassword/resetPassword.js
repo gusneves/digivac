@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
+    ScrollView,
     View,
     Text,
     StyleSheet,
@@ -57,9 +56,8 @@ export default function resetPassword({ navigation }) {
     });
 
     return (
-        <KeyboardAvoidingView
-            nabled={Platform.OS === "ios"}
-            behavior="padding"
+        <ScrollView
+            contentContainerStyle={styles.contentContainer}
             style={styles.container}
         >
             <Formik
@@ -242,14 +240,16 @@ export default function resetPassword({ navigation }) {
                 translucent={false}
                 backgroundColor="#FFF"
             />
-        </KeyboardAvoidingView>
+        </ScrollView>
     );
 }
 const styles = StyleSheet.create({
-    container: {
+    contentContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    container: {
         backgroundColor: "#FFF",
         padding: 15,
     },

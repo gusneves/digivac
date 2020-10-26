@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, Text, LogBox, StatusBar } from "react-native";
+import {
+    View,
+    StyleSheet,
+    FlatList,
+    Text,
+    LogBox,
+    StatusBar,
+    Alert,
+} from "react-native";
 import { StackActions } from "@react-navigation/native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -8,6 +16,7 @@ import Icon from "react-native-vector-icons/SimpleLineIcons";
 import MarkSlider from "../../../../components/MarkSlider";
 
 import api from "../../../../services/api";
+import calculoDataDose from "../../../../lib/dataDose";
 
 export default function CadVacDep({ route, navigation }) {
     LogBox.ignoreLogs([
@@ -68,7 +77,10 @@ export default function CadVacDep({ route, navigation }) {
                 setVacinas(response.data);
             })
             .catch((e) => {
-                console.log("Erro ao pegar dados das vacinas: " + e.message);
+                Alert.alert(
+                    "Erro",
+                    "Erro ao pegar dadso das vacinas, tente novamente"
+                );
             });
     }
 
@@ -105,13 +117,19 @@ export default function CadVacDep({ route, navigation }) {
             vacinasUsuario.push(objectVacina);
         });
         depData = { ...dependentes, vacinas: vacinasUsuario };
-        await cadDep(depData)
+        const newDepData = calculoDataDose(vacinas, depData);
+        await cadDep(newDepData)
             .then(async ({ data }) => {
                 console.log(data);
                 const popStack = StackActions.pop(3);
                 navigation.dispatch(popStack);
             })
-            .catch((response) => console.log(response));
+            .catch((response) =>
+                Alert.alert(
+                    "Erro",
+                    "Erro ao cadastrar dependente, tente novamente."
+                )
+            );
     }
 
     return (
@@ -236,7 +254,7 @@ export default function CadVacDep({ route, navigation }) {
                 />
             </View>
             <StatusBar
-                barStyle={'light-content'}
+                barStyle={"light-content"}
                 translucent={false}
                 backgroundColor="#2352FF"
             />

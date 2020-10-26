@@ -6,6 +6,7 @@ import {
     Text,
     LogBox,
     StatusBar,
+    Alert,
 } from "react-native";
 import { Button, Overlay, Divider } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -65,7 +66,10 @@ export default function CadVac({ route, navigation }) {
                 setVacinas(response.data);
             })
             .catch((e) => {
-                console.log("Erro ao pegar dados das vacinas: " + e.message);
+                Alert.alert(
+                    "Erro",
+                    "Erro ao pegar dadso das vacinas, tente novamente"
+                );
             });
     }
 
@@ -103,7 +107,6 @@ export default function CadVac({ route, navigation }) {
         });
         userData = { ...userData, vacinas: vacinasUsuario };
         const newUserData = calculoDataDose(vacinas, userData);
-        console.log(newUserData);
         await signUp(newUserData)
             .then(async ({ data }) => {
                 const { _id } = data.usuario;
@@ -112,7 +115,12 @@ export default function CadVac({ route, navigation }) {
                 await AsyncStorage.setItem("usuario", _id);
                 await AsyncStorage.setItem("token", token);
             })
-            .catch((response) => console.log(response));
+            .catch((response) =>
+                Alert.alert(
+                    "Erro",
+                    "Erro ao cadastrar usuário, tente novamente."
+                )
+            );
     }
 
     return (
