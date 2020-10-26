@@ -15,6 +15,7 @@ import resetPassword from "./screens/authentication/newPassword/resetPassword";
 
 import Home from "./screens/authenticaded/Home";
 import Agenda from "./screens/authenticaded/Agenda";
+import QRCodeScanner from './screens/authenticaded/QRCodeScanner';
 import Perfil from "./screens/authenticaded/Perfil";
 import Sobre from "./screens/authenticaded/Sobre";
 
@@ -29,6 +30,40 @@ import cti from './assets/cti.png';
 import unesp from './assets/unesp.png';
 
 const Stack = createStackNavigator();
+
+function AgendaStack() {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerTitleAlign: "center",
+                headerTintColor: "#FFF",
+                headerStyle: {
+                    backgroundColor: "#2352FF",
+                    height: 60,
+                },
+                headerTitleStyle: {
+                    fontWeight: "bold",
+                    fontSize: 14,
+                },
+            }}
+        >
+            <Stack.Screen
+                name="Agenda"
+                component={Agenda}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="QRCodeScanner"
+                component={QRCodeScanner}
+                options={{
+                    title: "Escaneie o QR Code da vacina",
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
 
 function PerfilStack() {
     return (
@@ -102,7 +137,7 @@ const SplashScreen = () => {
                 }}
             >
                 <Image style={styles.logo} source={logo} />
-                <Text style={styles.title} >Sua carteira de vacinação online</Text>
+                <Text style={styles.title} >Sua carteira de vacinação digital</Text>
                 <View style={styles.unesp_cti}>
                     <Image style={styles.cti} source={cti} />
                     <Image style={styles.unesp} source={unesp} />
@@ -153,7 +188,7 @@ function Router() {
                                 <Icon name="calendar" color={color} size={25} />
                             ),
                         }}
-                        component={Agenda}
+                        component={AgendaStack}
                     />
                     <Tab.Screen
                         name="Perfil"

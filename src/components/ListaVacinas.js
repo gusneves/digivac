@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator
+  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl
 } from 'react-native';
 import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
@@ -12,6 +12,7 @@ export default function ListaVacinas({ route, navigation }) {
   const [nomePessoa, setNomePessoa] = useState();
   const [vacinas, setVacinas] = useState();
   const [isLoading, setLoading] = useState(true);
+  const [isRefreshing, setRefreshing] = useState(false);
 
   const isFocused = useIsFocused();
 
@@ -22,15 +23,18 @@ export default function ListaVacinas({ route, navigation }) {
   async function getVacinas() {
     const objetoPessoa = route.params.info;
 
+    const _id = objetoPessoa._id; 
     const nome = objetoPessoa.nome;
     setNomePessoa(nome);
 
     const arrayVacinas = objetoPessoa.vacinas;
     const idVacinas = [];
+    const _idVacinas = [];
     const doseAtual = [];
 
     for (let i = 0; i < arrayVacinas.length; i++) {
       idVacinas.push(arrayVacinas[i].id);
+      _idVacinas.push(arrayVacinas[i]._id);
       doseAtual.push(arrayVacinas[i].doseAtual);
     }
 
@@ -58,8 +62,8 @@ export default function ListaVacinas({ route, navigation }) {
 
         arrayVacinasTomadas.push(
           criaObjetoVacinas(
-            nome, nomeVacinas[j],
-            descricaoVacinas[j],
+            _id, nome, 
+            _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
             doseAtual[j], dosesTotais[j],
             vacinaTomada, datas
           )
@@ -70,8 +74,8 @@ export default function ListaVacinas({ route, navigation }) {
 
       arrayVacinasPendentes.push(
         criaObjetoVacinas(
-          nome, nomeVacinas[j],
-          descricaoVacinas[j],
+          _id, nome, 
+          _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
           doseAtual[j], dosesTotais[j],
           vacinaTomada, datas
         )
@@ -84,17 +88,21 @@ export default function ListaVacinas({ route, navigation }) {
     const arrayVacinasFinal = arrayVacinasPendentes;
 
     setVacinas(arrayVacinasFinal);
+    // console.log('aqui');
+    // console.log(arrayVacinasFinal);
     setLoading(false);
   }
 
   function criaObjetoVacinas(
-    nome, vacina,
-    descricao,
+    _id, nome, 
+    _idVacina, vacina, descricao,
     doseAtual, doseTotal,
     vacinaTomada, data) {
     let objeto = {
+      _id,
       nome,
       vacina,
+      _idVacina,
       descricao,
       doseAtual,
       doseTotal,
@@ -149,6 +157,12 @@ export default function ListaVacinas({ route, navigation }) {
     return primeiroNome;
   }
 
+  const onRefreshSearch = async () => {
+    setRefreshing(true);
+    await getVacinas();
+    setRefreshing(false);
+  }
+
   if (isLoading) {
     return (
       <>
@@ -179,6 +193,16 @@ export default function ListaVacinas({ route, navigation }) {
       <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
       <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
       <Text style={styles.dataVacina}>Data: {item.data}</Text>
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={() => navigation.navigate('QRCodeScanner', {
+          _idPessoa: item._id,
+          _idVacina: item._idVacina,
+          doseAtual: item.doseAtual
+        })}
+      >
+        <Text style={styles.textButton}>Marcar dose como tomada</Text>
+      </TouchableOpacity>
     </View>
   ) : (
       <View style={styles.vacinaTomadaContainer}>
@@ -203,6 +227,8 @@ export default function ListaVacinas({ route, navigation }) {
           keyExtractor={(item, index) => 'key' + index}
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefreshSearch} />}
+          // extraData={vacinas}
         />
       </View>
       <StatusBar
@@ -325,5 +351,19 @@ const styles = StyleSheet.create({
 
   dataVacina: {
     fontSize: 14,
+  },
+
+  button: {
+    marginTop: 14,
+    padding: 8,
+    borderRadius: 4,
+    alignSelf: 'center',
+    backgroundColor: '#2352FF',
+  },
+  
+  textButton: {
+    fontSize: 15,
+    color: '#fff',
+    fontWeight: 'bold'
   }
 });
