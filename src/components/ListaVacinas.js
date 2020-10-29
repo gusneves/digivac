@@ -6,6 +6,8 @@ import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons'
 
+import moment from 'moment';
+
 import api from '../services/api';
 
 export default function ListaVacinas({ route, navigation }) {
@@ -28,20 +30,22 @@ export default function ListaVacinas({ route, navigation }) {
     setNomePessoa(nome);
 
     const arrayVacinas = objetoPessoa.vacinas;
+
     const idVacinas = [];
     const _idVacinas = [];
     const doseAtual = [];
+    const dataDose = [];
 
     for (let i = 0; i < arrayVacinas.length; i++) {
       idVacinas.push(arrayVacinas[i].id);
       _idVacinas.push(arrayVacinas[i]._id);
       doseAtual.push(arrayVacinas[i].doseAtual);
+      dataDose.push(arrayVacinas[i].dataDose);
     }
 
     const nomeVacinas = [];
     const descricaoVacinas = [];
     const dosesTotais = [];
-    const datas = '15/10/2020';
 
     for (let i = 0; i < idVacinas.length; i++) {
       nomeVacinas.push(await getNomeVacinas(idVacinas[i]));
@@ -54,6 +58,8 @@ export default function ListaVacinas({ route, navigation }) {
     const arrayVacinasPendentes = [];
     const arrayVacinasTomadas = [];
 
+    let pendente = true;
+
     for (let j = 0; j < nomeVacinas.length; j++) {
       let vacinaTomada = false;
 
@@ -64,22 +70,31 @@ export default function ListaVacinas({ route, navigation }) {
           criaObjetoVacinas(
             _id, nome, 
             _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
-            doseAtual[j], dosesTotais[j],
-            vacinaTomada, datas
+            doseAtual[j], dosesTotais[j], dataDose[j],
+            vacinaTomada,
           )
         );
-
-        continue;
+      } else {
+        if (moment(dataDose[j]).isBefore()) {
+          arrayVacinasPendentes.push(
+            criaObjetoVacinas(
+              _id, nome, 
+              _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
+              doseAtual[j], dosesTotais[j], dataDose[j],
+              vacinaTomada, pendente
+            )
+          );
+        } else {
+          arrayVacinasPendentes.push(
+            criaObjetoVacinas(
+              _id, nome, 
+              _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
+              doseAtual[j], dosesTotais[j], dataDose[j],
+              vacinaTomada, !pendente
+            )
+          );
+        }
       }
-
-      arrayVacinasPendentes.push(
-        criaObjetoVacinas(
-          _id, nome, 
-          _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
-          doseAtual[j], dosesTotais[j],
-          vacinaTomada, datas
-        )
-      );
     }
     // return console.log(arrayVacinasFinal);
 
@@ -96,8 +111,8 @@ export default function ListaVacinas({ route, navigation }) {
   function criaObjetoVacinas(
     _id, nome, 
     _idVacina, vacina, descricao,
-    doseAtual, doseTotal,
-    vacinaTomada, data) {
+    doseAtual, doseTotal, dataDose,
+    vacinaTomada, pendente) {
     let objeto = {
       _id,
       nome,
@@ -106,8 +121,9 @@ export default function ListaVacinas({ route, navigation }) {
       descricao,
       doseAtual,
       doseTotal,
+      dataDose,
       vacinaTomada,
-      data
+      pendente
     };
 
     return objeto;
@@ -187,23 +203,44 @@ export default function ListaVacinas({ route, navigation }) {
   }
 
   const renderItem = ({ item }) => !item.vacinaTomada ? (
-    <View style={styles.vacinaContainer}>
-      <Text style={styles.nomeVacina}>{item.vacina}</Text>
-      <Divider style={styles.divider} />
-      <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
-      <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
-      <Text style={styles.dataVacina}>Data: {item.data}</Text>
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('QRCodeScanner', {
-          _idPessoa: item._id,
-          _idVacina: item._idVacina,
-          doseAtual: item.doseAtual
-        })}
-      >
-        <Text style={styles.textButton}>Marcar dose como tomada</Text>
-      </TouchableOpacity>
-    </View>
+    item.pendente ? (
+      <View style={styles.vacinaPendenteContainer}>
+        <Text style={styles.nomeVacina}>{item.vacina}</Text>
+        <Divider style={styles.dividerVacinaPendente} />
+        <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+        <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
+        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+        <Text style={styles.dataVacinaPendente}>Atenção: essa vacina está atrasada!</Text>
+        <TouchableOpacity 
+          style={styles.buttonPendente} 
+          onPress={() => navigation.navigate('QRCodeScanner', {
+            _idPessoa: item._id,
+            _idVacina: item._idVacina,
+            doseAtual: item.doseAtual
+          })}
+        >
+          <Text style={styles.textPendenteButton}>Marcar dose como tomada</Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <View style={styles.vacinaContainer}>
+        <Text style={styles.nomeVacina}>{item.vacina}</Text>
+        <Divider style={styles.divider} />
+        <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+        <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
+        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('QRCodeScanner', {
+            _idPessoa: item._id,
+            _idVacina: item._idVacina,
+            doseAtual: item.doseAtual
+          })}
+        >
+          <Text style={styles.textButton}>Marcar dose como tomada</Text>
+        </TouchableOpacity>
+      </View>
+    )
   ) : (
       <View style={styles.vacinaTomadaContainer}>
         <Text style={styles.nomeVacinaTomada}>{item.vacina}</Text>
@@ -268,6 +305,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  vacinaPendenteContainer: {
+    marginHorizontal: 20,
+    backgroundColor: '#ffe5e3',
+    borderWidth: 1,
+    borderColor: '#ff2b1c',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 20,
+  },
+
   vacinaTomadaContainer: {
     marginHorizontal: 20,
     backgroundColor: '#31872f',
@@ -313,9 +360,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
 
+  dataVacinaPendente: {
+    marginTop: 8,
+    color: '#ff2b1c',
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+
   dividerVacinaTomada: {
     height: 1,
     backgroundColor: '#89ed87',
+    marginVertical: 8
+  },
+
+  dividerVacinaPendente: {
+    height: 1,
+    backgroundColor: '#ff2b1c',
     marginVertical: 8
   },
 
@@ -362,6 +423,20 @@ const styles = StyleSheet.create({
   },
   
   textButton: {
+    fontSize: 15,
+    color: '#fff',
+    fontWeight: 'bold'
+  },
+
+  buttonPendente: {
+    marginTop: 14,
+    padding: 8,
+    borderRadius: 4,
+    alignSelf: 'center',
+    backgroundColor: '#ff2b1c',
+  },
+  
+  textPendenteButton: {
     fontSize: 15,
     color: '#fff',
     fontWeight: 'bold'

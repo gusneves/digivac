@@ -7,6 +7,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
+import moment from 'moment';
+
 import api from '../../services/api';
 
 import ListaVacinas from '../../components/ListaVacinas';
@@ -104,6 +106,7 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
     const nomeDependentes = [];
     const vacinasDependentes = [];
     const dosesAtuaisDependentesFinal = [];
+    const dataDoseVacinasDependentes = [];
 
     if (dependentesUsuario.length > 0) {
       dependentesUsuario.forEach(element => {
@@ -114,6 +117,7 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
           if (prop === 'vacinas') {
             vacinasDependentes.push(element[prop]);
             dosesAtuaisDependentesFinal.push(getDosesAtuaisDependentes(element[prop]));
+            dataDoseVacinasDependentes.push(getDataDose(element[prop]));
           }
         }
       });
@@ -138,7 +142,7 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
         await juntaInfo(
           nomeDependentes, nomeVacinasDependentes,
           descricaoVacinasDependentes,
-          dosesAtuaisDependentesFinal, dosesTotaisDependetes, '15/10/2020'
+          dosesAtuaisDependentesFinal, dosesTotaisDependetes, dataDoseVacinasDependentes
         )
       );
 
@@ -157,6 +161,16 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
       }
 
       return dosesAtuaisDependentes;
+    }
+
+    function getDataDose(element) {
+      const dataDoseDependente = [];
+
+      for (let i = 0; i < element.length; i++) {
+        dataDoseDependente.push(element[i].dataDose);
+      }
+
+      return dataDoseDependente;
     }
 
     function getDosesFinais(dosesTotais, dosesAtuais) {
@@ -238,9 +252,11 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
       const vacinasUsuario = data.vacinas;
 
       const dosesAtuaisVacinasUsuario = [];
+      const dataDoseUsuario = [];
 
       for (let i = 0; i < vacinasUsuario.length; i++) {
         dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
+        dataDoseUsuario.push(data.vacinas[i].dataDose);
       }
 
       let idVacinasUsuario = [];
@@ -272,6 +288,8 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
       const arrayVacinasUsuario = [];
       // const arrayVacinasTomadasUsuario = [];
 
+      let pendente = true;
+
       for (let j = 0; j < nomeVacinasUsuario.length; j++) {
         let vacinaTomada = false;
 
@@ -290,12 +308,19 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
         // }
 
         if (diferencas[j] !== 0) {
-          arrayVacinasUsuario.push(criaObjetoVacinasUsuario(
-            nomeUsuario, nomeVacinasUsuario[j],
-            descricaoVacinasUsuario[j],
-            dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j],
-            vacinaTomada, '15/10/2020'
-          ));
+          if (moment(dataDoseUsuario[j]).isBefore()) {
+            arrayVacinasUsuario.push(criaObjetoVacinasUsuario(
+              nomeUsuario, nomeVacinasUsuario[j],
+              descricaoVacinasUsuario[j],
+              dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j], dataDoseUsuario[j], pendente
+            ));
+          } else {
+            arrayVacinasUsuario.push(criaObjetoVacinasUsuario(
+              nomeUsuario, nomeVacinasUsuario[j],
+              descricaoVacinasUsuario[j],
+              dosesAtuaisVacinasUsuario[j], dosesTotaisVacinasUsuario[j], dataDoseUsuario[j], !pendente
+            ));
+          }
         }
       }
 
@@ -311,16 +336,18 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
     function criaObjetoVacinasUsuario(
       nome, vacina,
       descricao,
-      doseAtual, doseTotal,
-      vacinaTomada, data) {
+      doseAtual, doseTotal, dataDose,
+      // vacinaTomada, 
+      pendente) {
       let objeto = {
         nome,
         vacina,
         descricao,
         doseAtual,
         doseTotal,
-        vacinaTomada,
-        data
+        dataDose,
+        // vacinaTomada,
+        pendente
       };
 
       return objeto;
@@ -329,8 +356,7 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
     async function juntaInfo(
       arrayNomes, arrayNomeVacinas,
       arrayDescricao,
-      arrayDosesFinais, arrayDosesTotais,
-      arrayDatas = '15/10/2020') {
+      arrayDosesFinais, arrayDosesTotais, arrayDatas) {
       const arrayUsuario = await getArrayFinalUsuario();
       // const arrayVacinasTomadasUsuario = [];
       // const arrayVacinasPendentesUsuario = [];
@@ -354,8 +380,8 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
           getVacinasDeCadaDependente(
             arrayNomes[i], arrayNomeVacinas[i],
             arrayDescricao[i],
-            arrayDosesFinais[i], arrayDosesTotais[i],
-            diferencaEntreDoses[i], arrayDatas
+            arrayDosesFinais[i], arrayDosesTotais[i], arrayDatas[i],
+            diferencaEntreDoses[i]
           )
         );
       }
@@ -365,11 +391,13 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
       function getVacinasDeCadaDependente(
         nomeDependente, arrayNomeVacinasDependente,
         arrayDescricao,
-        arrayDosesFinais, arrayDosesTotais,
-        diferenca, arrayDatas
+        arrayDosesFinais, arrayDosesTotais, arrayDatas,
+        diferenca
       ) {
         const objetoVacinasDependente = [];
         // const objetoVacinasTomadasDependente = [];
+
+        let pendente = true;
 
         for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
           let vacinaTomada = false;
@@ -390,14 +418,25 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
           // }
 
           if (diferenca[j] !== 0) {
-            objetoVacinasDependente.push(
-              criaObjetoVacinas(
-                nomeDependente, arrayNomeVacinasDependente[j],
-                arrayDescricao[j],
-                arrayDosesFinais[j], arrayDosesTotais[j],
-                vacinaTomada, arrayDatas
-              )
-            );
+            if (moment(arrayDatas[j]).isBefore()) {
+              objetoVacinasDependente.push(
+                criaObjetoVacinas(
+                  nomeDependente, arrayNomeVacinasDependente[j],
+                  arrayDescricao[j],
+                  arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas[j],
+                  vacinaTomada, pendente
+                )
+              );
+            } else {
+              objetoVacinasDependente.push(
+                criaObjetoVacinas(
+                  nomeDependente, arrayNomeVacinasDependente[j],
+                  arrayDescricao[j],
+                  arrayDosesFinais[j], arrayDosesTotais[j], arrayDatas[j],
+                  vacinaTomada, !pendente
+                )
+              );
+            }
           }
         }
 
@@ -413,16 +452,17 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
       function criaObjetoVacinas(
         dependente, vacina,
         descricao,
-        doseAtual, doseTotal,
-        vacinaTomada, data) {
+        doseAtual, doseTotal, dataDose,
+        vacinaTomada, pendente) {
         let objeto = {
           nome: dependente,
           vacina,
           descricao,
           doseAtual,
           doseTotal,
+          dataDose,
           vacinaTomada,
-          data
+          pendente
         };
 
         return objeto;
@@ -487,14 +527,26 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
   }
 
   const renderItem = ({ item }) => !item.vacinaTomada ? (
-    <View style={styles.vacinaContainer}>
-      <Text style={styles.nomeVacina}>{item.vacina}</Text>
-      <Text style={styles.nomeDependente}>({getPrimeiroNome(item.nome)})</Text>
-      <Divider style={styles.divider} />
-      <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
-      <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
-      <Text style={styles.dataVacina}>Data: {item.data}</Text>
-    </View>
+    item.pendente ? (
+      <View style={styles.vacinaPendenteContainer}>
+        <Text style={styles.nomeVacina}>{item.vacina}</Text>
+        <Text style={styles.nomeDependente}>({getPrimeiroNome(item.nome)})</Text>
+        <Divider style={styles.dividerVacinaPendente} />
+        <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+        <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
+        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+        <Text style={styles.dataVacinaPendente}>Atenção: essa vacina está atrasada!</Text>
+      </View>
+    ) : (
+      <View style={styles.vacinaContainer}>
+        <Text style={styles.nomeVacina}>{item.vacina}</Text>
+        <Text style={styles.nomeDependente}>({getPrimeiroNome(item.nome)})</Text>
+        <Divider style={styles.divider} />
+        <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
+        <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
+        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+      </View>
+    )
   ) : (
       <View style={styles.vacinaTomadaContainer}>
         <Text style={styles.nomeVacinaTomada}>{item.vacina}</Text>
@@ -562,6 +614,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  vacinaPendenteContainer: {
+    marginHorizontal: 20,
+    backgroundColor: '#ffe5e3',
+    borderWidth: 1,
+    borderColor: '#ff2b1c',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 20,
+  },
+
   vacinaTomadaContainer: {
     marginHorizontal: 20,
     backgroundColor: '#31872f',
@@ -607,6 +669,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
 
+  dataVacinaPendente: {
+    marginTop: 8,
+    color: '#ff2b1c',
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+
   dividerVacinaTomada: {
     height: 1,
     backgroundColor: '#89ed87',
@@ -616,6 +686,12 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: '#D3D3D3',
+    marginVertical: 8
+  },
+
+  dividerVacinaPendente: {
+    height: 1,
+    backgroundColor: '#ff2b1c',
     marginVertical: 8
   },
 
