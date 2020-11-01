@@ -5,6 +5,8 @@ import {
 import { Button, Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 
+import moment from 'moment';
+
 import api from '../../services/api';
 
 export default function Home() {
@@ -12,6 +14,7 @@ export default function Home() {
   const [vacinas, setVacinas] = useState({});
   const [nome, setNome] = useState('');
   const [isLoading, setLoading] = useState(true);
+  const [temVacinasProximas, setTemVacinasProximas] = useState(false);
 
   const isFocused = useIsFocused();
 
@@ -32,6 +35,7 @@ export default function Home() {
       const nomeDependentes = [];
       const vacinasDependentes = [];
       const dosesAtuaisDependentesFinal = [];
+      const dataDoseVacinasDependentes = [];
 
       if (dependentesUsuario.length > 0) {
         dependentesUsuario.forEach(element => {
@@ -42,6 +46,7 @@ export default function Home() {
             if (prop === 'vacinas') {
               vacinasDependentes.push(element[prop]);
               dosesAtuaisDependentesFinal.push(getDosesAtuaisDependentes(element[prop]));
+              dataDoseVacinasDependentes.push(getDataDose(element[prop]));
             }
           }
         }
@@ -60,7 +65,7 @@ export default function Home() {
         const diferencaEntreDoses = getDosesFinais(dosesTotaisDependetes, dosesAtuaisDependentesFinal);
 
         // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
-        setVacinas(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
+        setVacinas(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses, dataDoseVacinasDependentes));
         setLoading(false);
       } else {
         // console.log(await getArrayFinalUsuario());
@@ -76,6 +81,16 @@ export default function Home() {
         }
 
         return dosesAtuaisDependentes;
+      }
+
+      function getDataDose(element) {
+        const dataDoseDependente = [];
+  
+        for (let i = 0; i < element.length; i++) {
+          dataDoseDependente.push(element[i].dataDose);
+        }
+  
+        return dataDoseDependente;
       }
 
       function getDosesFinais(dosesTotais, dosesAtuais) {
@@ -145,9 +160,11 @@ export default function Home() {
         const vacinasUsuario = data.vacinas;
 
         const dosesAtuaisVacinasUsuario = [];
+        const dataDoseVacinasUsuario = [];
 
         for (let i = 0; i < vacinasUsuario.length; i++) {
           dosesAtuaisVacinasUsuario.push(data.vacinas[i].doseAtual);
+          dataDoseVacinasUsuario.push(data.vacinas[i].dataDose);
         }
 
         let idVacinasUsuario = [];
@@ -175,25 +192,37 @@ export default function Home() {
         }
 
         const arrayUsuarioFinal = [];
+        const hoje = moment();
+        const fimDoIntervalo = moment(hoje).add(1, 'M');
+        // const fimDoIntervalo = moment(hoje).add(42, 'Y');
+
+        let proxima = true;
 
         for (let j = 0; j < nomeVacinasUsuario.length; j++) {
           if (diferencas[j] === 0) {
             continue;
           }
 
-          arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
-            nomeUsuario, nomeVacinasUsuario[j], '15/10/2020'
-          ));
+          if (moment(dataDoseVacinasUsuario[j]).isBetween(hoje, fimDoIntervalo)) {
+            arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+              nomeUsuario, nomeVacinasUsuario[j], dataDoseVacinasUsuario[j], proxima
+            ));
+          } else {
+            arrayUsuarioFinal.push(criaObjetoVacinasUsuario(
+              nomeUsuario, nomeVacinasUsuario[j], dataDoseVacinasUsuario[j], !proxima
+            ));
+          }
         }
 
         return arrayUsuarioFinal;
       }
 
-      function criaObjetoVacinasUsuario(nome, vacina, data) {
+      function criaObjetoVacinasUsuario(nome, vacina, data, proxima) {
         let objeto = {
           nome,
           vacina,
-          data
+          data,
+          proxima
         };
 
         return objeto;
@@ -201,7 +230,7 @@ export default function Home() {
 
       async function juntaInfo(arrayNomes, arrayNomeVacinas,
         diferencaEntreDoses,
-        arrayDatas = '15/10/2020') {
+        arrayDatas) {
         const arrayUsuarioFinal = await getArrayFinalUsuario();
 
         if (arrayNomes.length === 0) {
@@ -214,7 +243,7 @@ export default function Home() {
           arrayVacinasFinal.push(getVacinasDeCadaDependente(
             arrayNomes[i], arrayNomeVacinas[i],
             diferencaEntreDoses[i],
-            arrayDatas))
+            arrayDatas[i]))
         }
 
         const arrayDependentesFinal = [].concat.apply([], arrayVacinasFinal);
@@ -224,23 +253,39 @@ export default function Home() {
           diferencaEntreDoses, arrayDatas) {
           let objetoVacinasDependente = [];
 
+          const hoje = moment();
+          const fimDoIntervalo = moment(hoje).add(1, 'M');
+          let proxima = true;
+
           for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
             if (diferencaEntreDoses[j] === 0) {
               continue;
             }
 
-            objetoVacinasDependente.push(
-              criaObjetoVacinas(nomeDependente, arrayNomeVacinasDependente[j], arrayDatas));
+            if (moment(arrayDatas[j]).isBetween(hoje, fimDoIntervalo)) {
+              objetoVacinasDependente.push(
+                criaObjetoVacinas(
+                  nomeDependente, arrayNomeVacinasDependente[j], arrayDatas[j], proxima
+                )
+              );
+            } else {
+              objetoVacinasDependente.push(
+                criaObjetoVacinas(
+                  nomeDependente, arrayNomeVacinasDependente[j], arrayDatas[j], !proxima
+                )
+              );
+            }
           }
 
           return objetoVacinasDependente;
         }
 
-        function criaObjetoVacinas(dependente, vacina, data) {
+        function criaObjetoVacinas(dependente, vacina, data, proxima) {
           let objeto = {
             nome: dependente,
             vacina,
-            data
+            data,
+            proxima
           };
 
           return objeto;
@@ -249,6 +294,18 @@ export default function Home() {
         Array.prototype.push.apply(arrayUsuarioFinal, arrayDependentesFinal); // une os dois arrays no primeiro
 
         const arrayFinal = arrayUsuarioFinal;
+
+        let resultado = 0;
+
+        arrayFinal.map(item => {
+          if (item.proxima) {
+            resultado++;
+          }
+        });
+
+        if (resultado > 0) {
+          setTemVacinasProximas(true);
+        }
 
         return arrayFinal;
       }
@@ -290,13 +347,23 @@ export default function Home() {
     );
   }
 
-  const renderItem = ({ item }) => (
-    <View style={styles.listItem}>
-      <Text style={styles.name}>{getPrimeiroNome(item.nome)}</Text>
-      <Text style={styles.vaccine}>{item.vacina}</Text>
-      <Text style={styles.date}>{item.data}</Text>
+  const renderItem = ({ item }) => temVacinasProximas ? (
+    item.proxima && (
+      <View style={styles.listItem}>
+        <Text style={styles.name}>{getPrimeiroNome(item.nome)}</Text>
+        <Text style={styles.vaccine}>{item.vacina}</Text>
+        <Text style={styles.date}>{moment(item.data).format('DD/MM/YYYY')}</Text>
+      </View>
+    )
+  ) : (
+    <View style={styles.semVacinasProximas}>
+      <Text style={styles.textSemVacinasProximas}>
+        Beleza! Você não possui vacinas para tomar no próximo intervalo de 1 mês.
+      </Text>
     </View>
   );
+
+  const array = [0];
 
   return (
     <View style={styles.container}>
@@ -306,7 +373,7 @@ export default function Home() {
         <Divider style={{ backgroundColor: '#D3D3D3', height: 1 }} />
         <FlatList
           contentContainerStyle={styles.list}
-          data={vacinas}
+          data={temVacinasProximas ? vacinas : array}
           keyExtractor={(item, index) => 'key' + index}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -364,6 +431,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     fontSize: 14,
+  },
+
+  semVacinasProximas: {
+    width: 290,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  textSemVacinasProximas: {
+    fontSize: 16,
+    fontWeight: 'bold'
   },
 
   list: {
