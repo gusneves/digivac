@@ -16,7 +16,7 @@ import Icon from "react-native-vector-icons/SimpleLineIcons";
 import MarkSlider from "../../../../components/MarkSlider";
 
 import api from "../../../../services/api";
-import calculoDataDose from "../../../../lib/dataDose";
+import { calculoDataDose } from "../../../../lib/dataDose";
 
 export default function CadVacDep({ route, navigation }) {
     LogBox.ignoreLogs([

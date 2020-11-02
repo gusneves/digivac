@@ -102,8 +102,8 @@ export default function Cadastro({ navigation }) {
                                 navigation.navigate("CadVac", { userData });
                             }
                         })
-                        .catch(() => {
-                            console.log("Erro ao validar e-mail e cpf!");
+                        .catch((e) => {
+                            console.log("Erro ao validar e-mail e cpf!", e);
                         });
                 }}
                 validationSchema={formSchema}

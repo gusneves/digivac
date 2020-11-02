@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import MarkSlider from "../../components/MarkSlider";
 
-import calculoDataDose from "../../lib/dataDose";
+import { calculoDataDose } from "../../lib/dataDose";
 import api from "../../services/api";
 
 import { SessionContext } from "../../context/Session";

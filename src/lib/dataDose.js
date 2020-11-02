@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export default function calculoDataDose(vacinas, usuario) {
+export function calculoDataDose(vacinas, usuario) {
     console.log(usuario, vacinas);
     const dataBase = moment("01/01/1900", "DD/MM/YYYY");
     usuario.vacinas.map((value, index) => {
@@ -27,4 +27,33 @@ export default function calculoDataDose(vacinas, usuario) {
         }
     });
     return usuario;
+}
+
+export function novaDose(idVacina, idade_doses, usuario) {
+    const dataBase = moment("01/01/1900", "DD/MM/YYYY");
+    usuario.vacinas.map((value, index) => {
+        if (value.id === idVacina) {
+            console.log(value);
+            value.doseAtual++;
+            if (value.doseAtual === value.doses) {
+                value.dataDose = null;
+            } else {
+                const idade_dose = moment(
+                    idade_doses[value.doseAtual],
+                    "DD/MM/YYYY"
+                );
+                console.log(idade_dose);
+                const diferencaDatas = idade_dose.diff(dataBase);
+                console.log(diferencaDatas);
+                const newDataDose = moment(usuario.data_nasc).add(
+                    diferencaDatas,
+                    "ms"
+                );
+                console.log(newDataDose);
+                value.dataDose = moment(newDataDose).toDate();
+                console.log(value.dataDose);
+            }
+        }
+    });
+    console.log(usuario);
 }
