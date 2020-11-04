@@ -64,9 +64,8 @@ export default function Agenda() {
     <DrawerAgenda.Navigator>
       <DrawerAgenda.Screen 
         name="Todas as vacinas pendentes" 
-      >
-        {props => <ListaVacinasTodasAsPessoas {...props} refreshing={isRefreshing} onRefresh={onRefresh} />}
-      </DrawerAgenda.Screen>
+        component={ListaVacinasTodasAsPessoas} 
+      />
       {info.map((info, key) => {
         return (
           <DrawerAgenda.Screen
@@ -80,7 +79,7 @@ export default function Agenda() {
   );
 }
 
-function ListaVacinasTodasAsPessoas(props, { navigation }) {
+function ListaVacinasTodasAsPessoas({ navigation }) {
   LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state'
   ]);
@@ -572,8 +571,8 @@ function ListaVacinasTodasAsPessoas(props, { navigation }) {
           renderItem={renderItem}
           refreshControl={
             <RefreshControl 
-              refreshing={props.refreshing} 
-              onRefresh={props.onRefresh}
+              // refreshing={props.refreshing} 
+              // onRefresh={props.onRefresh}
             />}
         />
       </View>
