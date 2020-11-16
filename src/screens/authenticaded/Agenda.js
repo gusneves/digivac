@@ -62,16 +62,16 @@ export default function Agenda() {
 
   return (
     <DrawerAgenda.Navigator>
-      <DrawerAgenda.Screen 
-        name="Todas as vacinas pendentes" 
-        component={ListaVacinasTodasAsPessoas} 
+      <DrawerAgenda.Screen
+        name="Todas as vacinas pendentes"
+        component={ListaVacinasTodasAsPessoas}
       />
       {info.map((info, key) => {
         return (
           <DrawerAgenda.Screen
             key={key} name={'Carteira de ' + getPrimeiroNome(info.nome)}
             component={ListaVacinas}
-            initialParams={{ info }} 
+            initialParams={{ info }}
           />
         );
       })}
@@ -336,7 +336,7 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
       nome, vacina,
       descricao,
       doseAtual, doseTotal, dataDose,
-      // vacinaTomada, 
+      // vacinaTomada,
       pendente) {
       let objeto = {
         nome,
@@ -570,8 +570,8 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
           refreshControl={
-            <RefreshControl 
-              // refreshing={props.refreshing} 
+            <RefreshControl
+              // refreshing={props.refreshing}
               // onRefresh={props.onRefresh}
             />}
         />

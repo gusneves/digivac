@@ -25,7 +25,7 @@ export default function ListaVacinas({ route, navigation }) {
   async function getVacinas() {
     const objetoPessoa = route.params.info;
 
-    const _id = objetoPessoa._id; 
+    const _id = objetoPessoa._id;
     const nome = objetoPessoa.nome;
     setNomePessoa(nome);
 
@@ -68,7 +68,7 @@ export default function ListaVacinas({ route, navigation }) {
 
         arrayVacinasTomadas.push(
           criaObjetoVacinas(
-            _id, nome, 
+            _id, nome,
             _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
             doseAtual[j], dosesTotais[j], dataDose[j],
             vacinaTomada,
@@ -78,7 +78,7 @@ export default function ListaVacinas({ route, navigation }) {
         if (moment(dataDose[j]).isBefore()) {
           arrayVacinasPendentes.push(
             criaObjetoVacinas(
-              _id, nome, 
+              _id, nome,
               _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
               doseAtual[j], dosesTotais[j], dataDose[j],
               vacinaTomada, pendente
@@ -87,7 +87,7 @@ export default function ListaVacinas({ route, navigation }) {
         } else {
           arrayVacinasPendentes.push(
             criaObjetoVacinas(
-              _id, nome, 
+              _id, nome,
               _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
               doseAtual[j], dosesTotais[j], dataDose[j],
               vacinaTomada, !pendente
@@ -109,7 +109,7 @@ export default function ListaVacinas({ route, navigation }) {
   }
 
   function criaObjetoVacinas(
-    _id, nome, 
+    _id, nome,
     _idVacina, vacina, descricao,
     doseAtual, doseTotal, dataDose,
     vacinaTomada, pendente) {
@@ -211,8 +211,8 @@ export default function ListaVacinas({ route, navigation }) {
         <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
         <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
         <Text style={styles.dataVacinaPendente}>Atenção: essa vacina está atrasada!</Text>
-        <TouchableOpacity 
-          style={styles.buttonPendente} 
+        <TouchableOpacity
+          style={styles.buttonPendente}
           onPress={() => navigation.navigate('QRCodeScanner', {
             _idPessoa: item._id,
             _idVacina: item._idVacina,
@@ -229,8 +229,8 @@ export default function ListaVacinas({ route, navigation }) {
         <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
         <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
         <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
-        <TouchableOpacity 
-          style={styles.button} 
+        <TouchableOpacity
+          style={styles.button}
           onPress={() => navigation.navigate('QRCodeScanner', {
             _idPessoa: item._id,
             _idVacina: item._idVacina,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
 
   vacinaTomadaContainer: {
     marginHorizontal: 20,
-    backgroundColor: '#31872f',
+    backgroundColor: '#45af90EE',
     borderWidth: 1,
     borderColor: '#89ed87',
     borderRadius: 4,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
 
   dataVacinaTomada: {
-    color: '#89ed87',
+    color: '#afa',
     fontSize: 16,
     fontWeight: 'bold',
     alignSelf: 'center'
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#2352FF',
   },
-  
+
   textButton: {
     fontSize: 15,
     color: '#fff',
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#ff2b1c',
   },
-  
+
   textPendenteButton: {
     fontSize: 15,
     color: '#fff',
