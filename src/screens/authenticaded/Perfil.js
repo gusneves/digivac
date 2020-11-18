@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SafeAreaView, Text, StyleSheet, AsyncStorage, StatusBar } from "react-native";
-import { ListItem, Avatar, Divider } from "react-native-elements";
+import { SafeAreaView, Text, StyleSheet, StatusBar } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { ListItem, Avatar, Divider, Accessory } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import * as FileSystem from "expo-file-system";
@@ -104,7 +105,7 @@ export default function Perfil({ navigation }) {
         await FileSystem.getInfoAsync(dir)
             .then(async () => {
                 const images = await FileSystem.readDirectoryAsync(dir);
-                if(images[0] != null){
+                if (images[0] != null) {
                     let lastItem = images[images.length - 1];
                     if (images != null) useImage("" + dir + lastItem);
                 }
@@ -131,17 +132,14 @@ export default function Perfil({ navigation }) {
                     activeOpacity={0.5}
                     containerStyle={styles.avatar}
                     onPress={_pickImage}
-                    onAccessoryPress={_pickImage}
-                    showAccessory={true}
-                    accessory={{
-                        name: "camera",
-                        underlayColor: "#2020FA",
-                        type: "font-awesome",
-                        size: 40,
-                        style: { backgroundColor: "#2352FA" },
-                        iconProps: { size: 20, color: "#FFF" },
-                    }}
-                />
+                    >
+                    <Accessory
+                        name={"camera-alt"}
+                        underlayColor={"#2020FA"}
+                        size={40}
+                        style={{ backgroundColor: "#2352FA" }}
+                    />
+                </Avatar>
             ) : (
                 <Avatar
                     size="xlarge"
@@ -151,17 +149,14 @@ export default function Perfil({ navigation }) {
                     activeOpacity={0.5}
                     containerStyle={styles.avatar}
                     onPress={_pickImage}
-                    onAccessoryPress={_pickImage}
-                    showAccessory={true}
-                    accessory={{
-                        name: "camera",
-                        underlayColor: "#2020FA",
-                        type: "font-awesome",
-                        size: 40,
-                        style: { backgroundColor: "#2352FA" },
-                        iconProps: { size: 20, color: "#FFF" },
-                    }}
-                />
+                >
+                    <Accessory
+                        name={"camera-alt"}
+                        size={40}
+                        style={{ backgroundColor: "#2352FA" }}
+                        onPress={_pickImage}
+                    />
+                </Avatar>
             )}
 
             <Text style={styles.username}>{user.nome}</Text>
@@ -169,23 +164,26 @@ export default function Perfil({ navigation }) {
             {list.map((item, i) => (
                 <ListItem
                     key={i}
-                    title={item.title}
-                    leftIcon={() => (
-                        <Icon name={item.icon} color="#2352FF" size={22} />
-                    )}
                     bottomDivider
-                    chevron
-                    titleStyle={styles.listText}
                     onPress={() =>
                         item.name === "Logout"
                             ? signOut()
                             : navigation.navigate(item.name)
                     }
-                />
+
+                >
+                    <ListItem.Content style={{flexDirection:'row'}}>
+                        <Icon name={item.icon} color="#2352FF" size={22} style={{flex: 0.4}} />
+                        <ListItem.Title
+                            style={styles.listText}
+                        >{item.title}</ListItem.Title>
+                        <ListItem.Chevron style={{flex:1}}/>
+                    </ListItem.Content>
+                </ListItem>
             ))}
 
             <StatusBar
-                barStyle={'dark-content'}
+                barStyle={"dark-content"}
                 translucent={false}
                 backgroundColor="#FFF"
             />
@@ -215,5 +213,7 @@ const styles = StyleSheet.create({
     },
     listText: {
         color: "#555",
+        flex: 3,
+        fontSize: 16
     },
 });

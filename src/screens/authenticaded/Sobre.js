@@ -1,9 +1,9 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, Image } from 'react-native';
 
-import logo from "../../assets/logo.png";
-import cti from "../../assets/cti.png";
-import unesp from "../../assets/unesp.png";
+import logo from "../../../assets/logo.png";
+import cti from "../../../assets/cti.png";
+import unesp from "../../../assets/unesp.png";
 
 export default function Sobre() {
   return (
