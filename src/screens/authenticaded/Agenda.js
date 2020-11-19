@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, Text, StyleSheet, StatusBar, FlatList, AsyncStorage, ActivityIndicator, RefreshControl, LogBox
 } from 'react-native';
@@ -7,6 +7,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 import moment from 'moment';
+
+import { CarteiraContext } from '../../context/Carteira';
 
 import api from '../../services/api';
 
@@ -435,6 +437,39 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         >
           <ActivityIndicator size="large" color="#999" />
           <Text style={{ margin: 12, fontSize: 14, color: '#999' }}>Carregando informações...</Text>
+        </View>
+        <StatusBar
+          barStyle="dark-content"
+          translucent={false}
+          backgroundColor="#FFF"
+        />
+      </>
+    );
+  }
+
+  if (Object.keys(vacinas).length === 0) {
+    return (
+      <>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Icon name='menu' size={25} onPress={() => { navigation.openDrawer() }} />
+            <Text style={styles.label}>Atente-se às vacinas pendentes!</Text>
+          </View>
+          <View style={{
+            flex: 1, 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            backgroundColor: '#fff',
+          }}>
+            <Text style={{fontSize: 26, fontWeight: 'bold', marginHorizontal: 20}}>
+              Parabéns, todas as vacinas foram tomadas!
+            </Text>
+            <View style={{marginTop: 5}}>
+              <Text style={{fontSize: 16, fontStyle: 'italic', marginHorizontal: 20}}>
+                Acesse sua carteira completa apertando o botão do canto superior esquerdo.
+              </Text> 
+            </View>
+          </View>
         </View>
         <StatusBar
           barStyle="dark-content"

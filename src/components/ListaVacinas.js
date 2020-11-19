@@ -10,12 +10,17 @@ import moment from 'moment';
 import { CarteiraContext } from '../context/Carteira';
 
 import api from '../services/api';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ListaVacinas({ route, navigation }) {
+  const [idPessoa, setIdPessoa] = useState();
   const [nomePessoa, setNomePessoa] = useState();
   const [vacinas, setVacinas] = useState();
   const [isLoading, setLoading] = useState(true);
   const [isRefreshing, setRefreshing] = useState(false);
+  const [refreshInfo, setRefreshInfo] = useState(null);
+
+  const isFocused = useIsFocused();
 
   const { carteiraInfo, setCarteiraInfo } = useContext(CarteiraContext);
 
@@ -23,16 +28,23 @@ export default function ListaVacinas({ route, navigation }) {
     getVacinas();
   }, []);
 
+  useEffect(() => {
+    setIdPessoa(route.params.info._id);
+  }, [isFocused]);
+
   async function getVacinas() {
     let objetoPessoa;
 
-    if (Object.keys(carteiraInfo).length !== 0) {
+    if (Object.keys(carteiraInfo).length !== 0 && carteiraInfo._id === idPessoa) {
       objetoPessoa = carteiraInfo;
+    } else if (refreshInfo !== null && refreshInfo._id === idPessoa) {
+      objetoPessoa = refreshInfo;
     } else {
       objetoPessoa = route.params.info;
     }
 
     const _id = objetoPessoa._id;
+
     const nome = objetoPessoa.nome;
     setNomePessoa(nome);
 
@@ -109,6 +121,7 @@ export default function ListaVacinas({ route, navigation }) {
     const arrayVacinasFinal = arrayVacinasPendentes;
 
     setVacinas(arrayVacinasFinal);
+    setRefreshInfo(carteiraInfo);
     setCarteiraInfo([]);
     setLoading(false);
   }
@@ -180,9 +193,15 @@ export default function ListaVacinas({ route, navigation }) {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    if (Object.keys(carteiraInfo).length !== 0) {
+
+    if (Object.keys(carteiraInfo).length !== 0  && carteiraInfo._id === idPessoa) {
       await getVacinas();
+      setRefreshed(false);
+    } else if (refreshInfo !== null && refreshInfo._id === idPessoa) {
+      await getVacinas();
+      setRefreshed(false);
     }
+
     setRefreshing(false);
   }
 

@@ -94,7 +94,7 @@ export default function QRCodeScanner({ route, navigation }) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text style={{fontSize: 16, fontWeight: 'bold'}}>
-          Requisitando para acesso à camera...
+          Requisitando acesso à camera...
         </Text>
       </View>
     ); 
