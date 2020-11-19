@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-import logo from "../../assets/logo.png";
+import logo from "../../../assets/logo.png";
 
 import { SessionContext } from "../../context/Session";
 

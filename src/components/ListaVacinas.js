@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, AsyncStorage, TouchableOpacity, RefreshControl
+  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl
 } from 'react-native';
 import { Divider } from 'react-native-elements';
-import { useIsFocused } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons'
 
 import moment from 'moment';

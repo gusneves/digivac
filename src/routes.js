@@ -26,9 +26,9 @@ import EditDependente from "./screens/authenticaded/profile/cadDependente/EditDe
 import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
 import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
 
-import logo from './assets/logo.png';
-import cti from './assets/cti.png';
-import unesp from './assets/unesp.png';
+import logo from '../assets/logo.png';
+import cti from '../assets/cti.png';
+import unesp from '../assets/unesp.png';
 
 const Stack = createStackNavigator();
 
@@ -127,42 +127,9 @@ function PerfilStack() {
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 
-const SplashScreen = () => {
-    return (
-        <>
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: '#fff',
-                    marginHorizontal: 40
-                }}
-            >
-                <Image style={styles.logo} source={logo} />
-                <Text style={styles.title} >Sua carteira de vacinação digital</Text>
-                <View style={styles.unesp_cti}>
-                    <Image style={styles.cti} source={cti} />
-                    <Image style={styles.unesp} source={unesp} />
-                </View>
-            </View>
-            <StatusBar
-                barStyle="dark-content"
-                translucent={false}
-                backgroundColor="#FFF"
-            />
-        </>
-    );
-}
 
 function Router() {
-    const { isLoggedIn, loading } = useContext(SessionContext);
-
-    if (loading) {
-        return (
-            <SplashScreen />
-        );
-    }
+    const { isLoggedIn } = useContext(SessionContext);
 
     return (
         <NavigationContainer>

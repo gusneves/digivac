@@ -1,8 +1,8 @@
 import React from 'react'
 
-import SessionProvider from './context/Session';
+import SessionProvider from './src/context/Session';
 
-import Router from './routes'
+import Router from './src/routes'
 
 export default function App() {
   return (
