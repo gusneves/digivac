@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { View, Image, StatusBar, StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import { SessionContext } from "./context/Session";
+import CarteiraProvider from './context/Carteira';
 
 import Login from "./screens/authentication/Login";
 import Cadastro from "./screens/authentication/Cadastro";
@@ -33,35 +34,37 @@ const Stack = createStackNavigator();
 
 function AgendaStack() {
     return (
-        <Stack.Navigator
-            screenOptions={{
-                headerTitleAlign: "center",
-                headerTintColor: "#FFF",
-                headerStyle: {
-                    backgroundColor: "#2352FF",
-                    height: 60,
-                },
-                headerTitleStyle: {
-                    fontWeight: "bold",
-                    fontSize: 14,
-                },
-            }}
-        >
-            <Stack.Screen
-                name="Agenda"
-                component={Agenda}
-                options={{
-                    headerShown: false,
+        <CarteiraProvider>
+            <Stack.Navigator
+                screenOptions={{
+                    headerTitleAlign: "center",
+                    headerTintColor: "#FFF",
+                    headerStyle: {
+                        backgroundColor: "#2352FF",
+                        height: 60,
+                    },
+                    headerTitleStyle: {
+                        fontWeight: "bold",
+                        fontSize: 14,
+                    },
                 }}
-            />
-            <Stack.Screen
-                name="QRCodeScanner"
-                component={QRCodeScanner}
-                options={{
-                    title: "Escaneie o QR Code da vacina",
-                }}
-            />
-        </Stack.Navigator>
+            >
+                <Stack.Screen
+                    name="Agenda"
+                    component={Agenda}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="QRCodeScanner"
+                    component={QRCodeScanner}
+                    options={{
+                        title: "Escaneie o QR Code da vacina",
+                    }}
+                />
+            </Stack.Navigator>
+        </CarteiraProvider>
     );
 }
 

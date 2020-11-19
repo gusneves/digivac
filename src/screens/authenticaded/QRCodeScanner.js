@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StatusBar, Text, Button, AsyncStorage, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+
+import { CarteiraContext } from '../../context/Carteira';
 
 import api from '../../services/api';
 
 export default function QRCodeScanner({ route, navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [isValid, setIsValid] = useState(false);
+  const [invalidQRCode, setInvalidQRCode] = useState(false);
+
+  const { setCarteiraInfo } = useContext(CarteiraContext);
 
   useEffect(() => {
     (async () => {
@@ -16,9 +20,39 @@ export default function QRCodeScanner({ route, navigation }) {
     })();
   }, []);
 
+  const atualizaCarteira = async (idPessoa) => {
+    const id = await AsyncStorage.getItem('usuario');
+    const { data } = await api.get(`/usuario/${id}`);
+
+    const idUsuario = data._id;
+    const dataNascUsuario = data.data_nasc;
+    const nomeUsuario = data.nome;
+    const vacinasUsuario = data.vacinas;
+
+    const objetoUsuario = {
+      _id: idUsuario,
+      data_nasc: dataNascUsuario,
+      nome: nomeUsuario,
+      vacinas: vacinasUsuario
+    };
+
+    const dependentesUsuario = data.dependentes;
+
+    dependentesUsuario.unshift(objetoUsuario);
+
+    let carteiraFinal = {};
+
+    dependentesUsuario.map(data => {
+      if (data._id === idPessoa) {
+        carteiraFinal = data;
+      }
+    });
+
+    return carteiraFinal;
+  }
+
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     
     const idUsuario = await AsyncStorage.getItem('usuario');
     const idPessoa = route.params._idPessoa;
@@ -31,28 +65,48 @@ export default function QRCodeScanner({ route, navigation }) {
         await api.put(`/dose/${idVacina}`, {
           doseAtual: doseAtualizada
         }).then(() => {
-            setIsValid(true);
             Alert.alert('Sucesso', 'Vacina tomada com sucesso!');
-            navigation.navigate('Agenda');
+            (async () => {
+              let carteiraAtualizada = await atualizaCarteira(idUsuario);
+              setCarteiraInfo(carteiraAtualizada);
+              navigation.navigate('Agenda');
+            })();
           }
           );
         } else {
           await api.put(`/dose/${idUsuario}/${idPessoa}/${idVacina}`, {
             doseAtual: doseAtualizada
           }).then(() => {
-            setIsValid(true);
             Alert.alert('Sucesso', 'Vacina tomada com sucesso!');
-            navigation.navigate('Agenda');
+            (async () => {
+              let carteiraAtualizada = await atualizaCarteira(idPessoa);
+              setCarteiraInfo(carteiraAtualizada);
+              navigation.navigate('Agenda');
+            })();
         });
       }
+    } else {
+      setInvalidQRCode(true);
     }
   };
 
   if (hasPermission === null) {
-    // return <Text>Requesting for camera permission</Text>;
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{fontSize: 16, fontWeight: 'bold'}}>
+          Requisitando para acesso à camera...
+        </Text>
+      </View>
+    ); 
   }
   if (hasPermission === false) {
-    // return <Text>No access to camera</Text>;
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{fontSize: 16, fontWeight: 'bold'}}>
+          Sem permissão para acessar a câmera 😞
+        </Text>
+      </View>
+    ); 
   }
 
   return (
@@ -68,7 +122,15 @@ export default function QRCodeScanner({ route, navigation }) {
           style={{ flex: 1, marginVertical: 50 }}
         />
 
-      {scanned && !isValid && <Button title={'QR Code errado, aperte esse botão para escanear novamente'} onPress={() => setScanned(false)} />}
+      {invalidQRCode && 
+        <Button 
+          title={'QR Code inválido, aperte esse botão para escanear novamente'} 
+          onPress={() =>{
+              setInvalidQRCode(false);
+              setScanned(false);
+            }
+          }  
+        />}
       </View>
       <StatusBar
         barStyle={'light-content'}

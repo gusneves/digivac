@@ -48,7 +48,6 @@ export default function Home() {
             })
             .catch((e) => console.log(e));
         const info = shuffle(texts);
-        console.log(info);
         setTextos(info);
     }
 
@@ -126,7 +125,6 @@ export default function Home() {
                     dosesAtuaisDependentesFinal
                 );
 
-                // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, diferencaEntreDoses));
                 setVacinas(
                     await juntaInfo(
                         nomeDependentes,
@@ -137,7 +135,6 @@ export default function Home() {
                 );
                 setLoading(false);
             } else {
-                // console.log(await getArrayFinalUsuario());
                 setVacinas(await getArrayFinalUsuario());
                 setLoading(false);
             }
@@ -508,7 +505,7 @@ export default function Home() {
                 <FlatList
                     contentContainerStyle={styles.list}
                     data={temVacinasProximas ? vacinas : array}
-                    keyExtractor={(item, index) => "key" + index}
+                    keyExtractor={(item, index) => "key" + item.nome + index}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     renderItem={renderItem}
@@ -527,7 +524,7 @@ export default function Home() {
                     sliderWidth={SLIDER_WIDTH}
                     contentContainerCustomStyle={styles.carouselContainer}
                     slideStyle={styles.carouselItemContainer}
-                    renderItem={({ item, index }) => (
+                    renderItem={({ item }) => (
                         <ScrollView style={{ flex: 1 }}>
                             <Text style={styles.learnMoreTitle}>
                                 {item.nome}

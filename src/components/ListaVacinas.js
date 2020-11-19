@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
-  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl
+  View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, AsyncStorage, TouchableOpacity, RefreshControl
 } from 'react-native';
 import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons'
 
 import moment from 'moment';
+
+import { CarteiraContext } from '../context/Carteira';
 
 import api from '../services/api';
 
@@ -16,14 +18,20 @@ export default function ListaVacinas({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
   const [isRefreshing, setRefreshing] = useState(false);
 
-  const isFocused = useIsFocused();
+  const { carteiraInfo, setCarteiraInfo } = useContext(CarteiraContext);
 
   useEffect(() => {
     getVacinas();
-  }, [isFocused]);
+  }, []);
 
   async function getVacinas() {
-    const objetoPessoa = route.params.info;
+    let objetoPessoa;
+
+    if (Object.keys(carteiraInfo).length !== 0) {
+      objetoPessoa = carteiraInfo;
+    } else {
+      objetoPessoa = route.params.info;
+    }
 
     const _id = objetoPessoa._id;
     const nome = objetoPessoa.nome;
@@ -96,15 +104,13 @@ export default function ListaVacinas({ route, navigation }) {
         }
       }
     }
-    // return console.log(arrayVacinasFinal);
 
     Array.prototype.push.apply(arrayVacinasPendentes, arrayVacinasTomadas)
 
     const arrayVacinasFinal = arrayVacinasPendentes;
 
     setVacinas(arrayVacinasFinal);
-    // console.log('aqui');
-    // console.log(arrayVacinasFinal);
+    setCarteiraInfo([]);
     setLoading(false);
   }
 
@@ -173,9 +179,11 @@ export default function ListaVacinas({ route, navigation }) {
     return primeiroNome;
   }
 
-  const onRefreshSearch = async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    await getVacinas();
+    if (Object.keys(carteiraInfo).length !== 0) {
+      await getVacinas();
+    }
     setRefreshing(false);
   }
 
@@ -216,7 +224,7 @@ export default function ListaVacinas({ route, navigation }) {
           onPress={() => navigation.navigate('QRCodeScanner', {
             _idPessoa: item._id,
             _idVacina: item._idVacina,
-            doseAtual: item.doseAtual
+            doseAtual: item.doseAtual,
           })}
         >
           <Text style={styles.textPendenteButton}>Marcar dose como tomada</Text>
@@ -234,7 +242,7 @@ export default function ListaVacinas({ route, navigation }) {
           onPress={() => navigation.navigate('QRCodeScanner', {
             _idPessoa: item._id,
             _idVacina: item._idVacina,
-            doseAtual: item.doseAtual
+            doseAtual: item.doseAtual,
           })}
         >
           <Text style={styles.textButton}>Marcar dose como tomada</Text>
@@ -261,11 +269,10 @@ export default function ListaVacinas({ route, navigation }) {
 
         <FlatList
           data={vacinas}
-          keyExtractor={(item, index) => 'key' + index}
+          keyExtractor={item => item._id + item._idVacina}
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefreshSearch} />}
-          // extraData={vacinas}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
         />
       </View>
       <StatusBar

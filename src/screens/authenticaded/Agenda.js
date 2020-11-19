@@ -6,7 +6,6 @@ import { Divider } from 'react-native-elements';
 import { useIsFocused } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-
 import moment from 'moment';
 
 import api from '../../services/api';
@@ -17,10 +16,9 @@ const DrawerAgenda = createDrawerNavigator();
 
 export default function Agenda() {
   const [info, setInfo] = useState([]);
-  const [isRefreshing, setRefreshing] = useState(false);
 
   const isFocused = useIsFocused();
-
+  
   useEffect(() => {
     getInfo();
   }, [isFocused]);
@@ -54,12 +52,6 @@ export default function Agenda() {
     return primeiroNome;
   }
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await getInfo();
-    setRefreshing(false);
-  }
-
   return (
     <DrawerAgenda.Navigator>
       <DrawerAgenda.Screen
@@ -87,12 +79,11 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
   const [, setUsuario] = useState({});
   const [vacinas, setVacinas] = useState({});
   const [isLoading, setLoading] = useState(true);
-
-  const isFocused = useIsFocused();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getUsuario();
-  }, [isFocused]);
+  }, []);
 
   async function getUsuario() {
     const id = await AsyncStorage.getItem('usuario');
@@ -136,7 +127,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         dosesTotaisDependetes.push(await getDosesTotaisVacinas(idVacinasDependentes[i]));
       }
 
-      // console.log(await juntaInfo(nomeDependentes, nomeVacinasDependentes, descricaoVacinasDependentes, dosesAtuaisDependentesFinal, dosesTotaisDependetes, '15/10/2020'));
       setVacinas(
         await juntaInfo(
           nomeDependentes, nomeVacinasDependentes,
@@ -147,7 +137,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
 
       setLoading(false);
     } else {
-      // console.log(await getArrayFinalUsuario());
       setVacinas(await getArrayFinalUsuario());
       setLoading(false);
     }
@@ -285,27 +274,10 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
       }
 
       const arrayVacinasUsuario = [];
-      // const arrayVacinasTomadasUsuario = [];
 
       let pendente = true;
 
       for (let j = 0; j < nomeVacinasUsuario.length; j++) {
-        let vacinaTomada = false;
-
-        // if (diferencas[j] === 0) {
-        //   vacinaTomada = true;
-
-        //   arrayVacinasTomadasUsuario.push(criaObjetoVacinasUsuario(
-        //     nomeUsuario, nomeVacinasUsuario[j],
-        //     descricaoVacinasUsuario[j],
-        //     dosesAtuaisVacinasUsuario[j],
-        //     dosesTotaisVacinasUsuario[j],
-        //     vacinaTomada, '15/10/2020'
-        //   ));
-
-        //   continue;
-        // }
-
         if (diferencas[j] !== 0) {
           if (moment(dataDoseUsuario[j]).isBefore()) {
             arrayVacinasUsuario.push(criaObjetoVacinasUsuario(
@@ -323,12 +295,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         }
       }
 
-      // Array.prototype.push.apply(arrayVacinasUsuario, arrayVacinasTomadasUsuario);
-
-      // const arrayUsuarioFinal = arrayVacinasUsuario;
-
-      // return arrayUsuarioFinal;
-
       return arrayVacinasUsuario;
     }
 
@@ -336,7 +302,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
       nome, vacina,
       descricao,
       doseAtual, doseTotal, dataDose,
-      // vacinaTomada,
       pendente) {
       let objeto = {
         nome,
@@ -345,7 +310,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         doseAtual,
         doseTotal,
         dataDose,
-        // vacinaTomada,
         pendente
       };
 
@@ -357,19 +321,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
       arrayDescricao,
       arrayDosesFinais, arrayDosesTotais, arrayDatas) {
       const arrayUsuario = await getArrayFinalUsuario();
-      // const arrayVacinasTomadasUsuario = [];
-      // const arrayVacinasPendentesUsuario = [];
-
-      // for (let i = 0; i < arrayUsuario.length; i++) {
-      //   // if (arrayUsuario[i].vacinaTomada) {
-      //   //   arrayVacinasTomadasUsuario.push(arrayUsuario[i]);
-      //   // } else {
-      //   //   arrayVacinasPendentesUsuario.push(arrayUsuario[i]);
-      //   // }
-      //   if (!arrayUsuario[i].vacinaTomada) {
-      //     arrayVacinasPendentesUsuario.push(arrayUsuario[i]);
-      //   }
-      // }
 
       let arrayVacinasFinal = [];
       const diferencaEntreDoses = getDosesFinais(arrayDosesTotais, arrayDosesFinais);
@@ -394,27 +345,11 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         diferenca
       ) {
         const objetoVacinasDependente = [];
-        // const objetoVacinasTomadasDependente = [];
 
         let pendente = true;
 
         for (let j = 0; j < arrayNomeVacinasDependente.length; j++) {
           let vacinaTomada = false;
-
-          // if (diferenca[j] === 0) {
-          //   vacinaTomada = true;
-
-          //   objetoVacinasTomadasDependente.push(
-          //     criaObjetoVacinas(
-          //       nomeDependente, arrayNomeVacinasDependente[j],
-          //       arrayDescricao[j],
-          //       arrayDosesFinais[j], arrayDosesTotais[j],
-          //       vacinaTomada, arrayDatas
-          //     )
-          //   );
-
-          //   continue;
-          // }
 
           if (diferenca[j] !== 0) {
             if (moment(arrayDatas[j]).isBefore()) {
@@ -439,12 +374,6 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
           }
         }
 
-        // Array.prototype.push.apply(objetoVacinasDependente, objetoVacinasTomadasDependente);
-
-        // const objetoVacinasDependenteFinal = objetoVacinasDependente;
-
-        // return objetoVacinasDependenteFinal;
-
         return objetoVacinasDependente;
       }
 
@@ -467,28 +396,13 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         return objeto;
       }
 
-      const arrayVacinasTomadasDependentes = [];
       const arrayVacinasPendentesDependetes = [];
 
       for (let i = 0; i < arrayDependentesFinal.length; i++) {
-        // if (arrayDependentesFinal[i].vacinaTomada) {
-        //   arrayVacinasTomadasDependentes.push(arrayDependentesFinal[i]);
-        // } else {
-        //   arrayVacinasPendentesDependetes.push(arrayDependentesFinal[i]);
-        // }
         if (!arrayDependentesFinal[i].vacinaTomada) {
           arrayVacinasPendentesDependetes.push(arrayDependentesFinal[i]);
         }
       }
-
-      // Array.prototype.push.apply(arrayVacinasPendentesUsuario, arrayVacinasPendentesDependetes);
-      // Array.prototype.push.apply(arrayVacinasTomadasUsuario, arrayVacinasTomadasDependentes);
-
-      // Array.prototype.push.apply(arrayVacinasPendentesUsuario, arrayVacinasTomadasUsuario); // une os dois arrays no primeiro
-
-      // const arrayFinal = arrayVacinasPendentesUsuario;
-
-      // return arrayFinal;
 
       Array.prototype.push.apply(arrayUsuario, arrayVacinasPendentesDependetes);
 
@@ -500,6 +414,12 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
     const primeiroNome = nomeInteiro.replace(/ .*/, ''); // RegEx que subistitui tudo depois do espaço por vazio
 
     return primeiroNome;
+  }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getUsuario();
+    setRefreshing(false);
   }
 
   if (isLoading) {
@@ -566,13 +486,13 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         </View>
         <FlatList
           data={vacinas}
-          keyExtractor={(item, index) => 'key' + index}
+          keyExtractor={(item, index) => 'key' + item.nome + index}
           showsHorizontalScrollIndicator={false}
           renderItem={renderItem}
           refreshControl={
             <RefreshControl
-              // refreshing={props.refreshing}
-              // onRefresh={props.onRefresh}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
             />}
         />
       </View>
