@@ -18,7 +18,8 @@ export default function ListaVacinas({ route, navigation }) {
   const [vacinas, setVacinas] = useState();
   const [isLoading, setLoading] = useState(true);
   const [isRefreshing, setRefreshing] = useState(false);
-  const [refreshInfo, setRefreshInfo] = useState(null);
+  const [refreshed, setRefreshed] = useState(false);
+  const [refreshedInfo, setRefreshedInfo] = useState([]);
 
   const isFocused = useIsFocused();
 
@@ -32,15 +33,35 @@ export default function ListaVacinas({ route, navigation }) {
     setIdPessoa(route.params.info._id);
   }, [isFocused]);
 
+  const removeItem = (indexItem) => {
+    setCarteiraInfo(carteiraInfo.filter((data, i) => i !== indexItem));
+  };
+
   async function getVacinas() {
     let objetoPessoa;
 
-    if (Object.keys(carteiraInfo).length !== 0 && carteiraInfo._id === idPessoa) {
-      objetoPessoa = carteiraInfo;
-    } else if (refreshInfo !== null && refreshInfo._id === idPessoa) {
-      objetoPessoa = refreshInfo;
+    if (Object.keys(carteiraInfo).length !== 0) {
+      for (let index = 0; index < carteiraInfo.length; index++) {
+        if (carteiraInfo[index]._id === idPessoa) {
+          objetoPessoa = carteiraInfo[index];
+          removeItem(index);
+          setRefreshed(true);
+          setRefreshedInfo(carteiraInfo[index]);
+          break;
+        } else {
+          if (!refreshed) {
+            objetoPessoa = route.params.info;
+          } else {
+            objetoPessoa = refreshedInfo;
+          }   
+        }
+      }
     } else {
-      objetoPessoa = route.params.info;
+      if (!refreshed) {
+        objetoPessoa = route.params.info;
+      } else {
+        objetoPessoa = refreshedInfo;
+      }
     }
 
     const _id = objetoPessoa._id;
@@ -121,8 +142,6 @@ export default function ListaVacinas({ route, navigation }) {
     const arrayVacinasFinal = arrayVacinasPendentes;
 
     setVacinas(arrayVacinasFinal);
-    setRefreshInfo(carteiraInfo);
-    setCarteiraInfo([]);
     setLoading(false);
   }
 
@@ -194,13 +213,7 @@ export default function ListaVacinas({ route, navigation }) {
   const onRefresh = async () => {
     setRefreshing(true);
 
-    if (Object.keys(carteiraInfo).length !== 0  && carteiraInfo._id === idPessoa) {
-      await getVacinas();
-      setRefreshed(false);
-    } else if (refreshInfo !== null && refreshInfo._id === idPessoa) {
-      await getVacinas();
-      setRefreshed(false);
-    }
+    await getVacinas();
 
     setRefreshing(false);
   }
@@ -254,7 +267,7 @@ export default function ListaVacinas({ route, navigation }) {
         <Divider style={styles.divider} />
         <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
         <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
-        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+        <Text style={styles.dataVacina}>Próxima dose até: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('QRCodeScanner', {

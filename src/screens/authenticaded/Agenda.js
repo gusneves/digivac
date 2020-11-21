@@ -498,7 +498,7 @@ function ListaVacinasTodasAsPessoas({ navigation }) {
         <Divider style={styles.divider} />
         <Text style={styles.doses}>Dose: {item.doseAtual}/{item.doseTotal}</Text>
         <Text style={styles.descricaoVacina}>Descrição: {item.descricao} </Text>
-        <Text style={styles.dataVacina}>Data: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
+        <Text style={styles.dataVacina}>Próxima dose até: {moment(item.dataDose).format('DD/MM/YYYY')}</Text>
       </View>
     )
   ) : (

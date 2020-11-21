@@ -51,7 +51,7 @@ export default function QRCodeScanner({ route, navigation }) {
     return carteiraFinal;
   }
 
-  const handleBarCodeScanned = async ({ type, data }) => {
+  const handleBarCodeScanned = async ({ data }) => {
     setScanned(true);
     
     const idUsuario = await AsyncStorage.getItem('usuario');
@@ -65,10 +65,10 @@ export default function QRCodeScanner({ route, navigation }) {
         await api.put(`/dose/${idVacina}`, {
           doseAtual: doseAtualizada
         }).then(() => {
-            Alert.alert('Sucesso', 'Vacina tomada com sucesso!');
+            Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
               let carteiraAtualizada = await atualizaCarteira(idUsuario);
-              setCarteiraInfo(carteiraAtualizada);
+              setCarteiraInfo(carteiraInfo => [...carteiraInfo, carteiraAtualizada]);
               navigation.navigate('Agenda');
             })();
           }
@@ -77,10 +77,10 @@ export default function QRCodeScanner({ route, navigation }) {
           await api.put(`/dose/${idUsuario}/${idPessoa}/${idVacina}`, {
             doseAtual: doseAtualizada
           }).then(() => {
-            Alert.alert('Sucesso', 'Vacina tomada com sucesso!');
+            Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
               let carteiraAtualizada = await atualizaCarteira(idPessoa);
-              setCarteiraInfo(carteiraAtualizada);
+              setCarteiraInfo(carteiraInfo => [...carteiraInfo, carteiraAtualizada]);
               navigation.navigate('Agenda');
             })();
         });
