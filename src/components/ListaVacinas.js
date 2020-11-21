@@ -111,7 +111,7 @@ export default function ListaVacinas({ route, navigation }) {
             _id, nome,
             _idVacinas[j], nomeVacinas[j], descricaoVacinas[j],
             doseAtual[j], dosesTotais[j], dataDose[j],
-            vacinaTomada,
+            vacinaTomada
           )
         );
       } else {
@@ -256,6 +256,7 @@ export default function ListaVacinas({ route, navigation }) {
             _idPessoa: item._id,
             _idVacina: item._idVacina,
             doseAtual: item.doseAtual,
+            doses: item.doseTotal
           })}
         >
           <Text style={styles.textPendenteButton}>Marcar dose como tomada</Text>

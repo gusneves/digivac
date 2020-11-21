@@ -4,6 +4,8 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import { CarteiraContext } from '../../context/Carteira';
 
+import { novaDose } from '../../lib/dataDose';
+
 import api from '../../services/api';
 
 export default function QRCodeScanner({ route, navigation }) {
@@ -51,19 +53,66 @@ export default function QRCodeScanner({ route, navigation }) {
     return carteiraFinal;
   }
 
+  const atualizaDataDose = async (idVacina, idPessoa, doses) => {
+    const id = await AsyncStorage.getItem('usuario');
+    const { data } = await api.get(`/usuario/${id}`);
+
+    const idUsuario = data._id;
+    const dataNascUsuario = data.data_nasc;
+    const nomeUsuario = data.nome;
+    const vacinasUsuario = data.vacinas;
+
+    const objetoUsuario = {
+      _id: idUsuario,
+      data_nasc: dataNascUsuario,
+      nome: nomeUsuario,
+      vacinas: vacinasUsuario
+    };
+
+    const dependentesUsuario = data.dependentes;
+
+    dependentesUsuario.unshift(objetoUsuario);
+
+    let usuario = {};
+    let idAuxVacina;
+
+    dependentesUsuario.map(data => {
+      if (data._id === idPessoa) {
+        usuario = data;
+        data.vacinas.map(vacina => {
+          if (vacina._id === idVacina) {
+            idAuxVacina = vacina.id;
+          }
+        })
+      }
+    });
+
+    const response = await api.get(`/vacina/${idAuxVacina}`);
+
+    const idade_doses = response.data.idade_doses;
+
+    const dataDose = novaDose(idVacina, idade_doses, usuario, doses);
+    
+    return dataDose;
+  }
+
   const handleBarCodeScanned = async ({ data }) => {
     setScanned(true);
     
     const idUsuario = await AsyncStorage.getItem('usuario');
     const idPessoa = route.params._idPessoa;
     const idVacina = route.params._idVacina;
+    const doses = route.params.doses;
     let doseAtualizada = route.params.doseAtual;
     doseAtualizada++;
+
+    const dataDoseAtualizada = await atualizaDataDose(idVacina, idPessoa, doses);
 
     if (data === 'digivac') {
       if (route.params._idPessoa === idUsuario) {
         await api.put(`/dose/${idVacina}`, {
-          doseAtual: doseAtualizada
+          doseAtual: doseAtualizada,
+          dataDose: dataDoseAtualizada
         }).then(() => {
             Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
@@ -75,7 +124,8 @@ export default function QRCodeScanner({ route, navigation }) {
           );
         } else {
           await api.put(`/dose/${idUsuario}/${idPessoa}/${idVacina}`, {
-            doseAtual: doseAtualizada
+            doseAtual: doseAtualizada,
+            dataDose: dataDoseAtualizada
           }).then(() => {
             Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
