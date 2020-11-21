@@ -6,7 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import { SessionContext } from "./context/Session";
-import CarteiraProvider from './context/Carteira';
+import CarteiraProvider from "./context/Carteira";
 
 import Login from "./screens/authentication/Login";
 import Cadastro from "./screens/authentication/Cadastro";
@@ -15,8 +15,9 @@ import forgotPassword from "./screens/authentication/newPassword/forgotPassword"
 import resetPassword from "./screens/authentication/newPassword/resetPassword";
 
 import Home from "./screens/authenticaded/Home";
+import LearnMoreLink from "./screens/authenticaded/LearnMore";
 import Agenda from "./screens/authenticaded/Agenda";
-import QRCodeScanner from './screens/authenticaded/QRCodeScanner';
+import QRCodeScanner from "./screens/authenticaded/QRCodeScanner";
 import Perfil from "./screens/authenticaded/Perfil";
 import Sobre from "./screens/authenticaded/Sobre";
 
@@ -25,10 +26,6 @@ import Dependentes from "./screens/authenticaded/profile/Dependentes";
 import EditDependente from "./screens/authenticaded/profile/cadDependente/EditDependente";
 import AddDependente from "./screens/authenticaded/profile/cadDependente/AddDependente";
 import CadVacDep from "./screens/authenticaded/profile/cadDependente/CadVacDependente";
-
-import logo from '../assets/logo.png';
-import cti from '../assets/cti.png';
-import unesp from '../assets/unesp.png';
 
 const Stack = createStackNavigator();
 
@@ -124,9 +121,40 @@ function PerfilStack() {
     );
 }
 
+function HomeStack() {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerTitleAlign: "center",
+                headerTintColor: "#FFF",
+                headerStyle: {
+                    backgroundColor: "#2352FF",
+                    height: 60,
+                },
+                headerTitleStyle: {
+                    fontWeight: "bold",
+                    fontSize: 16,
+                },
+            }}
+        >
+            <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="LinkInfo"
+                component={LearnMoreLink}
+                options={({ route }) => ({ title: route.params.title })}
+            />
+        </Stack.Navigator>
+    );
+}
+
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
-
 
 function Router() {
     const { isLoggedIn } = useContext(SessionContext);
@@ -149,7 +177,7 @@ function Router() {
                                 <Icon name="home" color={color} size={25} />
                             ),
                         }}
-                        component={Home}
+                        component={HomeStack}
                     />
                     <Tab.Screen
                         name="Agenda"
@@ -233,7 +261,7 @@ function Router() {
                                 fontWeight: "bold",
                                 fontSize: 20,
                             },
-                            title: ""
+                            title: "",
                         }}
                         name="forgotPassword"
                         component={forgotPassword}
@@ -251,7 +279,7 @@ function Router() {
                                 fontWeight: "bold",
                                 fontSize: 20,
                             },
-                            title: "Redefinição de senha"
+                            title: "Redefinição de senha",
                         }}
                         name="resetPassword"
                         component={resetPassword}
@@ -264,28 +292,28 @@ function Router() {
 
 const styles = StyleSheet.create({
     logo: {
-        resizeMode: 'contain',
+        resizeMode: "contain",
         width: 400,
         height: 200,
     },
     title: {
         marginTop: 20,
         fontSize: 17,
-        fontWeight: 'bold'
+        fontWeight: "bold",
     },
     unesp_cti: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
     },
     cti: {
-        resizeMode: 'contain',
+        resizeMode: "contain",
         width: 100,
         height: 80,
-        marginRight: 30
+        marginRight: 30,
     },
     unesp: {
-        resizeMode: 'contain',
+        resizeMode: "contain",
         width: 150,
         height: 110,
     },

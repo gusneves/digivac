@@ -41,6 +41,7 @@
     "react-native-unimodules": "~0.11.0",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.13.12",
+    "react-native-webview": "10.7.0",
     "remask": "^0.1.0-alpha.5",
     "vanilla-masker": "^1.2.0",
     "yup": "^0.29.3"

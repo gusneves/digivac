@@ -3,14 +3,13 @@ import {
     View,
     Text,
     StyleSheet,
-    AsyncStorage,
     FlatList,
     ScrollView,
     Dimensions,
     StatusBar,
     ActivityIndicator,
-    Linking
 } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import { Button, Divider } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
 import Carousel from "react-native-snap-carousel";
@@ -19,10 +18,10 @@ import moment from "moment";
 
 import api from "../../services/api";
 
-const ITEM_WIDTH = Math.round(Dimensions.get('window').width * 0.7);
-const SLIDER_WIDTH = ITEM_WIDTH/2;
+const ITEM_WIDTH = Math.round(Dimensions.get("window").width * 0.7);
+const SLIDER_WIDTH = ITEM_WIDTH / 2;
 
-export default function Home() {
+export default function Home({ navigation }) {
     const [, setUsuario] = useState({});
     const [vacinas, setVacinas] = useState({});
     const [textos, setTextos] = useState([{}]);
@@ -517,31 +516,41 @@ export default function Home() {
                     Aprenda um pouco mais 📖
                 </Text>
                 <Divider style={{ backgroundColor: "#D3D3D3", height: 1 }} />
-                <View style={{flex: 1, flexDirection:'row', justifyContent: 'center', padding: 10}}>
-                <Carousel
-                    data={textos}
-                    itemWidth={ITEM_WIDTH}
-                    sliderWidth={SLIDER_WIDTH}
-                    contentContainerCustomStyle={styles.carouselContainer}
-                    slideStyle={styles.carouselItemContainer}
-                    renderItem={({ item }) => (
-                        <ScrollView style={{ flex: 1 }}>
-                            <Text style={styles.learnMoreTitle}>
-                                {item.nome}
-                            </Text>
-                            <Text style={styles.learnMore}>{item.texto}</Text>
-                            <Button
-                                title="Veja mais ➜"
-                                type="clear"
-                                onPress={() => {Linking.openURL(item.fonte)}}
-                                buttonStyle={styles.learnMoreButton}
-                                titleStyle={styles.learnMoreButtonText}
-                            />
-                        </ScrollView>
-                    )}
-                />
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        padding: 10,
+                    }}
+                >
+                    <Carousel
+                        data={textos}
+                        itemWidth={ITEM_WIDTH}
+                        sliderWidth={SLIDER_WIDTH}
+                        contentContainerCustomStyle={styles.carouselContainer}
+                        slideStyle={styles.carouselItemContainer}
+                        renderItem={({ item }) => (
+                            <ScrollView style={{ flex: 1 }}>
+                                <Text style={styles.learnMoreTitle}>
+                                    {item.nome}
+                                </Text>
+                                <Text style={styles.learnMore}>
+                                    {item.texto}
+                                </Text>
+                                <Button
+                                    title="Veja mais ➜"
+                                    type="clear"
+                                    onPress={() => {
+                                        navigation.navigate("LinkInfo", {title: item.nome, link: item.fonte});
+                                    }}
+                                    buttonStyle={styles.learnMoreButton}
+                                    titleStyle={styles.learnMoreButtonText}
+                                />
+                            </ScrollView>
+                        )}
+                    />
                 </View>
-
             </View>
             <StatusBar
                 barStyle="dark-content"
@@ -677,13 +686,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#2352FF",
     },
-    carouselContainer:{
+    carouselContainer: {
         borderWidth: 1,
     },
-    carouselItemContainer:{
-        borderWidth:1,
+    carouselItemContainer: {
+        borderWidth: 1,
         borderRadius: 10,
         padding: 10,
-        borderColor:"#DDD"
-    }
+        borderColor: "#DDD",
+    },
 });
