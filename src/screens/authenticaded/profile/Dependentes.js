@@ -19,9 +19,6 @@ export default function Depedentes({ navigation }) {
         await api
             .get("/usuario/" + id)
             .then((response) => {
-                response.data.dependentes.map((item)=>{
-                    delete item.vacinas;
-                })
                 setDependentes(response.data.dependentes);
             })
             .catch((e) => {

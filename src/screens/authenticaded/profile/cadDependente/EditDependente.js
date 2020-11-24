@@ -4,11 +4,11 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    AsyncStorage,
     StatusBar,
     Alert,
 } from "react-native";
 import { StackActions } from "@react-navigation/native";
+import AsyncStorage from "@react-native-community/async-storage"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
 import { mask, unMask } from "remask";
@@ -17,27 +17,38 @@ import * as Yup from "yup";
 import moment from "moment";
 
 import api from "../../../../services/api";
+import {novaDataNasc} from "../../../../lib/dataDose";
 
 export default function EditDependente({ route, navigation }) {
     const [selectedIndex, useSelectedIndex] = useState(0);
     const [originalState, setOriginalState] = useState({});
+    const [vacinas, setVacinas] = useState();
     const sexos = ["Masculino", "Feminino"];
 
-    const [id, setId] = useState("");
 
     useEffect(() => {
         getOriginalState();
-        getUserData();
+        _getVacinas();
     }, []);
 
-    async function getUserData() {
-        const userId = await AsyncStorage.getItem("usuario");
-        setId(userId);
+
+    async function _getVacinas() {
+        await api
+            .get("/vacina")
+            .then((response) => {
+                setVacinas(response.data);
+            })
+            .catch((e) => {
+                Alert.alert(
+                    "Erro",
+                    "Erro ao pegar dados das vacinas, tente novamente"
+                );
+                console.log(e);
+            });
     }
 
     function getOriginalState() {
         const dados = route.params.dep;
-        console.log(dados);
         setOriginalState(dados);
     }
 
@@ -114,12 +125,18 @@ export default function EditDependente({ route, navigation }) {
                             );
                             return;
                         }
-                        const dependentes = {
+                        let dependentes = {
                             nome,
                             sexo,
                             data_nasc,
+                            vacinas: originalState.vacinas
                         };
-                        console.log(dependentes);
+                        const d1= new Date(data_nasc);
+                        const d2 = new Date(originalState.data_nasc);
+
+                        if(d1.getTime() != d2.getTime())
+                            dependentes = novaDataNasc(vacinas,dependentes);
+
                         await editDep(dependentes)
                             .then(async ({ data }) => {
                                 console.log(data);
