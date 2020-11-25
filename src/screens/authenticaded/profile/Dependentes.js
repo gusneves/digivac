@@ -37,7 +37,6 @@ export default function Depedentes({ navigation }) {
                         let data_nasc = moment(item.data_nasc).format(
                             "DD/MM/YYYY"
                         );
-                        console.log(item);
 
                         return (
                             <>

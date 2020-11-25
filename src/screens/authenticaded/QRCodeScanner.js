@@ -92,13 +92,13 @@ export default function QRCodeScanner({ route, navigation }) {
     const idade_doses = response.data.idade_doses;
 
     const dataDose = novaDose(idVacina, idade_doses, usuario, doses);
-    
+
     return dataDose;
   }
 
   const handleBarCodeScanned = async ({ data }) => {
     setScanned(true);
-    
+
     const idUsuario = await AsyncStorage.getItem('usuario');
     const idPessoa = route.params._idPessoa;
     const idVacina = route.params._idVacina;
@@ -117,6 +117,7 @@ export default function QRCodeScanner({ route, navigation }) {
             Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
               let carteiraAtualizada = await atualizaCarteira(idUsuario);
+              console.log(carteiraAtualizada);
               setCarteiraInfo(carteiraInfo => [...carteiraInfo, carteiraAtualizada]);
               navigation.navigate('Agenda');
             })();
@@ -130,6 +131,7 @@ export default function QRCodeScanner({ route, navigation }) {
             Alert.alert('Sucesso', 'Vacina tomada com sucesso! Arraste o dedo pra baixo em sua carteira para atualizá-la!');
             (async () => {
               let carteiraAtualizada = await atualizaCarteira(idPessoa);
+              console.log(carteiraAtualizada);
               setCarteiraInfo(carteiraInfo => [...carteiraInfo, carteiraAtualizada]);
               navigation.navigate('Agenda');
             })();
@@ -147,7 +149,7 @@ export default function QRCodeScanner({ route, navigation }) {
           Requisitando acesso à camera...
         </Text>
       </View>
-    ); 
+    );
   }
   if (hasPermission === false) {
     return (
@@ -156,7 +158,7 @@ export default function QRCodeScanner({ route, navigation }) {
           Sem permissão para acessar a câmera 😞
         </Text>
       </View>
-    ); 
+    );
   }
 
   return (
@@ -172,14 +174,14 @@ export default function QRCodeScanner({ route, navigation }) {
           style={{ flex: 1, marginVertical: 50 }}
         />
 
-      {invalidQRCode && 
-        <Button 
-          title={'QR Code inválido, aperte esse botão para escanear novamente'} 
+      {invalidQRCode &&
+        <Button
+          title={'QR Code inválido, aperte esse botão para escanear novamente'}
           onPress={() =>{
               setInvalidQRCode(false);
               setScanned(false);
             }
-          }  
+          }
         />}
       </View>
       <StatusBar

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
     View,
     ScrollView,
@@ -16,11 +16,14 @@ import moment from "moment";
 
 import api from "../../../services/api";
 import {novaDataNasc} from "../../../lib/dataDose";
+import {CarteiraContext} from '../../../context/Carteira';
 
 export default function EditInfo({ navigation }) {
     const [user, setUser] = useState({});
     const [userFinal, setUserFinal] = useState({});
     const [vacinas, setVacinas] = useState();
+
+    const { setCarteiraInfo } = useContext(CarteiraContext);
 
     const firstUpdate = useRef(true);
 
@@ -41,7 +44,7 @@ export default function EditInfo({ navigation }) {
                 .catch((e) => {
                     Alert.alert(
                         "Erro",
-                        "Erro ao pegar dadso das vacinas, tente novamente"
+                        "Erro ao pegar dados das vacinas, tente novamente"
                     );
                 });
         }
@@ -55,7 +58,6 @@ export default function EditInfo({ navigation }) {
             firstUpdate.current = false;
             return;
         }
-        console.log(userFinal.nome);
 
         async function update(){
             await api.put(`/usuario/${userFinal._id}`,
@@ -139,12 +141,12 @@ export default function EditInfo({ navigation }) {
 
         const dataFinal = moment(data_nasc, "DD/MM/YYYY").toDate();
         let aux = {...user, nome, sexo, data_nasc: dataFinal};
-
         const d1 = new Date(user.data_nasc);
         const d2 = new Date(aux.data_nasc);
 
         if(d1.getTime() != d2.getTime()){
             aux = novaDataNasc(vacinas, aux);
+            setCarteiraInfo(carteiraInfo => [...carteiraInfo, aux]);
         }
         setUserFinal(aux);
 

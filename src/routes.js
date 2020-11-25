@@ -31,37 +31,35 @@ const Stack = createStackNavigator();
 
 function AgendaStack() {
     return (
-        <CarteiraProvider>
-            <Stack.Navigator
-                screenOptions={{
-                    headerTitleAlign: "center",
-                    headerTintColor: "#FFF",
-                    headerStyle: {
-                        backgroundColor: "#2352FF",
-                        height: 60,
-                    },
-                    headerTitleStyle: {
-                        fontWeight: "bold",
-                        fontSize: 14,
-                    },
+        <Stack.Navigator
+            screenOptions={{
+                headerTitleAlign: "center",
+                headerTintColor: "#FFF",
+                headerStyle: {
+                    backgroundColor: "#2352FF",
+                    height: 60,
+                },
+                headerTitleStyle: {
+                    fontWeight: "bold",
+                    fontSize: 14,
+                },
+            }}
+        >
+            <Stack.Screen
+                name="Agenda"
+                component={Agenda}
+                options={{
+                    headerShown: false,
                 }}
-            >
-                <Stack.Screen
-                    name="Agenda"
-                    component={Agenda}
-                    options={{
-                        headerShown: false,
-                    }}
-                />
-                <Stack.Screen
-                    name="QRCodeScanner"
-                    component={QRCodeScanner}
-                    options={{
-                        title: "Escaneie o QR Code da vacina",
-                    }}
-                />
-            </Stack.Navigator>
-        </CarteiraProvider>
+            />
+            <Stack.Screen
+                name="QRCodeScanner"
+                component={QRCodeScanner}
+                options={{
+                    title: "Escaneie o QR Code da vacina",
+                }}
+            />
+        </Stack.Navigator>
     );
 }
 
@@ -162,51 +160,61 @@ function Router() {
     return (
         <NavigationContainer>
             {isLoggedIn ? (
-                <Tab.Navigator
-                    tabBarOptions={{
-                        activeBackgroundColor: "#2352FF",
-                        activeTintColor: "#FFF",
-                        inactiveBackgroundColor: "#FFFFFF",
-                        inactiveTintColor: "#2352FF",
-                    }}
-                >
-                    <Tab.Screen
-                        name="Home"
-                        options={{
-                            tabBarIcon: ({ color }) => (
-                                <Icon name="home" color={color} size={25} />
-                            ),
+                <CarteiraProvider>
+                    <Tab.Navigator
+                        tabBarOptions={{
+                            activeBackgroundColor: "#2352FF",
+                            activeTintColor: "#FFF",
+                            inactiveBackgroundColor: "#FFFFFF",
+                            inactiveTintColor: "#2352FF",
                         }}
-                        component={HomeStack}
-                    />
-                    <Tab.Screen
-                        name="Agenda"
-                        options={{
-                            tabBarIcon: ({ color }) => (
-                                <Icon name="calendar" color={color} size={25} />
-                            ),
-                        }}
-                        component={AgendaStack}
-                    />
-                    <Tab.Screen
-                        name="Perfil"
-                        options={{
-                            tabBarIcon: ({ color }) => (
-                                <Icon name="user" color={color} size={25} />
-                            ),
-                        }}
-                        component={PerfilStack}
-                    />
-                    <Tab.Screen
-                        name="Sobre"
-                        options={{
-                            tabBarIcon: ({ color }) => (
-                                <Icon name="question" color={color} size={25} />
-                            ),
-                        }}
-                        component={Sobre}
-                    />
-                </Tab.Navigator>
+                    >
+                        <Tab.Screen
+                            name="Home"
+                            options={{
+                                tabBarIcon: ({ color }) => (
+                                    <Icon name="home" color={color} size={25} />
+                                ),
+                            }}
+                            component={HomeStack}
+                        />
+                        <Tab.Screen
+                            name="Agenda"
+                            options={{
+                                tabBarIcon: ({ color }) => (
+                                    <Icon
+                                        name="calendar"
+                                        color={color}
+                                        size={25}
+                                    />
+                                ),
+                            }}
+                            component={AgendaStack}
+                        />
+                        <Tab.Screen
+                            name="Perfil"
+                            options={{
+                                tabBarIcon: ({ color }) => (
+                                    <Icon name="user" color={color} size={25} />
+                                ),
+                            }}
+                            component={PerfilStack}
+                        />
+                        <Tab.Screen
+                            name="Sobre"
+                            options={{
+                                tabBarIcon: ({ color }) => (
+                                    <Icon
+                                        name="question"
+                                        color={color}
+                                        size={25}
+                                    />
+                                ),
+                            }}
+                            component={Sobre}
+                        />
+                    </Tab.Navigator>
+                </CarteiraProvider>
             ) : (
                 <AuthStack.Navigator>
                     <AuthStack.Screen

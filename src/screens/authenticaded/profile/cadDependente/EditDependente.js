@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     View,
     ScrollView,
@@ -8,7 +8,6 @@ import {
     Alert,
 } from "react-native";
 import { StackActions } from "@react-navigation/native";
-import AsyncStorage from "@react-native-community/async-storage"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Input, Button, ButtonGroup } from "react-native-elements";
 import { mask, unMask } from "remask";
@@ -18,12 +17,16 @@ import moment from "moment";
 
 import api from "../../../../services/api";
 import {novaDataNasc} from "../../../../lib/dataDose";
+import  {CarteiraContext}  from "../../../../context/Carteira"
 
 export default function EditDependente({ route, navigation }) {
     const [selectedIndex, useSelectedIndex] = useState(0);
     const [originalState, setOriginalState] = useState({});
     const [vacinas, setVacinas] = useState();
     const sexos = ["Masculino", "Feminino"];
+
+
+    const { setCarteiraInfo } = useContext(CarteiraContext);
 
 
     useEffect(() => {
@@ -126,25 +129,27 @@ export default function EditDependente({ route, navigation }) {
                             return;
                         }
                         let dependentes = {
+                            _id: originalState._id,
                             nome,
                             sexo,
                             data_nasc,
                             vacinas: originalState.vacinas
                         };
+
                         const d1= new Date(data_nasc);
                         const d2 = new Date(originalState.data_nasc);
 
                         if(d1.getTime() != d2.getTime())
                             dependentes = novaDataNasc(vacinas,dependentes);
-
                         await editDep(dependentes)
                             .then(async ({ data }) => {
-                                console.log(data);
                                 if (data.usuario.ok === 1) {
                                     Alert.alert(
                                         "Concluído",
                                         "Os dados do dependente foram atualizados com sucesso!"
                                     );
+
+                                    setCarteiraInfo(carteiraInfo => [...carteiraInfo, dependentes]);
                                     const popStack = StackActions.pop(2);
                                     navigation.dispatch(popStack);
                                 } else {
@@ -156,6 +161,7 @@ export default function EditDependente({ route, navigation }) {
                             .catch((error) =>
                                 Alert.alert("Concluído", error.message)
                             );
+
                     }
                 }}
                 validationSchema={formSchema}
