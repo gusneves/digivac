@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://api-db-digivac.herokuapp.com'
+  baseURL: 'http://192.168.0.10:3000'
 });
 
 api.defaults.headers.common['Access-Control-Allow-Origin'] = '*'

@@ -305,6 +305,21 @@ export default function Home({ navigation }) {
                     }
                 }
 
+                let resultado = 0;
+
+                arrayUsuarioFinal.map((item) => {
+                    if (item.proxima) {
+                        resultado++;
+                    }
+                });
+
+                if (resultado > 0) {
+                    setTemVacinasProximas(true);
+                } else {
+                    setTemVacinasProximas(false);
+                }
+                // console.log(arrayUsuarioFinal);
+
                 return arrayUsuarioFinal;
             }
 
@@ -427,6 +442,8 @@ export default function Home({ navigation }) {
 
                 if (resultado > 0) {
                     setTemVacinasProximas(true);
+                } else {
+                    setTemVacinasProximas(false);
                 }
 
                 return arrayFinal;
